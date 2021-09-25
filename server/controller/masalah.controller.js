@@ -1,7 +1,7 @@
 require('dotenv').config()
 var fs = require('fs')
 const mysql = require('mysql')
-var fcm = require('firabase-admin')
+var fcm = require('firebase-admin')
 var serviceaccount = require('../utils/cmmsgeprivatekey.json')
 const tonotification = 'CMMSGE_SERVICE'
 const pool = mysql.createPool({
