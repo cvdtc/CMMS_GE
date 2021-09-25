@@ -38,33 +38,43 @@ const pool = mysql.createPool({
  */
 
 async function getDashboard(req, res) {
+    const token = req.headers.authorization.split(' ')[1]
     try {
-        pool.getConnection(function (error, database) {
-            if (error) {
-                return res.status(400).send({
-                    message: "Pool refushed, sorry :(, try again or contact developer",
-                    data: error
-                })
+        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+            if (jwterror) {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
+                });
             } else {
-                var sqlquery = "SELECT count(m.idmasalah) as jml_masalah, COUNT(p.idpenyelesaian) as jml_selesai FROM masalah m LEFT JOIN penyelesaian p on m.idmasalah=p.idmasalah;"
-                database.query(sqlquery, (error, rows) => {
+                pool.getConnection(function (error, database) {
                     if (error) {
-                        return res.status(500).send({
-                            message: "Sorry :(, my query has been error",
+                        return res.status(400).send({
+                            message: "Pool refushed, sorry :(, try again or contact developer",
                             data: error
-                        });
+                        })
                     } else {
-                        if (rows.length <= 0) {
-                            return res.status(204).send({
-                                message: "Data masih kosong",
-                                data: rows
-                            });
-                        } else {
-                            return res.status(200).send({
-                                message: "Data berhasil fetch.",
-                                data: rows
-                            });
-                        }
+                        var sqlquery = "SELECT count(m.idmasalah) as jml_masalah, COUNT(p.idpenyelesaian) as jml_selesai FROM masalah m LEFT JOIN penyelesaian p on m.idmasalah=p.idmasalah"
+                        database.query(sqlquery, (error, rows) => {
+                            if (error) {
+                                return res.status(500).send({
+                                    message: "Sorry :(, my query has been error",
+                                    data: error
+                                })
+                            } else {
+                                if (rows.length <= 0) {
+                                    return res.status(204).send({
+                                        message: "Data masih kosong",
+                                        data: rows
+                                    })
+                                } else {
+                                    return res.status(200).send({
+                                        message: "Data berhasil fetch.",
+                                        data: rows
+                                    })
+                                }
+                            }
+                        })
                     }
                 })
             }
@@ -73,7 +83,7 @@ async function getDashboard(req, res) {
         return res.status(403).send({
             message: "Forbidden.",
             error: error
-        });
+        })
     }
 }
 

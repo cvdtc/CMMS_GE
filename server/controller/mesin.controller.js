@@ -36,33 +36,43 @@ const pool = mysql.createPool({
  */
 
 async function getMesin(req, res) {
+    const token = req.headers.authorization.split(' ')[1]
     try {
-        pool.getConnection(function (error, database) {
-            if (error) {
-                return res.status(400).send({
-                    message: "Pool refushed, sorry :(, try again or contact developer",
-                    data: error
-                })
+        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+            if (jwterror) {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
+                });
             } else {
-                var sqlquery = "SELECT a.*, b.nama as site FROM mesin a, site b where a.idsite=b.idsite"
-                database.query(sqlquery, (error, rows) => {
+                pool.getConnection(function (error, database) {
                     if (error) {
-                        return res.status(500).send({
-                            message: "Sorry :(, my query has been error",
+                        return res.status(400).send({
+                            message: "Pool refushed, sorry :(, try again or contact developer",
                             data: error
-                        });
+                        })
                     } else {
-                        if (rows.length <= 0) {
-                            return res.status(204).send({
-                                message: "Data masih kosong",
-                                data: rows
-                            });
-                        } else {
-                            return res.status(200).send({
-                                message: "Data berhasil fetch.",
-                                data: rows
-                            });
-                        }
+                        var sqlquery = "SELECT a.*, b.nama as site FROM mesin a, site b where a.idsite=b.idsite"
+                        database.query(sqlquery, (error, rows) => {
+                            if (error) {
+                                return res.status(500).send({
+                                    message: "Sorry :(, my query has been error",
+                                    data: error
+                                })
+                            } else {
+                                if (rows.length <= 0) {
+                                    return res.status(204).send({
+                                        message: "Data masih kosong",
+                                        data: rows
+                                    })
+                                } else {
+                                    return res.status(200).send({
+                                        message: "Data berhasil fetch.",
+                                        data: rows
+                                    })
+                                }
+                            }
+                        })
                     }
                 })
             }
@@ -71,7 +81,7 @@ async function getMesin(req, res) {
         return res.status(403).send({
             message: "Forbidden.",
             error: error
-        });
+        })
     }
 }
 
@@ -112,61 +122,75 @@ async function getMesin(req, res) {
  *              description: kesalahan pada query sql
  */
 
- async function addMesin(req, res) {
-    var nomesin = req.body.nomesin;
-    var keterangan = req.body.keterangan;
-    var idsite = req.body.idsite;
+async function addMesin(req, res) {
+    var nomesin = req.body.nomesin
+    var keterangan = req.body.keterangan
+    var idsite = req.body.idsite
+    const token = req.headers.authorization.split(' ')[1]
+    if (Object.keys(req.body).length != 3) {
+        return res.status(405).send({
+            message: 'parameter tidak sesuai!'
+        })
+    } else {
     try {
-        pool.getConnection(function (error, database) {
-            if (error) {
-                return res.status(400).send({
-                    message: "Soory, Pool Refushed",
-                    data: error
+        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+            if (jwterror) {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
                 });
             } else {
-                database.beginTransaction(function (error) {
-                    let datamesin = {
-                        nomesin: nomesin,
-                        keterangan: keterangan,
-                        idsite: idsite
-                    }
-                    var sqlquery = "INSERT INTO mesin SET ?"
-                    database.query(sqlquery, datamesin, (error, result) => {
-                        if (error) {
-                            database.rollback(function () {
-                                database.release()
-                                return res.status(407).send({
-                                    message: 'Sorry :(, we have problems sql query!',
-                                    error: error
-                                })
-                            })
-                        } else {
-                            database.commit(function (errcommit) {
-                                if (errcommit) {
+                pool.getConnection(function (error, database) {
+                    if (error) {
+                        return res.status(400).send({
+                            message: "Soory, Pool Refushed",
+                            data: error
+                        })
+                    } else {
+                        database.beginTransaction(function (error) {
+                            let datamesin = {
+                                nomesin: nomesin,
+                                keterangan: keterangan,
+                                idsite: idsite
+                            }
+                            var sqlquery = "INSERT INTO mesin SET ?"
+                            database.query(sqlquery, datamesin, (error, result) => {
+                                if (error) {
                                     database.rollback(function () {
                                         database.release()
                                         return res.status(407).send({
-                                            message: 'data gagal disimpan!'
+                                            message: 'Sorry :(, we have problems sql query!',
+                                            error: error
                                         })
                                     })
                                 } else {
-                                    database.release()
-                                    return res.status(201).send({
-                                        message: 'Data berhasil disimpan!'
+                                    database.commit(function (errcommit) {
+                                        if (errcommit) {
+                                            database.rollback(function () {
+                                                database.release()
+                                                return res.status(407).send({
+                                                    message: 'data gagal disimpan!'
+                                                })
+                                            })
+                                        } else {
+                                            database.release()
+                                            return res.status(201).send({
+                                                message: 'Data berhasil disimpan!'
+                                            })
+                                        }
                                     })
                                 }
                             })
-                        }
-                    })
+                        })
+                    }
                 })
             }
         })
-
     } catch (error) {
         return res.status(403).send({
             message: 'Email atau Nomor Handphone yang anda masukkan sudah terdaftar!'
         })
-    }
+    }}
 }
 
 /**
@@ -206,61 +230,75 @@ async function getMesin(req, res) {
  */
 
 async function editMesin(req, res) {
-    var idmesin = req.params.idmesin;
-    var nomesin = req.body.nomesin;
-    var keterangan = req.body.keterangan;
-    var idsite = req.body.idsite;
+    var idmesin = req.params.idmesin
+    var nomesin = req.body.nomesin
+    var keterangan = req.body.keterangan
+    var idsite = req.body.idsite
+    const token = req.headers.authorization.split(' ')[1]
+    if (Object.keys(req.body).length != 3) {
+        return res.status(405).send({
+            message: 'parameter tidak sesuai!'
+        })
+    } else {
     try {
-        pool.getConnection(function (error, database) {
-            if (error) {
-                return res.status(400).send({
-                    message: "Soory, Pool Refushed",
-                    data: error
+        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+            if (jwterror) {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
                 });
             } else {
-                database.beginTransaction(function (error) {
-                    let datamesin = {
-                        nomesin: nomesin,
-                        keterangan: keterangan,
-                        idsite: idsite
-                    }
-                    var sqlquery = "UPDATE mesin SET ? WHERE idmesin = ?"
-                    database.query(sqlquery, [datamesin, idmesin], (error, result) => {
-                        if (error) {
-                            database.rollback(function () {
-                                database.release()
-                                return res.status(407).send({
-                                    message: 'Sorry :(, we have problems sql query!',
-                                    error: error
-                                })
-                            })
-                        } else {
-                            database.commit(function (errcommit) {
-                                if (errcommit) {
+                pool.getConnection(function (error, database) {
+                    if (error) {
+                        return res.status(400).send({
+                            message: "Soory, Pool Refushed",
+                            data: error
+                        })
+                    } else {
+                        database.beginTransaction(function (error) {
+                            let datamesin = {
+                                nomesin: nomesin,
+                                keterangan: keterangan,
+                                idsite: idsite
+                            }
+                            var sqlquery = "UPDATE mesin SET ? WHERE idmesin = ?"
+                            database.query(sqlquery, [datamesin, idmesin], (error, result) => {
+                                if (error) {
                                     database.rollback(function () {
                                         database.release()
                                         return res.status(407).send({
-                                            message: 'data gagal diperbarui!'
+                                            message: 'Sorry :(, we have problems sql query!',
+                                            error: error
                                         })
                                     })
                                 } else {
-                                    database.release()
-                                    return res.status(200).send({
-                                        message: 'Data berhasil diperbarui!'
+                                    database.commit(function (errcommit) {
+                                        if (errcommit) {
+                                            database.rollback(function () {
+                                                database.release()
+                                                return res.status(407).send({
+                                                    message: 'data gagal diperbarui!'
+                                                })
+                                            })
+                                        } else {
+                                            database.release()
+                                            return res.status(200).send({
+                                                message: 'Data berhasil diperbarui!'
+                                            })
+                                        }
                                     })
                                 }
                             })
-                        }
-                    })
+                        })
+                    }
                 })
             }
         })
-
     } catch (error) {
         return res.status(403).send({
             message: 'Email atau Nomor Handphone yang anda masukkan sudah terdaftar!'
         })
-    }
+    }}
 }
 
 
