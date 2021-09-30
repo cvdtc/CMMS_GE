@@ -10,12 +10,14 @@ const pool = mysql.createPool({
     port: process.env.DB_PORT,
     timezone: 'utc-8'
 })
+var fs = require('fs')
 
 async function Login(req, res) {
     var username = req.body.username;
     var password = req.body.password;
+    var tipe = req.body.tipe;
     console.log('Ada yang mencoba masuk')
-    if (Object.keys(req.body).length != 2) {
+    if (Object.keys(req.body).length != 3) {
         res.status(405).send({
             message: "Parameter tidak sesuai",
         })
@@ -52,16 +54,17 @@ async function Login(req, res) {
                                 const access_token = jwt.sign(user, process.env.ACCESS_SECRET, {
                                     expiresIn: process.env.ACCESS_EXPIRED
                                 })
-                                const refresh_token = jwt.sign(user, process.env.REFRESH_SECRET, {
-                                    expiresIn: process.env.REFRESH_EXPIRED
-                                })
-                                refreshTokens.push(refresh_token)
+                                const file = fs.createWriteStream('notificationlog.txt')
+                                file.write(`[CMMS] `+Date.now()+` `+`${username} ${tipe} berhasil login`)
+                                file.end('world!')
+                                // fs.createWriteStream('../log/notificationlog.txt').write(Date.now() + ' : Gagal mengirim notifikasi masalah, error : ' + error)
                                 return res.status(200).send({
                                     message: 'Selamat, Anda Berhasil Login',
-                                    access_token: access_token,
-                                    refresh_token: refresh_token,
-                                    username: rows[0].nama,
-                                    jabatan: rows[0].jabatan
+                                    data: {
+                                        access_token: access_token,
+                                        username: rows[0].nama,
+                                        jabatan: rows[0].jabatan
+                                    }
                                 })
                             }
                         }
@@ -75,6 +78,7 @@ async function Login(req, res) {
             })
         }
     }
-}module.exports = {
+}
+module.exports = {
     Login
 }
