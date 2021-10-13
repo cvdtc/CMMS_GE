@@ -1,4 +1,8 @@
+import 'package:cmmsge/services/models/login/LoginModel.dart';
+import 'package:cmmsge/services/utils/apiService.dart';
+import 'package:cmmsge/utils/ReusableCalass.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/utils/bottomnavigation.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
@@ -7,14 +11,18 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // ! Initialize Variable
+  // * please all variable drop here!
+  // * and make sure variable have value don't let variable null
   bool _isLoading = false,
       _passtype = true,
       _fieldUsername = true,
       _fieldPassword = true;
-
   TextEditingController _tecUsername = TextEditingController(text: "");
   TextEditingController _tecPassword = TextEditingController(text: "");
+  ApiService _apiService = ApiService();
 
+  // * method for show or hide password
   void _toggle() {
     setState(() {
       _passtype = !_passtype;
@@ -66,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        // LoginClick();
+                        LoginClick();
                       },
                       style: ElevatedButton.styleFrom(
                         elevation: 0.0,
@@ -94,6 +102,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // * widget for text editing username
   Widget _TextEditingUsername() {
     return TextFormField(
         controller: _tecUsername,
@@ -106,6 +115,7 @@ class _LoginPageState extends State<LoginPage> {
         ));
   }
 
+  // * widget for text editing password
   Widget _TextEditingPassword() {
     return TextFormField(
         controller: _tecPassword,
@@ -120,5 +130,41 @@ class _LoginPageState extends State<LoginPage> {
                 _passtype ? Icons.remove_red_eye : Icons.visibility_off),
           ),
         ));
+  }
+
+  // * class for login button action and response
+  void LoginClick() {
+    print('hii');
+    var username = _tecUsername.text.toString();
+    var password = _tecPassword.text.toString();
+    if (username == "" || password == "") {
+      ReusableClass().modalbottomWarning(
+          context,
+          "Tidak Valid",
+          'pastikan username dan password sudah terisi!',
+          'f400',
+          'assets/iamges/sorry.png');
+    } else {
+      LoginModel dataparams =
+          LoginModel(username: username, password: password, tipe: 'mobile');
+      _apiService.LoginApp(dataparams).then((isSuccess) {
+        setState(() {
+          _isLoading = false;
+        });
+        if (isSuccess) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => BottomNavigation()));
+        } else {
+          ReusableClass().modalbottomWarning(
+              context,
+              'Login Gagal!',
+              '${_apiService.responseCode.messageApi}',
+              '400',
+              'assets/images/sorry');
+        }
+        return;
+      });
+    }
+    return;
   }
 }

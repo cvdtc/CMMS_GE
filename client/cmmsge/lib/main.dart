@@ -1,8 +1,9 @@
-import 'package:cmmsge/pages/splashscreen/splashscreen.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import 'views/pages/splashscreen/splashscreen.dart';
 
 void main() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
