@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ReusableClass {
-  //MODAL BOTTOM SHEET FOR WARNING ERROR
+class ReusableClasses {
+  // ! MODAL BOTTOM SHEET FOR WARNING ERROR
   modalbottomWarning(BuildContext context, String title, String message,
       String kode, String imagelocation) {
     dynamic navigation;
@@ -52,5 +53,21 @@ class ReusableClass {
             ),
           );
         });
+  }
+}
+
+class GetSharedPreference {
+  late SharedPreferences sp;
+  var tokens = "";
+  getsharedpreferences() async {
+    sp = await SharedPreferences.getInstance();
+  }
+
+  set setToken(String token) {
+    this.tokens = token;
+  }
+
+  Future<String> get getToken async {
+    return tokens;
   }
 }

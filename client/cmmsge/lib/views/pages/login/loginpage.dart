@@ -1,6 +1,6 @@
 import 'package:cmmsge/services/models/login/LoginModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
-import 'package:cmmsge/utils/ReusableCalass.dart';
+import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/utils/bottomnavigation.dart';
 import 'package:flutter/material.dart';
@@ -138,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
     var username = _tecUsername.text.toString();
     var password = _tecPassword.text.toString();
     if (username == "" || password == "") {
-      ReusableClass().modalbottomWarning(
+      ReusableClasses().modalbottomWarning(
           context,
           "Tidak Valid",
           'pastikan username dan password sudah terisi!',
@@ -155,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => BottomNavigation()));
         } else {
-          ReusableClass().modalbottomWarning(
+          ReusableClasses().modalbottomWarning(
               context,
               'Login Gagal!',
               '${_apiService.responseCode.messageApi}',

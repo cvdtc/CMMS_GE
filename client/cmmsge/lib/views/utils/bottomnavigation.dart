@@ -1,5 +1,8 @@
 import 'package:cmmsge/utils/warna.dart';
-import 'package:cmmsge/views/pages/dashboard/dasboard.dart';
+import 'package:cmmsge/views/pages/dashboard/dasboardpage.dart';
+import 'package:cmmsge/views/pages/menu/menupage.dart';
+import 'package:cmmsge/views/pages/scan/scanmesinpage.dart';
+import 'package:cmmsge/views/pages/schedule/scheduleganti.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavigation extends StatefulWidget {
@@ -15,9 +18,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
   PageStorageBucket bucket = PageStorageBucket();
   List<Widget> _currentPage = <Widget>[
     DashboardPage(),
-    DashboardPage(),
-    DashboardPage(),
-    DashboardPage()
+    ScanMesinPage(),
+    ScheduleGantiPartPage(),
+    MenuPage()
   ];
 
   @override

@@ -15,7 +15,7 @@ class DashboardModel {
   }
 }
 
-List<DashboardModel> resultloginFromJson(String dataJson) {
+List<DashboardModel> dashboardFromJson(String dataJson) {
   final data = json.decode(dataJson);
   return List<DashboardModel>.from(
       data["data"].map((item) => DashboardModel.fromJson(item)));
