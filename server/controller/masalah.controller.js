@@ -2,7 +2,8 @@ require('dotenv').config()
 var fs = require('fs')
 const mysql = require('mysql')
 var fcm = require('firebase-admin')
-var serviceaccount = require('../utils/cmmsgeprivatekey.json')
+// var serviceaccount = require('../utils/cmmsgeprivatekey.json')
+var serviceaccount = ''
 const tonotification = 'CMMSGE_SERVICE'
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -12,9 +13,9 @@ const pool = mysql.createPool({
     port: process.env.DB_PORT,
     timezone: 'utc-8'
 })
-fcm.initializeApp({
-    credential: fcm.credential.cert(serviceaccount)
-})
+// fcm.initializeApp({
+//     credential: fcm.credential.cert(serviceaccount)
+// })
 
 /**
  * @swagger

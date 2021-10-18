@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:cmmsge/pages/login/loginpage.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/login/loginpage.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreenPage extends StatefulWidget {

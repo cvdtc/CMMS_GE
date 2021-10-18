@@ -30,6 +30,7 @@ dependencies:
   google_fonts: ^2.1.0
   http: ^0.13.3
   meta: ^1.7.0
+  shared_preferences: ^2.0.8
 
 dev_dependencies:
   flutter_test:
