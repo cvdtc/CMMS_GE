@@ -1,4 +1,5 @@
 require('dotenv').config()
+const jwt = require('jsonwebtoken')
 const mysql = require('mysql')
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -37,14 +38,10 @@ const pool = mysql.createPool({
 
 async function getMesin(req, res) {
     const token = req.headers.authorization.split(' ')[1]
+    var idsite = req.params.idsite
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwterror) {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                });
-            } else {
+            if (jwtresult) {
                 pool.getConnection(function (error, database) {
                     if (error) {
                         return res.status(400).send({
@@ -52,8 +49,8 @@ async function getMesin(req, res) {
                             data: error
                         })
                     } else {
-                        var sqlquery = "SELECT a.*, b.nama as site FROM mesin a, site b where a.idsite=b.idsite"
-                        database.query(sqlquery, (error, rows) => {
+                        var sqlquery = "SELECT * FROM mesin WHERE idsite = ?"
+                        database.query(sqlquery, [idsite],(error, rows) => {
                             if (error) {
                                 return res.status(500).send({
                                     message: "Sorry :(, my query has been error",
@@ -74,6 +71,12 @@ async function getMesin(req, res) {
                             }
                         })
                     }
+                })
+                
+            } else {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
                 })
             }
         })

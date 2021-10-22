@@ -8,6 +8,12 @@ router.get('/dashboard', function(req, res){
     RouteToDashbord.getDashboard(req, res)
 })
 
+//KOMPONEN
+var RouteToKomponen = require('../controller/komponen.controller')
+router.get('/komponen/:idmesin', function(req, res){
+    RouteToKomponen.getKomponen(req, res)
+})
+
 //LOGIN
 var RouteToLogin = require('../controller/login.controller')
 router.post('/login', function(req, res){
@@ -31,7 +37,7 @@ router.put('/masalah/:idmasalah', function(req, res){
 
 //MESIN
 var RouteToMesin = require('../controller/mesin.controller')
-router.get('/mesin', function(req, res){
+router.get('/mesin/:idsite', function(req, res){
     RouteToMesin.getMesin(req, res)
 })
 router.post('/mesin', function(req, res){

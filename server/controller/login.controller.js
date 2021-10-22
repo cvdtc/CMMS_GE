@@ -16,7 +16,7 @@ async function Login(req, res) {
     var username = req.body.username;
     var password = req.body.password;
     var tipe = req.body.tipe;
-    console.log('Ada yang mencoba masuk')
+    console.log('Ada yang mencoba masuk', Object.keys(req.body).length)
     if (Object.keys(req.body).length != 3) {
         res.status(405).send({
             message: "Parameter tidak sesuai",
@@ -54,9 +54,15 @@ async function Login(req, res) {
                                 const access_token = jwt.sign(user, process.env.ACCESS_SECRET, {
                                     expiresIn: process.env.ACCESS_EXPIRED
                                 })
-                                const file = fs.createWriteStream('notificationlog.txt')
-                                file.write(`[CMMS] `+Date.now()+` `+`${username} ${tipe} berhasil login`)
-                                file.end('world!')
+                                fs.appendFile('notificationlog.txt',  `[ ${tipe} ] `+new Date().getUTCMinutes+` [ Login ] - ${username}\n`, function (err){
+                                    if(err){
+                                        console.log('gagal')
+                                    }else{
+                                        console.log('berhasil')        
+                                    }
+                                })
+                                // file.write(`[CMMS] `+Date.now()+` `+`${username} ${tipe} berhasil login`)
+                                // file.end('--- END ---')
                                 // fs.createWriteStream('../log/notificationlog.txt').write(Date.now() + ' : Gagal mengirim notifikasi masalah, error : ' + error)
                                 return res.status(200).send({
                                     message: 'Selamat, Anda Berhasil Login',
