@@ -42,12 +42,7 @@ async function getPenyelesaian(req, res) {
     const token = req.headers.authorization.split(' ')[1]
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwterror) {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                });
-            } else {
+            if (jwtresult) {
                 pool.getConnection(function (error, database) {
                     if (error) {
                         return res.status(400).send({
@@ -77,6 +72,11 @@ async function getPenyelesaian(req, res) {
                             }
                         })
                     }
+                })
+            } else {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
                 })
             }
         })
@@ -112,12 +112,8 @@ async function getPenyelesaianByMasalah(req, res) {
     const token = req.headers.authorization.split(' ')[1]
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwterror) {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                });
-            } else {
+            if (jwtresult) {
+
                 pool.getConnection(function (error, database) {
                     if (error) {
                         return res.status(400).send({
@@ -147,6 +143,11 @@ async function getPenyelesaianByMasalah(req, res) {
                             }
                         })
                     }
+                })
+            } else {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
                 })
             }
         })
@@ -207,12 +208,7 @@ async function addPenyelesaian(req, res) {
     } else {
         try {
             jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-                if (jwterror) {
-                    return res.status(401).send({
-                        message: "Sorry, Token tidak valid!",
-                        data: jwterror
-                    });
-                } else {
+                if (jwtresult) {
                     pool.getConnection(function (error, database) {
                         if (error) {
                             return res.status(400).send({
@@ -270,11 +266,17 @@ async function addPenyelesaian(req, res) {
                             })
                         }
                     })
+                } else {
+                    return res.status(401).send({
+                        message: "Sorry, Token tidak valid!",
+                        data: jwterror
+                    })
                 }
             })
         } catch (error) {
             return res.status(403).send({
-                message: 'Email atau Nomor Handphone yang anda masukkan sudah terdaftar!'
+                message: "Forbidden.",
+                error: error
             })
         }
     }
@@ -329,12 +331,8 @@ async function editPenyelesaian(req, res) {
     } else {
         try {
             jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-                if (jwterror) {
-                    return res.status(401).send({
-                        message: "Sorry, Token tidak valid!",
-                        data: jwterror
-                    });
-                } else {
+                if (jwtresult) {
+
                     pool.getConnection(function (error, database) {
                         if (error) {
                             return res.status(400).send({
@@ -379,11 +377,17 @@ async function editPenyelesaian(req, res) {
                             })
                         }
                     })
+                } else {
+                    return res.status(401).send({
+                        message: "Sorry, Token tidak valid!",
+                        data: jwterror
+                    })
                 }
             })
         } catch (error) {
             return res.status(403).send({
-                message: 'Email atau Nomor Handphone yang anda masukkan sudah terdaftar!'
+                message: "Forbidden.",
+                error: error
             })
         }
     }

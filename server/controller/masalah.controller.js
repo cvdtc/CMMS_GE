@@ -2,8 +2,6 @@ require('dotenv').config()
 var fs = require('fs')
 const mysql = require('mysql')
 var fcm = require('firebase-admin')
-// var serviceaccount = require('../utils/cmmsgeprivatekey.json')
-var serviceaccount = ''
 const tonotification = 'CMMSGE_SERVICE'
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -13,9 +11,6 @@ const pool = mysql.createPool({
     port: process.env.DB_PORT,
     timezone: 'utc-8'
 })
-// fcm.initializeApp({
-//     credential: fcm.credential.cert(serviceaccount)
-// })
 
 /**
  * @swagger
@@ -47,12 +42,8 @@ async function getMasalah(req, res) {
     const token = req.headers.authorization.split(' ')[1];
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwterror) {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                });
-            } else {
+            if (jwtresult) {
+                
                 pool.getConnection(function (error, database) {
                     if (error) {
                         return res.status(400).send({
@@ -82,6 +73,11 @@ async function getMasalah(req, res) {
                             }
                         })
                     }
+                })
+            } else {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
                 })
             }
         })
@@ -117,12 +113,8 @@ async function getMasalahByMesin(req, res) {
     const token = req.headers.authorization.split(' ')[1]
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwterror) {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                });
-            } else {
+            if (jwtresult) {
+
                 pool.getConnection(function (error, database) {
                     if (error) {
                         return res.status(400).send({
@@ -152,6 +144,11 @@ async function getMasalahByMesin(req, res) {
                             }
                         })
                     }
+                })
+            } else {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
                 })
             }
         })
@@ -218,12 +215,8 @@ async function addMasalah(req, res) {
     } else {
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwterror) {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                });
-            } else {
+            if (jwtresult) {
+                
                 pool.getConnection(function (error, database) {
                     if (error) {
                         return res.status(400).send({
@@ -284,11 +277,17 @@ async function addMasalah(req, res) {
                         })
                     }
                 })
+            } else {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
+                })
             }
         })
     } catch (error) {
         return res.status(403).send({
-            message: 'Email atau Nomor Handphone yang anda masukkan sudah terdaftar!'
+            message: "Forbidden.",
+            error: error
         })
     }}
 }
@@ -349,12 +348,8 @@ async function editMasalah(req, res) {
     } else {
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwterror) {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                });
-            } else {
+            if (jwtresult) {
+                
                 pool.getConnection(function (error, database) {
                     if (error) {
                         return res.status(400).send({
@@ -415,11 +410,17 @@ async function editMasalah(req, res) {
                         })
                     }
                 })
+            } else {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
+                })
             }
         })
     } catch (error) {
         return res.status(403).send({
-            message: 'Email atau Nomor Handphone yang anda masukkan sudah terdaftar!'
+            message: "Forbidden.",
+            error: error
         })
     }}
 }

@@ -134,7 +134,6 @@ class _LoginPageState extends State<LoginPage> {
 
   // * class for login button action and response
   void LoginClick() {
-    print('hii');
     var username = _tecUsername.text.toString();
     var password = _tecPassword.text.toString();
     if (username == "" || password == "") {
@@ -151,15 +150,16 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _isLoading = false;
         });
-        if (isSuccess) {
+        print("Hmm? " + isSuccess.toString());
+        if (isSuccess == 'Login Success') {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => BottomNavigation()));
         } else {
           ReusableClasses().modalbottomWarning(
               context,
               'Login Gagal!',
-              '${_apiService.responseCode.messageApi}',
-              '400',
+              '${_apiService.responseCode.messageApi} [error : ${isSuccess}]',
+              'f400',
               'assets/images/sorry');
         }
         return;

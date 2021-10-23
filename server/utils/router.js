@@ -62,4 +62,19 @@ router.put('/penyelesaian/:idpenyelesaian', function(req, res){
     RouteToPenyelesaian.editPenyelesaian(req, res)
 })
 
+//SITE
+var RouteToSite = require('../controller/site.controller')
+router.get('/site', function(req, res){
+    RouteToSite.getSite(req, res)
+})
+router.post('/site', function(req, res){
+    RouteToSite.addSite(req, res)
+})
+router.put('/site/:idsite', function(req, res){
+    RouteToSite.editSite(req, res)
+})
+router.delete('/site/:idsite', function(req, res){
+    RouteToSite.deleteSite(req, res)
+})
+
 module.exports = router;

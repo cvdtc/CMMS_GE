@@ -39,6 +39,7 @@ const pool = mysql.createPool({
 async function getMesin(req, res) {
     const token = req.headers.authorization.split(' ')[1]
     var idsite = req.params.idsite
+    var filterquery = ""
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwtresult) {
@@ -49,7 +50,10 @@ async function getMesin(req, res) {
                             data: error
                         })
                     } else {
-                        var sqlquery = "SELECT * FROM mesin WHERE idsite = ?"
+                        // * if idsite == 0 run all query without where idsite
+                        if(idsite != 0) filterquery = 'WHERE idsite = ?'
+                        ///////////////////////////////////////////////
+                        var sqlquery = "SELECT * FROM mesin "+filterquery
                         database.query(sqlquery, [idsite],(error, rows) => {
                             if (error) {
                                 return res.status(500).send({
@@ -87,7 +91,6 @@ async function getMesin(req, res) {
         })
     }
 }
-
 
 /**
  * @swagger
@@ -191,7 +194,8 @@ async function addMesin(req, res) {
         })
     } catch (error) {
         return res.status(403).send({
-            message: 'Email atau Nomor Handphone yang anda masukkan sudah terdaftar!'
+            message: "Forbidden.",
+            error: error
         })
     }}
 }
@@ -299,7 +303,8 @@ async function editMesin(req, res) {
         })
     } catch (error) {
         return res.status(403).send({
-            message: 'Email atau Nomor Handphone yang anda masukkan sudah terdaftar!'
+            message: "Forbidden.",
+            error: error
         })
     }}
 }
