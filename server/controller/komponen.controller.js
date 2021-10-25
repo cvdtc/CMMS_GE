@@ -39,6 +39,7 @@ const pool = mysql.createPool({
 async function getKomponen(req, res) {
     const token = req.headers.authorization.split(' ')[1]
     var idmesin = req.params.idmesin;
+    var filterquery = ""
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwtresult) {
@@ -49,7 +50,10 @@ async function getKomponen(req, res) {
                             data: error
                         })
                     } else {
-                        var sqlquery = "SELECT * FROM komponen WHERE idmesin = ?"
+                        // * if idsite == 0 run all query without where idsite
+                        if(idmesin != 0) filterquery = 'WHERE idmesin = ?'
+                        ///////////////////////////////////////////////
+                        var sqlquery = "SELECT * FROM komponen "+filterquery
                         database.query(sqlquery, idmesin,(error, rows) => {
                             if (error) {
                                 return res.status(500).send({
