@@ -3,7 +3,9 @@ import 'package:cmmsge/views/pages/dashboard/dasboardpage.dart';
 import 'package:cmmsge/views/pages/menu/menupage.dart';
 import 'package:cmmsge/views/pages/scan/scanmesinpage.dart';
 import 'package:cmmsge/views/pages/schedule/scheduleganti.dart';
+import 'package:cmmsge/views/pages/site/sitewithinsearch.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BottomNavigation extends StatefulWidget {
   @override
@@ -11,6 +13,26 @@ class BottomNavigation extends StatefulWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
+  late SharedPreferences sp;
+  String? token = "", username = "", jabatan = "";
+// * ceking token and getting dashboard value from Shared Preferences
+  cekToken() async {
+    sp = await SharedPreferences.getInstance();
+    setState(() {
+      token = sp.getString("access_token")!;
+      username = sp.getString("username")!;
+      jabatan = sp.getString("jabatan")!;
+    });
+
+    print('Token Site?' + " " + token.toString());
+  }
+
+  @override
+  void initState() {
+    cekToken();
+    super.initState();
+  }
+
   // ! Initialize Variable
   // * please all variable drop here!
   // * and make sure variable have value don't let variable null
@@ -19,7 +41,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
   List<Widget> _currentPage = <Widget>[
     DashboardPage(),
     ScanMesinPage(),
-    ScheduleGantiPartPage(),
+    SiteSearchPage(
+      token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZHBlbmdndW5hIjoxMCwiaWF0IjoxNjM1NzU2ODEyLCJleHAiOjE2MzU4NDMyMTJ9.CweiMGCE9Qa792RLhblo4pZXFJFhThCHuaafPDvN1eo',
+    ),
     MenuPage()
   ];
 

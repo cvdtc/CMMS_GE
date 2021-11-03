@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // ? make sure api url true, change variable BaseUrl if api url has changed.
-  final String BaseUrl = "http://192.168.1.207:9994/api/v1/";
+  final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
   Client client = Client();
   ResponseCode responseCode = ResponseCode();
 
@@ -117,7 +117,8 @@ class ApiService {
   }
 
   /**
-   * ! List Data Site
+   * ! Site
+   * ++ LIST SITE
    * * note : getting data site
    */
   Future<List<SiteModel>?> getListSite(String token) async {
@@ -138,7 +139,10 @@ class ApiService {
     }
   }
 
-  // ! Add Data Site
+  /**
+  * ++ TAMBAH SITE 
+  * * note : add site
+  */
   Future<bool> addRumah(String token, SiteModel data) async {
     var url = Uri.parse(BaseUrl + 'site');
     var response = await client.post(url,
@@ -147,6 +151,64 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: siteToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+  * ++ UPDATE SITE
+  * * note : ubah data site
+  */
+  Future<bool> ubahSite(String token, String idsite, SiteModel data) async {
+    var url = Uri.parse(BaseUrl + 'site/' + idsite);
+    var response = await client.put(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: siteToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+  * ++ DELETE SITE
+  * * note : ubah data site
+  */
+  Future<bool> hapusSite(String token, String idsite) async {
+    var url = Uri.parse(BaseUrl + 'site/' + idsite);
+    var response = await client.delete(url, headers: {
+      'content-type': 'application/json',
+      'Authorization': 'Bearer ${token}'
+    });
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // ! Add Data Komponen
+  Future<bool> addKomponen(String token, KomponenModel data) async {
+    var url = Uri.parse(BaseUrl + 'site');
+    var response = await client.post(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: KomponenToJson(data));
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {

@@ -2,6 +2,7 @@ import 'package:cmmsge/services/models/site/siteModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/site/bottommodalsite.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -51,7 +52,8 @@ class _SitePageState extends State<SitePage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          _modalAddSite();
+          BottomSite().modalAddSite(context, 'tambah', token!);
+          // _modalAddSite(context, 'tambah');
         },
         label: Text(
           'Tambah Site',
@@ -66,6 +68,7 @@ class _SitePageState extends State<SitePage> {
       body: FutureBuilder(
           future: _apiService.getListSite(token!),
           builder: (context, AsyncSnapshot<List<SiteModel>?> snapshot) {
+            print('SNAPSHOT? ' + snapshot.toString());
             if (snapshot.hasError) {
               return Center(
                 child: Column(
@@ -134,243 +137,46 @@ class _SitePageState extends State<SitePage> {
               padding: const EdgeInsets.all(5.0),
               child: Card(
                   elevation: 0.0,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        left: 20, right: 20, top: 10, bottom: 15),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text('Nama : ', style: TextStyle(fontSize: 18.0)),
-                            Text(dataSite.nama,
-                                style: TextStyle(fontSize: 18.0))
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Text('Keterangan : ',
-                                style: TextStyle(fontSize: 18.0)),
-                            Text(dataSite.keterangan,
-                                style: TextStyle(fontSize: 18.0))
-                          ],
-                        ),
-                      ],
+                  child: InkWell(
+                    onTap: () {
+                      BottomSite().modalActionItem(
+                          context,
+                          token,
+                          dataSite.nama,
+                          dataSite.keterangan,
+                          dataSite.idsite.toString());
+                      // _modalActionItem(dataSite.nama, dataSite.keterangan,
+                      //     dataSite.idsite.toString());
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          left: 20, right: 20, top: 10, bottom: 15),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text('Nama : ', style: TextStyle(fontSize: 18.0)),
+                              Text(dataSite.nama,
+                                  style: TextStyle(fontSize: 18.0))
+                            ],
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              Text('Keterangan : ',
+                                  style: TextStyle(fontSize: 18.0)),
+                              Text(dataSite.keterangan,
+                                  style: TextStyle(fontSize: 18.0))
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   )));
         });
-  }
-
-  // ++ BOTTOM MODAL INPUT FORM
-  void _modalAddSite() {
-    showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15.0),
-                topRight: Radius.circular(15.0))),
-        builder: (BuildContext context) {
-          return Padding(
-            padding: MediaQuery.of(context).viewInsets,
-            child: Container(
-              padding: EdgeInsets.all(15.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TextFormField(
-                      controller: _tecNama,
-                      textCapitalization: TextCapitalization.characters,
-                      decoration: InputDecoration(
-                          icon: Icon(Icons.cabin_rounded),
-                          labelText: 'Nama Site',
-                          hintText: 'Masukkan Nama Site',
-                          suffixIcon:
-                              Icon(Icons.check_circle_outline_outlined))),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  TextFormField(
-                      controller: _tecKeterangan,
-                      textCapitalization: TextCapitalization.words,
-                      decoration: InputDecoration(
-                          icon: Icon(Icons.note_outlined),
-                          labelText: 'Keterangan Site',
-                          hintText: 'Masukkan Keterangan',
-                          suffixIcon:
-                              Icon(Icons.check_circle_outline_outlined))),
-                  SizedBox(
-                    height: 15.0,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        _modalKonfirmasi();
-                      },
-                      style: ElevatedButton.styleFrom(
-                          elevation: 0.0, primary: Colors.white),
-                      child: Ink(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(18.0)),
-                          child: Container(
-                            width: 325,
-                            height: 45,
-                            alignment: Alignment.center,
-                            child: Text('S I M P A N',
-                                style: TextStyle(
-                                  color: primarycolor,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                          )))
-                ],
-              ),
-            ),
-          );
-        });
-  }
-
-  // ++ BOTTOM MODAL CONFIRMATION
-  void _modalKonfirmasi() {
-    var nama = _tecNama.text.toString();
-    var keterangan = _tecKeterangan.text.toString();
-    if (nama == "" || keterangan == "") {
-      ReusableClasses().modalbottomWarning(
-          context,
-          "Tidak Valid!",
-          "Pastikan semua kolom terisi dengan benar",
-          'f405',
-          'assets/images/sorry.png');
-    } else {
-      showModalBottomSheet(
-          isScrollControlled: true,
-          context: context,
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(15.0),
-                  topRight: Radius.circular(15.0))),
-          builder: (BuildContext context) {
-            return Padding(
-              padding: MediaQuery.of(context).viewInsets,
-              child: Container(
-                padding: EdgeInsets.all(15.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'Konfirmasi',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text('Apakah data yang anda masukkan sudah sesuai.?',
-                        style: TextStyle(fontSize: 16)),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0.0,
-                              primary: Colors.red,
-                            ),
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(18)),
-                              child: Container(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Periksa Lagi",
-                                ),
-                              ),
-                            )),
-                        SizedBox(
-                          width: 55,
-                        ),
-                        ElevatedButton(
-                            onPressed: () {
-                              _addSite();
-                              Navigator.of(context).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0.0,
-                              primary: Colors.white,
-                            ),
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(18)),
-                              child: Container(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Simpan",
-                                  style: TextStyle(color: primarycolor),
-                                ),
-                              ),
-                            )),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          });
-    }
-  }
-
-  // ++ SEND VALUE TO API
-  void _addSite() {
-    var nama = _tecNama.text.toString();
-    var keterangan = _tecKeterangan.text.toString();
-    if (nama == "" || keterangan == "") {
-      ReusableClasses().modalbottomWarning(
-          context,
-          "Tidak Valid!",
-          "Pastikan semua kolom terisi dengan benar",
-          'f405',
-          'assets/images/sorry.png');
-    } else {
-      SiteModel data = SiteModel(nama: nama, keterangan: keterangan);
-      print("Data? " + data.toString());
-      _apiService.addRumah(token!, data).then((isSuccess) {
-        if (isSuccess) {
-          _tecNama.clear();
-          _tecKeterangan.clear();
-          ReusableClasses().modalbottomWarning(
-              context,
-              "Berhasil!",
-              "${_apiService.responseCode.messageApi}",
-              "f200",
-              "assets/images/congratulations.png");
-        } else {
-          ReusableClasses().modalbottomWarning(
-              context,
-              "Gagal!",
-              "${_apiService.responseCode.messageApi}",
-              "f400",
-              "assets/images/sorry.png");
-        }
-        return;
-      });
-    }
   }
 }

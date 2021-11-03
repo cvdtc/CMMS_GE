@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 class SiteModel {
-  var idsite, nama, keterangan;
+  var idsite;
+  var nama, keterangan;
 
   SiteModel({this.idsite, this.nama, this.keterangan});
 
-  factory SiteModel.fromJson(Map<dynamic, dynamic> map) {
+  factory SiteModel.fromJson(Map<String, dynamic> map) {
     return SiteModel(
-        idsite: map["idsite"],
+        idsite: map['idsite'],
         nama: map["nama"],
         keterangan: map["keterangan"]);
   }

@@ -51,9 +51,9 @@ async function getKomponen(req, res) {
                         })
                     } else {
                         // * if idsite == 0 run all query without where idsite
-                        if(idmesin != 0) filterquery = 'WHERE idmesin = ?'
+                        if(idmesin != 0) filterquery = 'AND idmesin = ?'
                         ///////////////////////////////////////////////
-                        var sqlquery = "SELECT * FROM komponen "+filterquery
+                        var sqlquery = "SELECT k.*, m.keterangan, s.nama FROM komponen k, mesin m, site s WHERE k.idmesin=m.idmesin AND m.idsite=s.idsite "+filterquery
                         database.query(sqlquery, idmesin,(error, rows) => {
                             if (error) {
                                 return res.status(500).send({

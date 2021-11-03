@@ -3,8 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ReusableClasses {
   // ! MODAL BOTTOM SHEET FOR WARNING ERROR
-  modalbottomWarning(BuildContext context, String title, String message,
-      String kode, String imagelocation) {
+  modalbottomWarning(context, String title, String message, String kode,
+      String imagelocation) {
     dynamic navigation;
     showModalBottomSheet(
         context: context,

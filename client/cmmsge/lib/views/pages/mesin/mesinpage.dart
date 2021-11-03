@@ -135,32 +135,36 @@ class _MesinPageState extends State<MesinPage> {
               padding: const EdgeInsets.all(5.0),
               child: Card(
                   elevation: 0.0,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        left: 20, right: 20, top: 10, bottom: 15),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text('Nomor : ', style: TextStyle(fontSize: 18.0)),
-                            Text(dataMesin.nomesin,
-                                style: TextStyle(fontSize: 18.0))
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Text('Keterangan : ',
-                                style: TextStyle(fontSize: 18.0)),
-                            Text(dataMesin.keterangan,
-                                style: TextStyle(fontSize: 18.0))
-                          ],
-                        ),
-                      ],
+                  child: InkWell(
+                    onTap: () {
+                      _modalActionItem();
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                          left: 20, right: 20, top: 10, bottom: 15),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text('No. Mesin : ',
+                                  style: TextStyle(fontSize: 18.0)),
+                              Text(dataMesin.nomesin,
+                                  style: TextStyle(fontSize: 18.0))
+                            ],
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Row(
+                            children: [
+                              Text(dataMesin.keterangan,
+                                  style: TextStyle(fontSize: 18.0))
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   )));
         });
@@ -262,7 +266,7 @@ class _MesinPageState extends State<MesinPage> {
                         // _modalKonfirmasi();
                       },
                       style: ElevatedButton.styleFrom(
-                          side: BorderSide(width: 2, color: Colors.red),
+                          side: BorderSide(width: 2, color: Colors.green),
                           elevation: 0.0,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8)),
@@ -274,13 +278,40 @@ class _MesinPageState extends State<MesinPage> {
                             width: 325,
                             height: 45,
                             alignment: Alignment.center,
-                            child: Text('S I M P A N',
+                            child: Text('EDIT MESIN',
                                 style: TextStyle(
-                                  color: primarycolor,
+                                  color: Colors.green,
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
                                 )),
-                          )))
+                          ))),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        // _modalKonfirmasi();
+                      },
+                      style: ElevatedButton.styleFrom(
+                          side: BorderSide(width: 2, color: Colors.blue),
+                          elevation: 0.0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          primary: Colors.white),
+                      child: Ink(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(18.0)),
+                          child: Container(
+                            width: 325,
+                            height: 45,
+                            alignment: Alignment.center,
+                            child: Text('TAMBAH KOMPONEN',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                          ))),
                 ],
               ),
             ),

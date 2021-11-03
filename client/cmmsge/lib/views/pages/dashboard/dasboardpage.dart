@@ -119,7 +119,12 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
-        child: Container(color: primarycolor, height: 150, width: 200),
+        child: Container(
+          color: thirdcolor,
+          height: 150,
+          width: 200,
+          child: Image.asset('assets/images/logoge.png'),
+        ),
       ),
     ));
   }
