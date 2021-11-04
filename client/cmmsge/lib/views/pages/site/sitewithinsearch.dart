@@ -4,29 +4,33 @@ import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/site/networksite.dart';
 import 'package:cmmsge/views/pages/site/sitetile.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'bottommodalsite.dart';
 
 class SiteSearchPage extends StatefulWidget {
-  String token;
-  SiteSearchPage({required this.token});
   @override
   _SiteSearchPageState createState() => _SiteSearchPageState();
 }
 
 class _SiteSearchPageState extends State<SiteSearchPage> {
-  String token = '';
+  late SharedPreferences sp;
+  String? token = "", username = "", jabatan = "";
   List<SiteModel> _sites = <SiteModel>[];
   List<SiteModel> _sitesDisplay = <SiteModel>[];
 
   bool _isLoading = true;
 
-  @override
-  void initState() {
-    String token = widget.token;
-    print(token);
-    fetchSite(token).then((value) {
-      print("IN?");
+  // * ceking token and getting dashboard value from Shared Preferences
+  cekToken() async {
+    sp = await SharedPreferences.getInstance();
+    setState(() {
+      token = sp.getString("access_token");
+      username = sp.getString("username");
+      jabatan = sp.getString("jabatan");
+    });
+    fetchSite(token!).then((value) {
+      print("IN? " + token!);
       setState(() {
         _isLoading = false;
         _sites.addAll(value);
@@ -34,6 +38,15 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
         print(_sitesDisplay.length);
       });
     });
+  }
+
+  @override
+  initState() {
+    // String token = widget.token;
+
+    cekToken();
+    print(token);
+
     super.initState();
   }
 
@@ -41,13 +54,24 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Daftar Site'),
-        centerTitle: true,
-        backgroundColor: thirdcolor,
-      ),
+          title: Text('Daftar Site'),
+          centerTitle: true,
+          backgroundColor: thirdcolor,
+          actions: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {},
+                child: Icon(
+                  Icons.search,
+                  size: 26.0,
+                ),
+              ),
+            )
+          ]),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          BottomSite().modalAddSite(context, 'tambah', token);
+          BottomSite().modalAddSite(context, 'tambah', token!, '', '', '');
           // _modalAddSite(context, 'tambah');
         },
         label: Text(
@@ -61,6 +85,75 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
         ),
       ),
       body: SafeArea(
+        // child: FutureBuilder(
+        //     future: fetchSite(token!).then((value) {
+        //       setState(() {
+        //         _isLoading = false;
+        //         _sites.addAll(value);
+        //         _sitesDisplay = _sites;
+        //         print(_sitesDisplay.length);
+        //       });
+        //     }),
+        //     builder: (context, AsyncSnapshot<List<SiteModel>?> snapshot) {
+        //       if (snapshot.hasError) {
+        //         return Center(
+        //           child: Column(
+        //             children: [
+        //               LoadingView(),
+        //               Text(
+        //                   'maaf, terjadi masalah ${snapshot.error}. buka halaman ini kembali...')
+        //             ],
+        //           ),
+        //         );
+        //       } else if (snapshot.connectionState == ConnectionState.waiting) {
+        //         return Center(
+        //           child: Column(
+        //             children: [
+        //               LoadingView(),
+        //               Text('sebentar ya, sendang antri...')
+        //             ],
+        //           ),
+        //         );
+        //       } else if (snapshot.connectionState == ConnectionState.done) {
+        //         if (snapshot.hasData) {
+        //           return Container(
+        //             child: ListView.builder(itemBuilder: (context, index) {
+        //               if (!_isLoading) {
+        //                 print('is here?'+_isLoading.toString())
+        //                 return index == 0
+        //                     ? _searchBar()
+        //                     : SiteTile(
+        //                         site: this._sitesDisplay[index - 1],
+        //                         token: token!,
+        //                       );
+        //                 // : SiteTile(site: this._sitesDisplay[index - 1]);
+        //               } else {
+        //                 return LoadingView();
+        //               }
+        //             }),
+        //           );
+        //         } else {
+        //           return Center(
+        //             child: Text('Data Masih kosong'),
+        //           );
+        //         }
+        //       } else {
+        //         return Center(
+        //           child: Column(
+        //             mainAxisAlignment: MainAxisAlignment.center,
+        //             crossAxisAlignment: CrossAxisAlignment.center,
+        //             children: [
+        //               CircularProgressIndicator(),
+        //               SizedBox(
+        //                 height: 15,
+        //               ),
+        //               Text(
+        //                   'maaf, terjadi masalah ${snapshot.error}. buka halaman ini kembali.')
+        //             ],
+        //           ),
+        //         );
+        //       }
+        //     }),
         child: Container(
           child: ListView.builder(
             itemBuilder: (context, index) {
@@ -69,7 +162,7 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
                     ? _searchBar()
                     : SiteTile(
                         site: this._sitesDisplay[index - 1],
-                        token: token,
+                        token: token!,
                       );
                 // : SiteTile(site: this._sitesDisplay[index - 1]);
               } else {

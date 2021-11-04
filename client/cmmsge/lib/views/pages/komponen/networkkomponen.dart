@@ -1,25 +1,25 @@
 import 'dart:convert';
 
-import 'package:cmmsge/services/models/site/siteModel.dart';
+import 'package:cmmsge/services/models/komponen/KomponenModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 final String _apiService = ApiService().BaseUrl;
-List<SiteModel> parseSite(String responseBody) {
+List<KomponenModel> parseSite(String responseBody) {
   var listSite = json.decode(responseBody)['data'] as List<dynamic>;
   print(listSite);
-  return listSite.map((e) => SiteModel.fromJson(e)).toList();
+  return listSite.map((e) => KomponenModel.fromJson(e)).toList();
 }
 
-Future<List<SiteModel>> fetchSite(String token) async {
-  var url = Uri.parse(_apiService + 'site');
+Future<List<KomponenModel>> fetchKomponen(String token, String idmesin) async {
+  var url = Uri.parse(_apiService + 'komponen/' + idmesin);
   var response = await http.get(url, headers: {
     'content-type': 'application/json',
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print("NETWORK SITE? " + token);
+  print("NETWORK Komponen? " + token);
   if (response.statusCode == 200) {
     print('Success?');
     return compute(parseSite, response.body);

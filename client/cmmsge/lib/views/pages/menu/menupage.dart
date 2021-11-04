@@ -1,8 +1,11 @@
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/komponen/komponenpage.dart';
+import 'package:cmmsge/views/pages/komponen/komponenwithsearch.dart';
 import 'package:cmmsge/views/pages/login/loginpage.dart';
+import 'package:cmmsge/views/pages/masalah/masalahwithsearch.dart';
 import 'package:cmmsge/views/pages/mesin/mesinpage.dart';
 import 'package:cmmsge/views/pages/site/sitepage.dart';
+import 'package:cmmsge/views/pages/site/sitewithinsearch.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -95,8 +98,10 @@ class _MenuPageState extends State<MenuPage> {
             width: double.infinity,
             child: ListTile(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => KomponenPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => KomponenPageSearch()));
               },
               title: (Text(
                 'Komponen',
@@ -146,7 +151,7 @@ class _MenuPageState extends State<MenuPage> {
             child: ListTile(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SitePage()));
+                    MaterialPageRoute(builder: (context) => SiteSearchPage()));
               },
               title: (Text(
                 'Site',
@@ -189,7 +194,12 @@ class _MenuPageState extends State<MenuPage> {
             alignment: Alignment.center,
             width: double.infinity,
             child: ListTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MasalahPageSearch()));
+              },
               title: (Text(
                 'Masalah',
                 style: TextStyle(fontSize: 18),

@@ -41,10 +41,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   List<Widget> _currentPage = <Widget>[
     DashboardPage(),
     ScanMesinPage(),
-    SiteSearchPage(
-      token:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZHBlbmdndW5hIjoxMCwiaWF0IjoxNjM1NzU2ODEyLCJleHAiOjE2MzU4NDMyMTJ9.CweiMGCE9Qa792RLhblo4pZXFJFhThCHuaafPDvN1eo',
-    ),
+    ScheduleGantiPartPage(),
     MenuPage()
   ];
 

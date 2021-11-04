@@ -16,6 +16,7 @@ class _DashboardPageState extends State<DashboardPage> {
   late SharedPreferences sp;
   String? token = "", username = "", jabatan = "";
   var jml_masalah = "", jml_selesai = 0, belum_selesai = 0;
+  List<DashboardModel> _dashboard = <DashboardModel>[];
 
   // * ceking token and getting dashboard value from api
   cekToken() async {
@@ -28,6 +29,9 @@ class _DashboardPageState extends State<DashboardPage> {
     _apiService.getDashboard(token!).then((value) {
       // DashboardModel dashboardModel = DashboardModel();
       print("Jumlah Masalah? " + value.toString());
+      setState(() {
+        _dashboard.addAll(value!);
+      });
       // jml_masalah = value as String.toList();
       // jml_selesai = dashboardModel.jml_selesai;
       // belum_selesai = jml_masalah - jml_selesai;
@@ -131,6 +135,40 @@ class _DashboardPageState extends State<DashboardPage> {
 
   // * code for setting dashboard value api to ui
   SliverToBoxAdapter _buildContent(double screenHeight) {
-    return SliverToBoxAdapter();
+    return SliverToBoxAdapter(
+      child: Container(
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Jumlah Masalah ' +
+                  _dashboard.toString().split('jml_masalah: ')[1] +
+                  _dashboard.toString().split('jml_selesai: ')[1],
+              style: TextStyle(
+                fontSize: 22,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+    // return SliverToBoxAdapter(
+    //   child: Container(
+    //       padding: EdgeInsets.only(left: 20, right: 20),
+    //       child: Column(
+    //         mainAxisAlignment: MainAxisAlignment.center,
+    //         crossAxisAlignment: CrossAxisAlignment.center,
+    //         children: [
+    //           Row(
+    //             children: [Text('Jumlah Masalah'), Text('Jumlah Selesai')],
+    //           )
+    //         ],
+    //       )),
+    // );
   }
 }

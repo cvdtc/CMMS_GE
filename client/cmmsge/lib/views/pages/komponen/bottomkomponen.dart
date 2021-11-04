@@ -1,29 +1,17 @@
-import 'package:cmmsge/services/models/site/siteModel.dart';
+import 'package:cmmsge/services/models/komponen/KomponenModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:flutter/material.dart';
 
-class BottomSite {
+class BottomKomponen {
   ApiService _apiService = new ApiService();
   TextEditingController _tecNama = TextEditingController(text: "");
-  TextEditingController _tecKeterangan = TextEditingController(text: "");
+  TextEditingController _tecJumlah = TextEditingController(text: "");
 
   // ++ BOTTOM MODAL INPUT FORM
-  void modalAddSite(context, String tipe, String token, String nama,
-      String keterangan, String idsite) {
-    print("IDSITE?" + idsite.toString());
-    // * setting value text form field if action is edit
-    if (tipe == 'ubah') {
-      _tecNama.value = TextEditingValue(
-          text: nama,
-          selection: TextSelection.fromPosition(
-              TextPosition(offset: _tecNama.text.length)));
-      _tecKeterangan.value = TextEditingValue(
-          text: keterangan,
-          selection: TextSelection.fromPosition(
-              TextPosition(offset: _tecKeterangan.text.length)));
-    }
+  void modalAddSite(
+      context, String tipe, String token, String idkomponen, String idmesin) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -60,12 +48,12 @@ class BottomSite {
                     height: 10.0,
                   ),
                   TextFormField(
-                      controller: _tecKeterangan,
+                      controller: _tecJumlah,
                       textCapitalization: TextCapitalization.words,
                       decoration: InputDecoration(
                           icon: Icon(Icons.note_outlined),
-                          labelText: 'Keterangan Site',
-                          hintText: 'Masukkan Keterangan',
+                          labelText: 'Jumlah Komponen',
+                          hintText: 'Masukkan Jumlah Komponen',
                           suffixIcon:
                               Icon(Icons.check_circle_outline_outlined))),
                   SizedBox(
@@ -73,18 +61,14 @@ class BottomSite {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        print(token +
-                            tipe +
-                            '0' +
-                            _tecNama.text.toString() +
-                            _tecKeterangan.text.toString());
                         _modalKonfirmasi(
                             context,
                             token,
-                            tipe,
-                            tipe == 'ubah' ? idsite.toString() : '0',
+                            'tambah',
+                            '0',
                             _tecNama.text.toString(),
-                            _tecKeterangan.text.toString());
+                            _tecJumlah.text.toString(),
+                            idmesin);
                       },
                       style: ElevatedButton.styleFrom(
                           elevation: 0.0, primary: Colors.white),
@@ -110,10 +94,9 @@ class BottomSite {
   }
 
   // ++ BOTTOM MODAL CONFIRMATION
-  void _modalKonfirmasi(context, String token, String tipe, String idsite,
-      String nama, String keterangan) {
-    print("IDSITE?" + idsite.toString());
-    if (nama == "" || keterangan == "") {
+  void _modalKonfirmasi(context, String token, String tipe, String idkomponen,
+      String nama, String jumlah, String idmesin) {
+    if (nama == "" || jumlah == "") {
       ReusableClasses().modalbottomWarning(
           context,
           "Tidak Valid!",
@@ -186,9 +169,8 @@ class BottomSite {
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              _actiontoapi(context, token, tipe, idsite, nama,
-                                  keterangan);
-
+                              _actiontoapi(context, token, tipe, idkomponen,
+                                  nama, jumlah, idmesin);
                               Navigator.of(context).pop();
                             },
                             style: ElevatedButton.styleFrom(
@@ -217,9 +199,9 @@ class BottomSite {
   }
 
   // ++ UNTUK MELAKUKAN TRANSAKSI KE API SESUAI DENGAN PARAMETER TIPE YANG DIKIRIM
-  void _actiontoapi(context, String token, String tipe, String idsite,
-      String nama, String keterangan) {
-    if (nama == "" || keterangan == "") {
+  void _actiontoapi(context, String token, String tipe, String idkomponen,
+      String nama, String jumlah, String idmesin) {
+    if (nama == "" || jumlah == "") {
       ReusableClasses().modalbottomWarning(
           context,
           "Tidak Valid!",
@@ -227,13 +209,13 @@ class BottomSite {
           'f405',
           'assets/images/sorry.png');
     } else {
-      SiteModel data = SiteModel(nama: nama, keterangan: keterangan);
-      print(data);
+      KomponenModel data =
+          KomponenModel(nama: nama, jumlah: jumlah, idmesin: idmesin);
       if (tipe == 'tambah') {
-        _apiService.addRumah(token, data).then((isSuccess) {
+        _apiService.addKomponen(token, data).then((isSuccess) {
           if (isSuccess) {
             _tecNama.clear();
-            _tecKeterangan.clear();
+            _tecJumlah.clear();
             ReusableClasses().modalbottomWarning(
                 context,
                 "Berhasil!",
@@ -251,29 +233,28 @@ class BottomSite {
           return;
         });
       } else if (tipe == 'ubah') {
-        _apiService.ubahSite(token, idsite, data).then((isSuccess) {
-          print(isSuccess);
-          if (isSuccess) {
-            _tecNama.clear();
-            _tecKeterangan.clear();
-            ReusableClasses().modalbottomWarning(
-                context,
-                "Berhasil!",
-                "${_apiService.responseCode.messageApi}",
-                "f200",
-                "assets/images/congratulations.png");
-          } else {
-            ReusableClasses().modalbottomWarning(
-                context,
-                "Gagal!",
-                "${_apiService.responseCode.messageApi}",
-                "f400",
-                "assets/images/sorry.png");
-          }
-          return;
-        });
+        // _apiService.ubahKomponen(token, idkomponen, data).then((isSuccess) {
+        //   if (isSuccess) {
+        //     _tecNama.clear();
+        //     _tecJumlah.clear();
+        //     ReusableClasses().modalbottomWarning(
+        //         context,
+        //         "Berhasil!",
+        //         "${_apiService.responseCode.messageApi}",
+        //         "f200",
+        //         "assets/images/congratulations.png");
+        //   } else {
+        //     ReusableClasses().modalbottomWarning(
+        //         context,
+        //         "Gagal!",
+        //         "${_apiService.responseCode.messageApi}",
+        //         "f400",
+        //         "assets/images/sorry.png");
+        //   }
+        //   return;
+        // });
       } else if (tipe == 'hapus') {
-        _apiService.hapusSite(token, idsite).then((isSuccess) {
+        _apiService.hapusSite(token, idkomponen).then((isSuccess) {
           if (isSuccess) {
             ReusableClasses().modalbottomWarning(
                 context,
@@ -300,7 +281,15 @@ class BottomSite {
 
   // ++ BOTTOM MODAL ACTION ITEM
   void modalActionItem(
-      context, token, String nama, String keterangan, String idsite) {
+      context,
+      String token,
+      String nama,
+      String nomesin,
+      String mesin,
+      String site,
+      String jumlah,
+      String idkomponen,
+      String idmesin) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -319,18 +308,19 @@ class BottomSite {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('DETAIL',
+                  Text('DETAIL KOMPONEN',
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                   SizedBox(
                     height: 10,
                   ),
                   Text(
-                    'Site : ' + nama,
+                    'Nama : ' + nama + ' (' + jumlah + ')',
                     style: TextStyle(fontSize: 16),
                   ),
-                  Text('Keterangan: ' + keterangan,
+                  Text('Mesin: ' + mesin + ' (' + nomesin + ')',
                       style: TextStyle(fontSize: 16)),
+                  Text('Site: ' + site, style: TextStyle(fontSize: 16)),
                   SizedBox(
                     height: 5,
                   ),
@@ -343,7 +333,7 @@ class BottomSite {
                   ElevatedButton(
                       onPressed: () {
                         modalAddSite(
-                            context, 'ubah', token, nama, keterangan, idsite);
+                            context, 'ubah', token, idkomponen, idmesin);
                       },
                       style: ElevatedButton.styleFrom(
                           side: BorderSide(width: 2, color: Colors.green),
@@ -370,8 +360,8 @@ class BottomSite {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        _modalKonfirmasi(context, token, 'hapus',
-                            idsite.toString(), nama, '-');
+                        _modalKonfirmasi(context, token, 'hapus', idkomponen,
+                            nama, jumlah, idmesin);
                       },
                       style: ElevatedButton.styleFrom(
                           side: BorderSide(width: 2, color: Colors.red),
