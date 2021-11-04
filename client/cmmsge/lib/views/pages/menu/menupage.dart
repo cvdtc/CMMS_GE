@@ -4,6 +4,7 @@ import 'package:cmmsge/views/pages/komponen/komponenwithsearch.dart';
 import 'package:cmmsge/views/pages/login/loginpage.dart';
 import 'package:cmmsge/views/pages/masalah/masalahwithsearch.dart';
 import 'package:cmmsge/views/pages/mesin/mesinpage.dart';
+import 'package:cmmsge/views/pages/mesin/mesinwithsearch.dart';
 import 'package:cmmsge/views/pages/site/sitepage.dart';
 import 'package:cmmsge/views/pages/site/sitewithinsearch.dart';
 import 'package:flutter/material.dart';
@@ -126,7 +127,7 @@ class _MenuPageState extends State<MenuPage> {
             child: ListTile(
               onTap: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MesinPage()));
+                    MaterialPageRoute(builder: (context) => MesinSearchPage()));
               },
               title: (Text(
                 'Mesin',

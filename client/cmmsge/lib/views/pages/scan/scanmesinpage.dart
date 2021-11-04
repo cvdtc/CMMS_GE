@@ -96,8 +96,12 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
                       Container(
                         margin: EdgeInsets.all(5),
                         child: ElevatedButton(
-                            style:
-                                ElevatedButton.styleFrom(primary: thirdcolor),
+                            style: ElevatedButton.styleFrom(
+                                side: BorderSide(width: 2, color: thirdcolor),
+                                elevation: 0.0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                                primary: Colors.white),
                             onPressed: () async {
                               await controller?.toggleFlash();
                               setState(() {});
@@ -107,16 +111,20 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
                               builder: (context, snapshot) {
                                 // return Text('Flash: ${snapshot.data}');
                                 return snapshot.data == true
-                                    ? Icon(Icons.flash_off)
-                                    : Icon(Icons.flash_on);
+                                    ? Icon(Icons.flash_off, color: thirdcolor)
+                                    : Icon(Icons.flash_on, color: thirdcolor);
                               },
                             )),
                       ),
                       Container(
                         margin: EdgeInsets.all(5),
                         child: ElevatedButton(
-                            style:
-                                ElevatedButton.styleFrom(primary: thirdcolor),
+                            style: ElevatedButton.styleFrom(
+                                side: BorderSide(width: 2, color: thirdcolor),
+                                elevation: 0.0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                                primary: Colors.white),
                             onPressed: () async {
                               await controller?.flipCamera();
                               setState(() {});
@@ -125,8 +133,12 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
                               future: controller?.getCameraInfo(),
                               builder: (context, snapshot) {
                                 return snapshot.data == CameraFacing.back
-                                    ? Icon(Icons.camera_front)
-                                    : Icon(Icons.cameraswitch);
+                                    ? Icon(
+                                        Icons.camera_front,
+                                        color: thirdcolor,
+                                      )
+                                    : Icon(Icons.cameraswitch,
+                                        color: thirdcolor);
                               },
                             )),
                       ),
