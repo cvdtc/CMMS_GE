@@ -6,9 +6,9 @@ class LoginResult {
   LoginResult({this.access_token, this.username, this.jabatan});
   factory LoginResult.fromJson(Map<dynamic, dynamic> map) {
     return LoginResult(
-        access_token: map["data"]["access_token"],
-        username: map["data"]["username"],
-        jabatan: map["data"]["jabatan"]);
+        access_token: map["access_token"],
+        username: map["username"],
+        jabatan: map["jabatan"]);
   }
 
   @override

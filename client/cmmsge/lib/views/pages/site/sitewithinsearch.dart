@@ -42,11 +42,7 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
 
   @override
   initState() {
-    // String token = widget.token;
-
     cekToken();
-    print(token);
-
     super.initState();
   }
 
@@ -85,75 +81,6 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
         ),
       ),
       body: SafeArea(
-        // child: FutureBuilder(
-        //     future: fetchSite(token!).then((value) {
-        //       setState(() {
-        //         _isLoading = false;
-        //         _sites.addAll(value);
-        //         _sitesDisplay = _sites;
-        //         print(_sitesDisplay.length);
-        //       });
-        //     }),
-        //     builder: (context, AsyncSnapshot<List<SiteModel>?> snapshot) {
-        //       if (snapshot.hasError) {
-        //         return Center(
-        //           child: Column(
-        //             children: [
-        //               LoadingView(),
-        //               Text(
-        //                   'maaf, terjadi masalah ${snapshot.error}. buka halaman ini kembali...')
-        //             ],
-        //           ),
-        //         );
-        //       } else if (snapshot.connectionState == ConnectionState.waiting) {
-        //         return Center(
-        //           child: Column(
-        //             children: [
-        //               LoadingView(),
-        //               Text('sebentar ya, sendang antri...')
-        //             ],
-        //           ),
-        //         );
-        //       } else if (snapshot.connectionState == ConnectionState.done) {
-        //         if (snapshot.hasData) {
-        //           return Container(
-        //             child: ListView.builder(itemBuilder: (context, index) {
-        //               if (!_isLoading) {
-        //                 print('is here?'+_isLoading.toString())
-        //                 return index == 0
-        //                     ? _searchBar()
-        //                     : SiteTile(
-        //                         site: this._sitesDisplay[index - 1],
-        //                         token: token!,
-        //                       );
-        //                 // : SiteTile(site: this._sitesDisplay[index - 1]);
-        //               } else {
-        //                 return LoadingView();
-        //               }
-        //             }),
-        //           );
-        //         } else {
-        //           return Center(
-        //             child: Text('Data Masih kosong'),
-        //           );
-        //         }
-        //       } else {
-        //         return Center(
-        //           child: Column(
-        //             mainAxisAlignment: MainAxisAlignment.center,
-        //             crossAxisAlignment: CrossAxisAlignment.center,
-        //             children: [
-        //               CircularProgressIndicator(),
-        //               SizedBox(
-        //                 height: 15,
-        //               ),
-        //               Text(
-        //                   'maaf, terjadi masalah ${snapshot.error}. buka halaman ini kembali.')
-        //             ],
-        //           ),
-        //         );
-        //       }
-        //     }),
         child: Container(
           child: ListView.builder(
             itemBuilder: (context, index) {

@@ -7,6 +7,7 @@ import 'package:cmmsge/services/models/login/loginresult.dart';
 import 'package:cmmsge/services/models/mesin/mesinModel.dart';
 import 'package:cmmsge/services/models/response/responsecode.dart';
 import 'package:cmmsge/services/models/site/siteModel.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,12 +22,12 @@ class ApiService {
    * * note : login vaidation with api
    * TODO: responstatus api must be set for show to error/message dialog.
   */
-  Future<String> LoginApp(LoginModel data) async {
+  Future<bool> LoginApp(LoginModel data) async {
     var url = Uri.parse(BaseUrl + 'login');
     var response = await client.post(url,
         headers: {'content-type': 'application/json'}, body: loginToJson(data));
     // ++ fyi : this code below for getting login result if success.
-    Map resultLogin = jsonDecode(response.body);
+    Map resultLogin = jsonDecode(response.body)['data'];
     var loginresult = LoginResult.fromJson(resultLogin);
     // ++ fyi : this code below for getting response and message from api response.
     Map responsemessage = jsonDecode(response.body);
@@ -39,9 +40,9 @@ class ApiService {
       sp.setString('access_token', "${loginresult.access_token}");
       sp.setString('username', "${loginresult.username}");
       sp.setString('jabatan', "${loginresult.jabatan}");
-      return 'Login Success';
+      return true;
     } else {
-      return 'Login Gagal ${response.persistentConnection}';
+      return false;
     }
   }
 
@@ -62,9 +63,17 @@ class ApiService {
     print("Data Dashbaord : " + response.body);
     if (response.statusCode == 200) {
       return dashboardFromJson(response.body);
+      // return compute(parseDashboard, response.body);
     } else {
       return null;
+      // throw Exception(response.statusCode);
     }
+  }
+
+  List<DashboardModel> parseDashboard(String responseBody) {
+    var listSite = json.decode(responseBody)['data'] as List<dynamic>;
+    print('???' + listSite.toString());
+    return listSite.map((e) => DashboardModel.fromJson(e)).toList();
   }
 
   /**

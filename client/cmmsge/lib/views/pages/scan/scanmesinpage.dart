@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/scan/webviewscanresult.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -146,26 +147,33 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
                   ),
                   result == null
                       ? Text('Scan a code')
-                      : result!.code!.split('2b')[0].toString() != '\$'
-                          ? Text('QR Tidak Valid!')
-                          : ElevatedButton(
-                              onPressed: () {
-                                // _PaymentDetail();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                elevation: 0.0,
-                                primary: thirdcolor,
+                      // : result!.code!.split('2b')[0].toString() != '\$'
+                      // ? Text('QR Tidak Valid!')
+                      : ElevatedButton(
+                          onPressed: () {
+                            // _PaymentDetail();                Navigator.push(context,
+                            print('Hallo' + result!.code.toString());
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => WebviewScanResult(
+                                          urlwebview: result!.code.toString(),
+                                        )));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            elevation: 0.0,
+                            primary: thirdcolor,
+                          ),
+                          child: Ink(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(18)),
+                            child: Container(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "Lihat Detail",
                               ),
-                              child: Ink(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(18)),
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    "Lanjutkan Pembayaran",
-                                  ),
-                                ),
-                              )),
+                            ),
+                          )),
                 ],
               ),
             ),

@@ -186,9 +186,9 @@ class BottomSite {
                         ),
                         ElevatedButton(
                             onPressed: () {
+                              Navigator.of(context).pop();
                               _actiontoapi(context, token, tipe, idsite, nama,
                                   keterangan);
-
                               Navigator.of(context).pop();
                             },
                             style: ElevatedButton.styleFrom(
@@ -232,6 +232,7 @@ class BottomSite {
       if (tipe == 'tambah') {
         _apiService.addRumah(token, data).then((isSuccess) {
           if (isSuccess) {
+            Navigator.of(context).pop();
             _tecNama.clear();
             _tecKeterangan.clear();
             _modalbottomSite(
@@ -254,6 +255,7 @@ class BottomSite {
         _apiService.ubahSite(token, idsite, data).then((isSuccess) {
           print(isSuccess);
           if (isSuccess) {
+            Navigator.of(context).pop();
             _tecNama.clear();
             _tecKeterangan.clear();
             _modalbottomSite(
@@ -342,6 +344,7 @@ class BottomSite {
                   ),
                   ElevatedButton(
                       onPressed: () {
+                        Navigator.of(context).pop();
                         modalAddSite(
                             context, 'ubah', token, nama, keterangan, idsite);
                       },
@@ -370,6 +373,7 @@ class BottomSite {
                   ),
                   ElevatedButton(
                       onPressed: () {
+                        Navigator.of(context).pop();
                         _modalKonfirmasi(context, token, 'hapus',
                             idsite.toString(), nama, '-');
                       },
@@ -402,6 +406,7 @@ class BottomSite {
 
   _modalbottomSite(context, String title, String message, String kode,
       String imagelocation) {
+    print('Yash im show');
     dynamic navigation;
     showModalBottomSheet(
         context: context,

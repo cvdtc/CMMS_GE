@@ -41,7 +41,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   @override
-  void initState() {
+  initState() {
     // TODO: implement initState
     super.initState();
     cekToken();
@@ -63,7 +63,7 @@ class _DashboardPageState extends State<DashboardPage> {
         physics: ClampingScrollPhysics(),
         slivers: <Widget>[
           _buildTextHeader(screenHeight),
-          _buildBanner(screenHeight),
+          // _buildBanner(screenHeight),
           _buildContent(screenHeight)
         ],
       ),
@@ -76,7 +76,7 @@ class _DashboardPageState extends State<DashboardPage> {
       child: Container(
         padding: EdgeInsets.only(left: 20, right: 20, top: 55, bottom: 10),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,7 +108,14 @@ class _DashboardPageState extends State<DashboardPage> {
                   ],
                 )
               ],
-            )
+            ),
+            Container(
+              padding: EdgeInsets.only(left: 20),
+              child: CircleAvatar(
+                backgroundColor: primarycolor,
+                child: Image.asset('assets/images/icongajah.png'),
+              ),
+            ),
           ],
         ),
       ),
@@ -137,7 +144,6 @@ class _DashboardPageState extends State<DashboardPage> {
 
   // * code for setting dashboard value api to ui
   SliverToBoxAdapter _buildContent(double screenHeight) {
-    print('hasilnya adalah : $_dashboard');
     return SliverToBoxAdapter(
       child: Container(
         padding: const EdgeInsets.only(
@@ -145,43 +151,64 @@ class _DashboardPageState extends State<DashboardPage> {
           right: 20,
           top: 20,
         ),
-        child: _dashboard == [] ? Text('Data Not Found') :
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 120,
-              width: MediaQuery.of(context).size.width /2.3,
-              child: Card(
-                child: Center(
-                  child: ListTile(
-                    title: Text('Jumlah Masalah', style: TextStyle(fontSize: 18),),
-                    subtitle: Text(_dashboard.toString().trim().split('jml_masalah: ')[1].split(',')[0]),
-                  ),
+        child: _dashboard == []
+            ? Text('Data Not Found')
+            : Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 80,
+                      // width: MediaQuery.of(context).size.width / 2.3,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                                _dashboard
+                                    .toString()
+                                    .trim()
+                                    .split('jml_masalah: ')[1]
+                                    .split(',')[0],
+                                style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue)),
+                            Text('JUMLAH MASALAH')
+                          ]),
+                    ),
+                    SizedBox(
+                      width: 25,
+                    ),
+                    Container(
+                      height: 85,
+                      // width: MediaQuery.of(context).size.width / 2.3,
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                                _dashboard
+                                    .toString()
+                                    .trim()
+                                    .split('jml_selesai: ')[1]
+                                    .split(',')[0]
+                                    .split(']')[0],
+                                style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red)),
+                            Text('JUMLAH SELESAI')
+                          ]),
+                    ),
+                  ],
                 ),
-                elevation: 5,
-                shadowColor: Colors.black,
               ),
-            ),
-            Container(
-              height: 120,
-              width: MediaQuery.of(context).size.width /2.3,
-              child: Card(
-                child: Center(
-                  child: ListTile(
-                    title: Text('Jumlah Selesai', style: TextStyle(fontSize: 18),),
-                    subtitle: Text(_dashboard.toString().trim().split('jml_selesai: ')[1].split(',')[0].split(']')[0]),
-                  ),
-                ),
-                elevation: 5,
-                shadowColor: Colors.black,
-              ),
-            ),
-            
-          ],
-        ),
       ),
-      
     );
     // return SliverToBoxAdapter(
     //   child: Container(

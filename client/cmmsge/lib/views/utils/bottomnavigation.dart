@@ -1,9 +1,8 @@
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/akun/akunpage.dart';
 import 'package:cmmsge/views/pages/dashboard/dasboardpage.dart';
 import 'package:cmmsge/views/pages/menu/menupage.dart';
 import 'package:cmmsge/views/pages/scan/scanmesinpage.dart';
-import 'package:cmmsge/views/pages/schedule/scheduleganti.dart';
-import 'package:cmmsge/views/pages/site/sitewithinsearch.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,8 +22,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
       username = sp.getString("username")!;
       jabatan = sp.getString("jabatan")!;
     });
-
-    print('Token Site?' + " " + token.toString());
   }
 
   @override
@@ -41,8 +38,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
   List<Widget> _currentPage = <Widget>[
     DashboardPage(),
     ScanMesinPage(),
-    ScheduleGantiPartPage(),
-    MenuPage()
+    MenuPage(),
+    AkunPage()
   ];
 
   @override
@@ -69,8 +66,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
               BottomNavigationBarItem(
                   label: 'Scan', icon: Icon(Icons.qr_code_2)),
               BottomNavigationBarItem(
-                  label: 'Schedule', icon: Icon(Icons.schedule_outlined)),
-              BottomNavigationBarItem(label: 'Menu', icon: Icon(Icons.menu)),
+                  label: 'Menu', icon: Icon(Icons.list_alt_rounded)),
+              BottomNavigationBarItem(
+                  label: 'Account', icon: Icon(Icons.account_circle_outlined)),
             ],
           ),
         ));

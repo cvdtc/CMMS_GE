@@ -151,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
           "Tidak Valid",
           'pastikan username dan password sudah terisi!',
           'f400',
-          'assets/iamges/sorry.png');
+          'assets/images/sorry.png');
     } else {
       LoginModel dataparams =
           LoginModel(username: username, password: password, tipe: 'mobile');
@@ -160,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
           _isLoading = false;
         });
         print("Hmm? " + isSuccess.toString());
-        if (isSuccess == 'Login Success') {
+        if (isSuccess) {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => BottomNavigation()));
         } else {
@@ -169,16 +169,16 @@ class _LoginPageState extends State<LoginPage> {
               'Login Gagal!',
               '${_apiService.responseCode.messageApi} [error : ${isSuccess}]',
               'f400',
-              'assets/images/sorry');
+              'assets/images/sorry.png');
         }
         return;
       }).onError((error, stackTrace) {
         ReusableClasses().modalbottomWarning(
             context,
             'Koneksi Bermasalah!',
-            'Pastikan Koneksi anda stabil terlebih dahulu, apabila masih terkendala hubungi IT.',
+            'Pastikan Koneksi anda stabil terlebih dahulu, apabila masih terkendala hubungi IT. ${error}',
             'f500',
-            'assets/images/sorry');
+            'assets/images/sorry.png');
       });
     }
     return;
