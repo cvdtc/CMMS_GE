@@ -30,46 +30,22 @@ class MasalahTile extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Text(masalah.masalah, style: TextStyle(fontSize: 18.0))
-                      ],
+                    Text(masalah.masalah, style: TextStyle(fontSize: 18.0)),
+                    Divider(
+                      color: Colors.grey,
                     ),
                     SizedBox(
                       height: 5,
                     ),
-                    Row(
-                      children: [
-                        Text('Tanggal : ', style: TextStyle(fontSize: 18.0)),
-                        Text(masalah.tanggal + ' (' + masalah.jam + ')',
-                            style: TextStyle(fontSize: 18.0))
-                      ],
-                    ),
+                    Text('Tanggal : ${masalah.tanggal}', style: TextStyle(fontSize: 18.0)),
                     SizedBox(
                       height: 5,
                     ),
-                    Row(
-                      children: [
-                        Text('Mesin : ', style: TextStyle(fontSize: 18.0)),
-                        Text(masalah.nomesin, style: TextStyle(fontSize: 18.0))
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text('Ket. Mesin : ', style: TextStyle(fontSize: 18.0)),
-                        Text(masalah.ketmesin, style: TextStyle(fontSize: 18.0))
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text('Status : ', style: TextStyle(fontSize: 18.0)),
-                        Text(
-                            masalah.status == 1
-                                ? 'Sudah Selesai'
-                                : 'Belum Selesai',
-                            style: TextStyle(fontSize: 18.0))
-                      ],
-                    ),
+                    Text('Mesin : ${masalah.nomesin}', style: TextStyle(fontSize: 18.0)),
+                    Text('Ket. Mesin : ${masalah.ketmesin}', style: TextStyle(fontSize: 18.0)),
+                    Text('Status : ${masalah.status == 1
+                            ? 'Sudah Selesai'
+                            : 'Belum Selesai'}', style: TextStyle(fontSize: 18.0)),
                   ],
                 ),
               ),

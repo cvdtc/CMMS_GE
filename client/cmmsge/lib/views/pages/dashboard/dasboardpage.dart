@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cmmsge/services/models/dashboard/dashboardModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
@@ -135,6 +137,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
   // * code for setting dashboard value api to ui
   SliverToBoxAdapter _buildContent(double screenHeight) {
+    print('hasilnya adalah : $_dashboard');
     return SliverToBoxAdapter(
       child: Container(
         padding: const EdgeInsets.only(
@@ -142,20 +145,43 @@ class _DashboardPageState extends State<DashboardPage> {
           right: 20,
           top: 20,
         ),
-        child: Column(
+        child: _dashboard == [] ? Text('Data Not Found') :
+        Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Jumlah Masalah ' +
-                  _dashboard.toString().split('jml_masalah: ')[1] +
-                  _dashboard.toString().split('jml_selesai: ')[1],
-              style: TextStyle(
-                fontSize: 22,
+            Container(
+              height: 120,
+              width: MediaQuery.of(context).size.width /2.3,
+              child: Card(
+                child: Center(
+                  child: ListTile(
+                    title: Text('Jumlah Masalah', style: TextStyle(fontSize: 18),),
+                    subtitle: Text(_dashboard.toString().trim().split('jml_masalah: ')[1].split(',')[0]),
+                  ),
+                ),
+                elevation: 5,
+                shadowColor: Colors.black,
               ),
-            )
+            ),
+            Container(
+              height: 120,
+              width: MediaQuery.of(context).size.width /2.3,
+              child: Card(
+                child: Center(
+                  child: ListTile(
+                    title: Text('Jumlah Selesai', style: TextStyle(fontSize: 18),),
+                    subtitle: Text(_dashboard.toString().trim().split('jml_selesai: ')[1].split(',')[0].split(']')[0]),
+                  ),
+                ),
+                elevation: 5,
+                shadowColor: Colors.black,
+              ),
+            ),
+            
           ],
         ),
       ),
+      
     );
     // return SliverToBoxAdapter(
     //   child: Container(

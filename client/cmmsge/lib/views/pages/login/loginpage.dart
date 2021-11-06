@@ -4,6 +4,7 @@ import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/utils/bottomnavigation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -43,28 +44,36 @@ class _LoginPageState extends State<LoginPage> {
             alignment: Alignment.center,
             fit: StackFit.passthrough,
             children: [
-              Positioned.fill(
-                  top: 20,
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: (Text("PT. SINAR INDOGREEN KENCANA")),
-                  )),
+              // Positioned.fill(
+              //     top: 20,
+              //     child: Align(
+              //       alignment: Alignment.topLeft,
+              //       child: (Text("PT. SINAR INDOGREEN KENCANA")),
+              //     )),
               Positioned(
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 175,
-                    height: 100,
+                    width: 240,
+                    height: 80,
                     child: Image.asset('assets/images/logoge.png'),
                   ),
                   Text(
-                    "[ CMMS ]",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
+                    "CMMS",
+                    style: GoogleFonts.nunito(
+                      textStyle: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xff000912),
+                        letterSpacing: 3,
+                      ),
+                    ),
+                    // style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                   ),
                   SizedBox(
-                    height: 15,
+                    height: 20,
                   ),
                   _TextEditingUsername(),
                   SizedBox(height: 10),
