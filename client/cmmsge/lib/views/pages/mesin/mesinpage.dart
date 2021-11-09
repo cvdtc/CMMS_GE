@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MesinPage extends StatefulWidget {
+  String transaksi;
+  MesinPage({required this.transaksi});
   @override
   _MesinPageState createState() => _MesinPageState();
 }
@@ -14,7 +16,7 @@ class _MesinPageState extends State<MesinPage> {
   // ! Declare Variable HERE!
   ApiService _apiService = new ApiService();
   late SharedPreferences sp;
-  String? token = "", username = "", jabatan = "";
+  String? token = "", username = "", jabatan = "", transaksi = "";
   TextEditingController _tecNoMesin = TextEditingController(text: "");
   TextEditingController _tecKeterangan = TextEditingController(text: "");
 
@@ -30,6 +32,7 @@ class _MesinPageState extends State<MesinPage> {
 
   @override
   initState() {
+    transaksi = widget.transaksi;
     super.initState();
     cekToken();
   }

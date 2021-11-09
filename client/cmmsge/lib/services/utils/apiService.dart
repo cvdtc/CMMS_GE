@@ -7,6 +7,7 @@ import 'package:cmmsge/services/models/login/loginresult.dart';
 import 'package:cmmsge/services/models/mesin/mesinModel.dart';
 import 'package:cmmsge/services/models/response/responsecode.dart';
 import 'package:cmmsge/services/models/site/siteModel.dart';
+import 'package:cmmsge/services/models/timeline/timelineModel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -126,12 +127,13 @@ class ApiService {
   }
 
   /**
-   * ! Site
+   * ! TIMELINE
    * ++ LIST SITE
    * * note : getting data site
    */
-  Future<List<SiteModel>?> getListSite(String token) async {
-    var url = Uri.parse(BaseUrl + 'site');
+  Future<List<TimelineModel>?> getListTimeline(
+      String token, String idmasalah) async {
+    var url = Uri.parse(BaseUrl + 'timeline/' + idmasalah);
     var response = await client.get(url, headers: {
       'content-type': 'application/json',
       // ++ fyi : sending token with BEARER
@@ -142,13 +144,14 @@ class ApiService {
     responseCode = ResponseCode.fromJson(responsemessage);
     print("Data Site : " + response.body);
     if (response.statusCode == 200) {
-      return siteFromJson(response.body);
+      return timelineFromJson(response.body);
     } else {
       return null;
     }
   }
 
   /**
+   * ! SITE
   * ++ TAMBAH SITE 
   * * note : add site
   */

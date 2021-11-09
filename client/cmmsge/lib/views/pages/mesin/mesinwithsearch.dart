@@ -8,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'mesintile.dart';
 
 class MesinSearchPage extends StatefulWidget {
+  //  String transaksi;
+  //  MesinSearchPage({this.})
   @override
   _MesinSearchPageState createState() => _MesinSearchPageState();
 }

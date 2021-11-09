@@ -1,4 +1,5 @@
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/timeline/timelinepage.dart';
 import 'package:flutter/material.dart';
 
 class BottomMasalah {
@@ -73,8 +74,12 @@ class BottomMasalah {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        // modalAddSite(
-                        //     context, 'ubah', token, nama, keterangan, idsite);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TimelinePage(
+                                      idmasalah: idmasalah,
+                                    )));
                       },
                       style: ElevatedButton.styleFrom(
                           side: BorderSide(width: 2, color: Colors.blue),
