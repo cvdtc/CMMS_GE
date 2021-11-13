@@ -53,7 +53,7 @@ async function getMesin(req, res) {
                         // * if idsite == 0 run all query without where idsite
                         if(idsite != 0) filterquery = 'WHERE idsite = ?'
                         ///////////////////////////////////////////////
-                        var sqlquery = "SELECT * FROM mesin "+filterquery
+                        var sqlquery = "SELECT * FROM mesin "+filterquery+" ORDER BY nomesin ASC"
                         database.query(sqlquery, [idsite],(error, rows) => {
                             if (error) {
                                 return res.status(500).send({

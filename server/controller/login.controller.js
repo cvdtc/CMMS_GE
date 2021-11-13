@@ -26,7 +26,7 @@ async function Login(req, res) {
             pool.getConnection(function (error, database) {
                 if (error) {
                     res.status(501).send({
-                        message: "Soory, Pool Refushed",
+                        message: "Sorry, Pool Refushed",
                         data: error
                     })
                 } else {

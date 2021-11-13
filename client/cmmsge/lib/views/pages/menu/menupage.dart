@@ -108,8 +108,12 @@ class _MenuPageState extends State<MenuPage> {
             width: double.infinity,
             child: ListTile(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MesinSearchPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MesinSearchPage(
+                              transaksi: 'menu',
+                            )));
               },
               title: (Text(
                 'Mesin',

@@ -34,6 +34,9 @@ router.post('/masalah', function(req, res){
 router.put('/masalah/:idmasalah', function(req, res){
     RouteToMasalah.editMasalah(req, res)
 })
+router.get('/timeline/:idmasalah', function(req, res){
+    RouteToMasalah.getTimeline(req, res)
+})
 
 //MESIN
 var RouteToMesin = require('../controller/mesin.controller')

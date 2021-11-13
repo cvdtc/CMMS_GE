@@ -1,10 +1,12 @@
 import 'package:cmmsge/services/models/mesin/mesinModel.dart';
+import 'package:cmmsge/views/pages/masalah/bottommasalah.dart';
 import 'package:flutter/material.dart';
 
 class MesinTile extends StatelessWidget {
   late final MesinModel mesin;
-  final String token;
-  MesinTile({required this.mesin, required this.token});
+  final String token, transaksi;
+  MesinTile(
+      {required this.mesin, required this.token, required this.transaksi});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -13,6 +15,10 @@ class MesinTile extends StatelessWidget {
             elevation: 0.0,
             child: InkWell(
               onTap: () {
+                if (transaksi == 'masalah') {
+                  BottomMasalah().modalAddMasalah(context, 'tambah', token,
+                      mesin.nomesin, mesin.keterangan, '', '', '', '', '');
+                }
                 // BottomSite().modalActionItem(context, token, site.nama,
                 //     site.keterangan, site.idsite.toString());
               },

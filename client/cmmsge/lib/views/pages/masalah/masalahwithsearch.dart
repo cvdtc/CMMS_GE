@@ -3,6 +3,7 @@ import 'package:cmmsge/services/models/mesin/mesinModel.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/mesin/mesintile.dart';
+import 'package:cmmsge/views/pages/mesin/mesinwithsearch.dart';
 import 'package:cmmsge/views/pages/mesin/networkmesin.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -61,7 +62,14 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
         backgroundColor: thirdcolor,
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MesinSearchPage(
+                        transaksi: 'masalah',
+                      )));
+        },
         label: Text(
           'Tambah Masalah',
           style: TextStyle(color: Colors.white),

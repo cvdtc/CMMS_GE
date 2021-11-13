@@ -8,15 +8,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'mesintile.dart';
 
 class MesinSearchPage extends StatefulWidget {
-  //  String transaksi;
-  //  MesinSearchPage({this.})
+  String transaksi;
+  MesinSearchPage({required this.transaksi});
   @override
   _MesinSearchPageState createState() => _MesinSearchPageState();
 }
 
 class _MesinSearchPageState extends State<MesinSearchPage> {
   late SharedPreferences sp;
-  String? token = "", username = "", jabatan = "";
+  String? token = "", username = "", jabatan = "", transaksi = "";
   List<MesinModel> _mesin = <MesinModel>[];
   List<MesinModel> _mesinDisplay = <MesinModel>[];
 
@@ -43,6 +43,7 @@ class _MesinSearchPageState extends State<MesinSearchPage> {
 
   @override
   initState() {
+    transaksi = widget.transaksi;
     cekToken();
     print(token);
     super.initState();
@@ -92,7 +93,7 @@ class _MesinSearchPageState extends State<MesinSearchPage> {
                     : MesinTile(
                         mesin: this._mesinDisplay[index - 1],
                         token: token!,
-                      );
+                        transaksi: transaksi.toString());
                 // : SiteTile(site: this._sitesDisplay[index - 1]);
               } else {
                 return LoadingView();
