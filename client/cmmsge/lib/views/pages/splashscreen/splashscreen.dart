@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/login/loginpage.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreenPage extends StatefulWidget {
@@ -10,9 +11,47 @@ class SplashScreenPage extends StatefulWidget {
 }
 
 class _SplashScreenPageState extends State<SplashScreenPage> {
+  late FirebaseMessaging messaging;
+  bool subscribemasalah = true;
+  bool subscribeprogress = true;
+  bool subscribeselesai = true;
+
   @override
   void initState() {
     super.initState();
+    // * adding firebase configuration setup
+    messaging = FirebaseMessaging.instance;
+    FirebaseMessaging.onMessage.listen((RemoteMessage event) {
+      print("message recieved");
+      print(event.notification!.body);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print('Message clicked!');
+    });
+    // ++ SUBSCRIBE TOPIC RMS PERMINTAAN
+    if (subscribemasalah) {
+      // messaging.subscribeToTopic('RMSPERMINTAAN');
+      messaging.subscribeToTopic('CMMSMASALAH');
+    } else {
+      // messaging.unsubscribeFromTopic('RMSPERMINTAAN');
+      messaging.unsubscribeFromTopic('CMMSMASALAH');
+    }
+    // ++ SUBSCRIBE TOPIC RMSPROGRESS
+    if (subscribeprogress) {
+      // messaging.subscribeToTopic('RMSPROGRESS');
+      messaging.subscribeToTopic('CMMSPROGRESS');
+    } else {
+      // messaging.unsubscribeFromTopic('RMSPROGRESS');
+      messaging.unsubscribeFromTopic('CMMSPROGRESS');
+    }
+    // ++ SUBSCRIBE TOPIC RMSSELESAI
+    if (subscribeselesai) {
+      // messaging.subscribeToTopic('RMSPROGRESS');
+      messaging.subscribeToTopic('CMMSSELESAI');
+    } else {
+      // messaging.unsubscribeFromTopic('RMSPROGRESS');
+      messaging.unsubscribeFromTopic('CMMSSELESAI');
+    }
     Timer(Duration(seconds: 4), () {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginPage()));

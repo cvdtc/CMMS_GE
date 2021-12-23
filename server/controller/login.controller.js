@@ -32,6 +32,7 @@ async function Login(req, res) {
                 } else {
                     var sqlquery = "SELECT idpengguna, username, password, jabatan, nama, aktif FROM pengguna WHERE username = ? and password = ?"
                     database.query(sqlquery, [username, password], function (error, rows) {
+                        database.release()
                         if (error) {
                             res.status(407).send({
                                 message: "Sorry, sql query have problems",
@@ -61,9 +62,6 @@ async function Login(req, res) {
                                         console.log('berhasil')        
                                     }
                                 })
-                                // file.write(`[CMMS] `+Date.now()+` `+`${username} ${tipe} berhasil login`)
-                                // file.end('--- END ---')
-                                // fs.createWriteStream('../log/notificationlog.txt').write(Date.now() + ' : Gagal mengirim notifikasi masalah, error : ' + error)
                                 return res.status(200).send({
                                     message: 'Selamat, Anda Berhasil Login',
                                     data: {

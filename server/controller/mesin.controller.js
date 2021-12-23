@@ -55,6 +55,7 @@ async function getMesin(req, res) {
                         ///////////////////////////////////////////////
                         var sqlquery = "SELECT * FROM mesin "+filterquery+" ORDER BY nomesin ASC"
                         database.query(sqlquery, [idsite],(error, rows) => {
+                            database.release()
                             if (error) {
                                 return res.status(500).send({
                                     message: "Sorry :(, my query has been error",
@@ -161,9 +162,10 @@ async function addMesin(req, res) {
                             }
                             var sqlquery = "INSERT INTO mesin SET ?"
                             database.query(sqlquery, datamesin, (error, result) => {
+                                database.release()
                                 if (error) {
                                     database.rollback(function () {
-                                        database.release()
+                                        
                                         return res.status(407).send({
                                             message: 'Sorry :(, we have problems sql query!',
                                             error: error
@@ -173,13 +175,11 @@ async function addMesin(req, res) {
                                     database.commit(function (errcommit) {
                                         if (errcommit) {
                                             database.rollback(function () {
-                                                database.release()
                                                 return res.status(407).send({
                                                     message: 'data gagal disimpan!'
                                                 })
                                             })
                                         } else {
-                                            database.release()
                                             return res.status(201).send({
                                                 message: 'Data berhasil disimpan!'
                                             })
@@ -270,9 +270,9 @@ async function editMesin(req, res) {
                             }
                             var sqlquery = "UPDATE mesin SET ? WHERE idmesin = ?"
                             database.query(sqlquery, [datamesin, idmesin], (error, result) => {
+                                database.release()
                                 if (error) {
                                     database.rollback(function () {
-                                        database.release()
                                         return res.status(407).send({
                                             message: 'Sorry :(, we have problems sql query!',
                                             error: error
@@ -282,13 +282,11 @@ async function editMesin(req, res) {
                                     database.commit(function (errcommit) {
                                         if (errcommit) {
                                             database.rollback(function () {
-                                                database.release()
                                                 return res.status(407).send({
                                                     message: 'data gagal diperbarui!'
                                                 })
                                             })
                                         } else {
-                                            database.release()
                                             return res.status(200).send({
                                                 message: 'Data berhasil diperbarui!'
                                             })

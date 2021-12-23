@@ -50,6 +50,7 @@ async function getDashboard(req, res) {
                     } else {
                         var sqlquery = "SELECT count(m.idmasalah) as jml_masalah, COUNT(p.idpenyelesaian) as jml_selesai FROM masalah m LEFT JOIN penyelesaian p on m.idmasalah=p.idmasalah"
                         database.query(sqlquery, (error, rows) => {
+                            database.release()
                             if (error) {
                                 return res.status(500).send({
                                     message: "Sorry :(, my query has been error",

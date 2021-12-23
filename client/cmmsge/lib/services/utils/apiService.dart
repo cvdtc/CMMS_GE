@@ -41,6 +41,9 @@ class ApiService {
       sp.setString('access_token', "${loginresult.access_token}");
       sp.setString('username', "${loginresult.username}");
       sp.setString('jabatan', "${loginresult.jabatan}");
+      sp.setBool('notifmasalah', true);
+      sp.setBool('notifprogress', true);
+      sp.setBool('notifselesai', true);
       return true;
     } else {
       return false;

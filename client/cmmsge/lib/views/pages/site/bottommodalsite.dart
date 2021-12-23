@@ -8,6 +8,7 @@ class BottomSite {
   ApiService _apiService = new ApiService();
   TextEditingController _tecNama = TextEditingController(text: "");
   TextEditingController _tecKeterangan = TextEditingController(text: "");
+  String _dropdownValue = "";
 
   // ++ BOTTOM MODAL INPUT FORM
   void modalAddSite(context, String tipe, String token, String nama,

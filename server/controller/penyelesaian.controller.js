@@ -52,6 +52,7 @@ async function getPenyelesaian(req, res) {
                     } else {
                         var sqlquery = "SELECT * FROM penyelesaian"
                         database.query(sqlquery, (error, rows) => {
+                            database.release()
                             if (error) {
                                 return res.status(500).send({
                                     message: "Sorry :(, my query has been error",
@@ -123,6 +124,7 @@ async function getPenyelesaianByMasalah(req, res) {
                     } else {
                         var sqlquery = "SELECT * FROM penyelesaian WHERE idmasalah = ?"
                         database.query(sqlquery, [idmasalah], (error, rows) => {
+                            database.release()
                             if (error) {
                                 return res.status(500).send({
                                     message: "Sorry :(, my query has been error",
@@ -241,24 +243,34 @@ async function addPenyelesaian(req, res) {
                                                         message: 'data gagal disimpan!'
                                                     })
                                                 })
-                                            } else {
-                                                const messagenotif = {
-                                                    to: tonotification,
+                                            } else {var getmesin = "SELECT nomesin, keterangan FROM mesin WHERE idmesin = ?"
+                                            database.query(getmesin, idmesin, (error, result) => {
+                                                database.release()
+                                                // * set firebase notification message 
+                                                let notificationMessage = {
                                                     notification: {
-                                                        title: "Masalah pada Mesin " + namamesin + "Sudah selesai.",
-                                                        body: keterangan
+                                                        title: ` Masalah pada Mesin ${namamesin} Sudah selesai!`,
+                                                        body: keterangan,
+                                                        sound: 'default',
+                                                        'click_action': 'FCM_PLUGIN_ACTIVITY'
+                                                    },
+                                                    data: {
+                                                        "judul": ` Masalah pada Mesin ${namamesin} Sudah selesai!`,
+                                                        "isi": keterangan
                                                     }
                                                 }
-                                                database.release()
-                                                fcm.messaging().send(messagenotif).then((response) => {
-                                                    console.log('Berhasil Sending Notif', response)
-                                                }).catch((error) => {
-                                                    console.log('Gagal Sending Notif', error)
-                                                    fs.createWriteStream('../log/notificationlog.txt').write(Date.now() + ' : Gagal mengirim notifikasi masalah, error : ' + error)
-                                                })
-                                                return res.status(201).send({
-                                                    message: 'Data berhasil disimpan!'
-                                                })
+                                                // * sending notification topic RMSPERMINTAAN
+                                                fcmadmin.messaging().sendToTopic('CMMSSELESAI', notificationMessage)
+                                                    .then(function (response) {
+                                                        return res.status(201).send({
+                                                            message: "Done!,  Data has been stored!",
+                                                        })
+                                                    }).catch(function (error) {
+                                                        return res.status(201).send({
+                                                            message: "Done!,  Data has been stored!",
+                                                        })
+                                                    })
+                                            })
                                             }
                                         })
                                     }
