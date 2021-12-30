@@ -20,6 +20,7 @@ async function Login(req, res) {
     if (Object.keys(req.body).length != 3) {
         res.status(405).send({
             message: "Parameter tidak sesuai",
+            data: null
         })
     } else {
         try {
@@ -42,10 +43,12 @@ async function Login(req, res) {
                             if (!rows.length) {
                                 res.status(400).send({
                                     message: "Username atau Password anda salah!",
+                                    data: null
                                 });
                             } else if (rows[0].aktif == 0) {
                                 res.status(200).send({
                                     message: "Akun anda tidak aktif",
+                                    data: null
                                 });
                             } else {
                                 console.log("Login Berhasil")
@@ -62,7 +65,9 @@ async function Login(req, res) {
                                         console.log('berhasil')        
                                     }
                                 })
+                                console.log('berhasil')      
                                 return res.status(200).send({
+                                    
                                     message: 'Selamat, Anda Berhasil Login',
                                     data: {
                                         access_token: access_token,

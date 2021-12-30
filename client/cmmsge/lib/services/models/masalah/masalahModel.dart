@@ -15,7 +15,7 @@ import 'dart:convert';
 
 class MasalahModel {
   var idmasalah, idmesin, idpenyelesaian, status, shift;
-  var jam, tanggal, masalah, nomesin, ketmesin, site;
+  var jam, tanggal, masalah, nomesin, ketmesin, site, created, jenis_masalah;
 
   MasalahModel(
       {this.idmasalah,
@@ -28,7 +28,9 @@ class MasalahModel {
       this.masalah,
       this.nomesin,
       this.ketmesin,
-      this.site});
+      this.site,
+      this.created,
+      this.jenis_masalah});
 
   factory MasalahModel.fromJson(Map<String, dynamic> map) {
     return MasalahModel(
@@ -42,28 +44,25 @@ class MasalahModel {
         masalah: map['masalah'],
         nomesin: map['nomesin'],
         ketmesin: map['ketmesin'],
-        site: map['site']);
+        site: map['site'],
+        created: map['created'],
+        jenis_masalah: map['jenis_masalah']);
   }
 
   Map<String, dynamic> toJson() {
     return {
-      "idmasalah": idmasalah,
       "idmesin": idmesin,
-      "idpenyelesaian": idpenyelesaian,
-      "status": status,
       "shift": shift,
       "jam": jam,
       "tanggal": tanggal,
       "masalah": masalah,
-      "nomesin": nomesin,
-      "ketmesin": ketmesin,
-      "site": site,
+      "jenis_masalah": jenis_masalah
     };
   }
 
   @override
   String toString() {
-    return 'MasalahModel{idmasalah: $idmasalah, idmesin: $idmesin,idpenyelesaian: $idpenyelesaian,status: $status,shift: $shift, jam: $jam, masalah: $masalah, nomesin: $nomesin, ketmesin: $ketmesin, site: $site}';
+    return 'MasalahModel{idmesin: $idmesin,shift: $shift, jam: $jam, tanggal: $tanggal, masalah: $masalah, jenis_masalah:$jenis_masalah}';
   }
 }
 

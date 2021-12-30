@@ -13,7 +13,6 @@ class BottomSite {
   // ++ BOTTOM MODAL INPUT FORM
   void modalAddSite(context, String tipe, String token, String nama,
       String keterangan, String idsite) {
-    print("IDSITE?" + idsite.toString());
     // * setting value text form field if action is edit
     if (tipe == 'ubah') {
       _tecNama.value = TextEditingValue(
@@ -74,11 +73,6 @@ class BottomSite {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        print(token +
-                            tipe +
-                            '0' +
-                            _tecNama.text.toString() +
-                            _tecKeterangan.text.toString());
                         _modalKonfirmasi(
                             context,
                             token,
@@ -113,7 +107,6 @@ class BottomSite {
   // ++ BOTTOM MODAL CONFIRMATION
   void _modalKonfirmasi(context, String token, String tipe, String idsite,
       String nama, String keterangan) {
-    print("IDSITE?" + idsite.toString());
     if (nama == "" || keterangan == "") {
       _modalbottomSite(
           context,
@@ -229,7 +222,6 @@ class BottomSite {
           'assets/images/sorry.png');
     } else {
       SiteModel data = SiteModel(nama: nama, keterangan: keterangan);
-      print(data);
       if (tipe == 'tambah') {
         _apiService.addRumah(token, data).then((isSuccess) {
           if (isSuccess) {
@@ -254,7 +246,6 @@ class BottomSite {
         });
       } else if (tipe == 'ubah') {
         _apiService.ubahSite(token, idsite, data).then((isSuccess) {
-          print(isSuccess);
           if (isSuccess) {
             Navigator.of(context).pop();
             _tecNama.clear();
@@ -407,7 +398,6 @@ class BottomSite {
 
   _modalbottomSite(context, String title, String message, String kode,
       String imagelocation) {
-    print('Yash im show');
     dynamic navigation;
     showModalBottomSheet(
         context: context,

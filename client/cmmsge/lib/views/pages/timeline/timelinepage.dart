@@ -55,7 +55,6 @@ class _TimelinePageState extends State<TimelinePage> {
       body: FutureBuilder(
           future: _apiService.getListTimeline(token!, idmasalah.toString()),
           builder: (context, AsyncSnapshot<List<TimelineModel>?> snapshot) {
-            print('SNAPSHOT? ' + snapshot.toString());
             if (snapshot.hasError) {
               return Center(
                 child: Column(

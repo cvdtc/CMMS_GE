@@ -2,6 +2,29 @@ require('dotenv').config()
 const express = require('express')
 const router = express.Router()
 
+
+// BARANG
+var RouteToBarang = require('../controller/barang.controller')
+router.get('/barang', function(req, res){
+    RouteToBarang.getBarang(req, res)
+})
+
+//CHECKOUT
+var RouteToCheckout = require('../controller/checkout.controller')
+router.get('/checkout/:idmasalah', function(req, res){
+    RouteToCheckout.getCheckout(req, res)
+})
+router.post('/checkout', function(req, res){
+    RouteToCheckout.addCheckout(req, res)
+})
+router.put('/checkout/:idcheckout', function(req, res){
+    RouteToCheckout.editCheckout(req, res)
+})
+router.delete('/checkout/:idcheckout', function(req, res){
+    RouteToCheckout.deleteCheckout (req, res)
+})
+
+
 //DASHBOARD
 var RouteToDashbord = require('../controller/dashboard.controller')
 router.get('/dashboard', function(req, res){
@@ -34,9 +57,6 @@ router.post('/masalah', function(req, res){
 router.put('/masalah/:idmasalah', function(req, res){
     RouteToMasalah.editMasalah(req, res)
 })
-router.get('/timeline/:idmasalah', function(req, res){
-    RouteToMasalah.getTimeline(req, res)
-})
 
 //MESIN
 var RouteToMesin = require('../controller/mesin.controller')
@@ -63,6 +83,23 @@ router.post('/penyelesaian', function(req, res){
 })
 router.put('/penyelesaian/:idpenyelesaian', function(req, res){
     RouteToPenyelesaian.editPenyelesaian(req, res)
+})
+router.put('/penyelesaian/:idpenyelesaian', function(req, res){
+    RouteToPenyelesaian.deletePenyelesaian(req, res)
+})
+
+// PROGRESS
+var RouteToProgress = require('../controller/progress.controller')
+router.post('/progress', function(req, res){
+    RouteToProgress.addProgress(req, res)
+})
+router.put('/progress/:idprogress', function(req, res){
+    RouteToProgress.editProgress(req, res)
+})
+
+var RouteToReport = require('../controller/report.controller')
+router.get('/timeline/:idmasalah', function(req, res){
+    RouteToReport.getTimeline(req, res)
 })
 
 //SITE

@@ -30,12 +30,10 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
       jabatan = sp.getString("jabatan");
     });
     fetchSite(token!).then((value) {
-      print("IN? " + token!);
       setState(() {
         _isLoading = false;
         _sites.addAll(value);
         _sitesDisplay = _sites;
-        print(_sitesDisplay.length);
       });
     });
   }

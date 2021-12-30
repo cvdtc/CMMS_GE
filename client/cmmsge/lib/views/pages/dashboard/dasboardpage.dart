@@ -30,13 +30,15 @@ class _DashboardPageState extends State<DashboardPage> {
     });
     _apiService.getDashboard(token!).then((value) {
       // DashboardModel dashboardModel = DashboardModel();
-      print("Jumlah Masalah? " + value.toString());
       setState(() {
         _dashboard.addAll(value!);
       });
       // jml_masalah = value as String.toList();
       // jml_selesai = dashboardModel.jml_selesai;
       // belum_selesai = jml_masalah - jml_selesai;
+    }).onError((error, stackTrace) {
+      ReusableClasses().modalbottomWarning(context, 'Gagal', 'Sorry',
+          error.toString(), '/assets/images/sorry.png');
     });
   }
 
@@ -96,9 +98,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          'Halo, ' +
-                              username!.toUpperCase() +
-                              belum_selesai.toString(),
+                          'Halo, ' + username!.toUpperCase(),
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -169,11 +169,13 @@ class _DashboardPageState extends State<DashboardPage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                                _dashboard
-                                    .toString()
-                                    .trim()
-                                    .split('jml_masalah: ')[1]
-                                    .split(',')[0],
+                                _dashboard.length > 0
+                                    ? _dashboard
+                                        .toString()
+                                        .trim()
+                                        .split('jml_masalah: ')[1]
+                                        .split(',')[0]
+                                    : '0',
                                 style: TextStyle(
                                     fontSize: 32,
                                     fontWeight: FontWeight.bold,
@@ -192,12 +194,14 @@ class _DashboardPageState extends State<DashboardPage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                                _dashboard
-                                    .toString()
-                                    .trim()
-                                    .split('jml_selesai: ')[1]
-                                    .split(',')[0]
-                                    .split(']')[0],
+                                _dashboard.length > 0
+                                    ? _dashboard
+                                        .toString()
+                                        .trim()
+                                        .split('jml_selesai: ')[1]
+                                        .split(',')[0]
+                                        .split(']')[0]
+                                    : '0',
                                 style: TextStyle(
                                     fontSize: 32,
                                     fontWeight: FontWeight.bold,

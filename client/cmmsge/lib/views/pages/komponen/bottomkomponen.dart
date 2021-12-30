@@ -348,7 +348,7 @@ class BottomKomponen {
                             width: 325,
                             height: 45,
                             alignment: Alignment.center,
-                            child: Text('EDIT SITE',
+                            child: Text('EDIT KOMPONEN',
                                 style: TextStyle(
                                   color: Colors.green,
                                   fontSize: 18.0,
@@ -376,7 +376,7 @@ class BottomKomponen {
                             width: 325,
                             height: 45,
                             alignment: Alignment.center,
-                            child: Text('HAPUS SITE',
+                            child: Text('HAPUS KOMPONEN',
                                 style: TextStyle(
                                   color: Colors.red,
                                   fontSize: 18.0,

@@ -22,9 +22,10 @@ class _WebviewScanResultState extends State<WebviewScanResult> {
     urlweb = widget.urlwebview;
     final _key = UniqueKey();
     print('WEBVIEW? ' + urlweb + ' ~ ' + _key.toString());
-    super.initState();
+
     // Enable hybrid composition.
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+    super.initState();
   }
 
   @override
@@ -65,24 +66,6 @@ class _WebviewScanResultState extends State<WebviewScanResult> {
             gestureNavigationEnabled: true,
           );
         }));
-    //   body: SingleChildScrollView(
-    //     child: Column(
-    //       children: [
-    //         Text(urlweb),
-    //         WebView(
-    //           javascriptMode: JavascriptMode.unrestricted,
-    //           initialUrl: '${urlweb}',
-    //         )
-    //         // Expanded(
-    //         //   child: WebView(
-    //         //     javascriptMode: JavascriptMode.unrestricted,
-    //         //     initialUrl: 'https://cvdtc.com',
-    //         //   ),
-    //         // ),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 
   JavascriptChannel _toasterJavascriptChannel(BuildContext context) {

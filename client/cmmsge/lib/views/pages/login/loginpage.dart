@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
                         LoginClick();
                       },
                       style: ElevatedButton.styleFrom(
-                        elevation: 0.0,
+                        elevation: 3.0,
                         primary: thirdcolor,
                       ),
                       child: Ink(
@@ -159,7 +159,6 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _isLoading = false;
         });
-        print("Hmm? " + isSuccess.toString());
         if (isSuccess) {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) => BottomNavigation()));
@@ -172,14 +171,15 @@ class _LoginPageState extends State<LoginPage> {
               'assets/images/sorry.png');
         }
         return;
-      }).onError((error, stackTrace) {
-        ReusableClasses().modalbottomWarning(
-            context,
-            'Koneksi Bermasalah!',
-            'Pastikan Koneksi anda stabil terlebih dahulu, apabila masih terkendala hubungi IT. ${error}',
-            'f500',
-            'assets/images/sorry.png');
       });
+      // .onError((error, stackTrace) {
+      //   ReusableClasses().modalbottomWarning(
+      //       context,
+      //       'Koneksi Bermasalah!',
+      //       'Pastikan Koneksi anda stabil terlebih dahulu, apabila masih terkendala hubungi IT. ${error}',
+      //       'f500',
+      //       'assets/images/sorry.png');
+      // });
     }
     return;
   }

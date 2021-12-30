@@ -29,12 +29,10 @@ class _KomponenPageSearchState extends State<KomponenPageSearch> {
       jabatan = sp.getString("jabatan");
     });
     fetchKomponen(token!, '0').then((value) {
-      print("IN? " + token!);
       setState(() {
         _isLoading = false;
         _komponents.addAll(value);
         _komponentsDisplay = _komponents;
-        print(_komponentsDisplay.length);
       });
     });
   }
@@ -42,8 +40,6 @@ class _KomponenPageSearchState extends State<KomponenPageSearch> {
   @override
   initState() {
     cekToken();
-    print(token);
-
     super.initState();
   }
 

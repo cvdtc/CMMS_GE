@@ -1,20 +1,28 @@
 import 'dart:convert';
 
+import 'package:cmmsge/services/models/checkout/checkoutModel.dart';
 import 'package:cmmsge/services/models/dashboard/dashboardModel.dart';
 import 'package:cmmsge/services/models/komponen/KomponenModel.dart';
 import 'package:cmmsge/services/models/login/LoginModel.dart';
 import 'package:cmmsge/services/models/login/loginresult.dart';
+import 'package:cmmsge/services/models/masalah/masalahModel.dart';
 import 'package:cmmsge/services/models/mesin/mesinModel.dart';
+import 'package:cmmsge/services/models/penyelesaian/penyelesaianModel.dart';
+import 'package:cmmsge/services/models/progress/progressModel.dart';
 import 'package:cmmsge/services/models/response/responsecode.dart';
 import 'package:cmmsge/services/models/site/siteModel.dart';
 import 'package:cmmsge/services/models/timeline/timelineModel.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   // ? make sure api url true, change variable BaseUrl if api url has changed.
+  /// for server
   final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
+
+  /// for development
+  // final String BaseUrl = "http://192.168.1.211:9994/api/v1/";
+
   Client client = Client();
   ResponseCode responseCode = ResponseCode();
 
@@ -33,8 +41,6 @@ class ApiService {
     // ++ fyi : this code below for getting response and message from api response.
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
-    print("Body? " + response.body);
-    print("Access Token? " + loginresult.toString());
     if (response.statusCode == 200) {
       // ++ fyi : for set shared preferences from LoginResult model, this shared preferences fot save access token credentials for request to api.
       SharedPreferences sp = await SharedPreferences.getInstance();
@@ -64,19 +70,15 @@ class ApiService {
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
-    print("Data Dashbaord : " + response.body);
     if (response.statusCode == 200) {
       return dashboardFromJson(response.body);
-      // return compute(parseDashboard, response.body);
     } else {
       return null;
-      // throw Exception(response.statusCode);
     }
   }
 
   List<DashboardModel> parseDashboard(String responseBody) {
     var listSite = json.decode(responseBody)['data'] as List<dynamic>;
-    print('???' + listSite.toString());
     return listSite.map((e) => DashboardModel.fromJson(e)).toList();
   }
 
@@ -97,7 +99,6 @@ class ApiService {
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
-    print("Data Komponen : " + response.body);
     if (response.statusCode == 200) {
       return komponenFromJson(response.body);
     } else {
@@ -121,7 +122,6 @@ class ApiService {
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
-    print("Data Mesin : " + response.body);
     if (response.statusCode == 200) {
       return mesinFromJson(response.body);
     } else {
@@ -145,7 +145,6 @@ class ApiService {
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
-    print("Data Site : " + response.body);
     if (response.statusCode == 200) {
       return timelineFromJson(response.body);
     } else {
@@ -215,7 +214,7 @@ class ApiService {
     }
   }
 
-  // ! Add Data Komponen
+  // ! Add Data Site
   Future<bool> addKomponen(String token, KomponenModel data) async {
     var url = Uri.parse(BaseUrl + 'site');
     var response = await client.post(url,
@@ -224,6 +223,132 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: KomponenToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // ! Add Data Masalah
+  Future<bool> addMasalah(String token, MasalahModel data) async {
+    var url = Uri.parse(BaseUrl + 'masalah');
+    var response = await client.post(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: masalahToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // ! Edit Data Masalah
+  Future<bool> editMasalah(
+      String token, MasalahModel data, String idmasalah) async {
+    var url = Uri.parse(BaseUrl + 'masalah/' + idmasalah);
+    var response = await client.put(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: masalahToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // ! Add Data Progress
+  Future<bool> addProgress(String token, ProgressModel data) async {
+    var url = Uri.parse(BaseUrl + 'progress');
+    var response = await client.post(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: progressToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // ! Edit Data Progress (belum dipakai)
+  Future<bool> editProgress(
+      String token, ProgressModel data, String idprogress) async {
+    var url = Uri.parse(BaseUrl + 'progress/' + idprogress);
+    var response = await client.put(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: progressToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // ! Add Data Checkout Barang
+  Future<bool> addCheckoutBarang(String token, CheckoutModel data) async {
+    var url = Uri.parse(BaseUrl + 'checkout');
+    var response = await client.post(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: checkoutToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // ! Add Data Penyelesaian Masalah
+  Future<bool> addPenyelesaian(String token, PenyelesaianModel data) async {
+    var url = Uri.parse(BaseUrl + 'penyelesaian');
+    var response = await client.post(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: penyelesaianToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // ! Delete Data Penyelesaian Masalah
+  Future<bool> deletePenyelesaian(String token, String idpenyelesaian) async {
+    var url = Uri.parse(BaseUrl + 'penyelesaian/' + idpenyelesaian);
+    var response = await client.delete(url, headers: {
+      'content-type': 'application/json',
+      'Authorization': 'Bearer ${token}'
+    });
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {

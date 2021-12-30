@@ -3,6 +3,7 @@ import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/mesin/networkmesin.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'mesintile.dart';
@@ -11,14 +12,16 @@ class MesinSearchPage extends StatefulWidget {
   String transaksi;
   MesinSearchPage({required this.transaksi});
   @override
-  _MesinSearchPageState createState() => _MesinSearchPageState();
+  MesinSearchPageState createState() => MesinSearchPageState();
 }
 
-class _MesinSearchPageState extends State<MesinSearchPage> {
+class MesinSearchPageState extends State<MesinSearchPage> {
   late SharedPreferences sp;
   String? token = "", username = "", jabatan = "", transaksi = "";
   List<MesinModel> _mesin = <MesinModel>[];
   List<MesinModel> _mesinDisplay = <MesinModel>[];
+
+  TextEditingController _textSearch = TextEditingController(text: "");
 
   bool _isLoading = true;
 
@@ -31,13 +34,20 @@ class _MesinSearchPageState extends State<MesinSearchPage> {
       jabatan = sp.getString("jabatan");
     });
     fetchMesin(token!, '0').then((value) {
-      print("IN? " + token!);
       setState(() {
         _isLoading = false;
         _mesin.addAll(value);
         _mesinDisplay = _mesin;
-        print(_mesinDisplay.length);
       });
+    });
+  }
+
+  Future refreshData() async {
+    _mesinDisplay.clear();
+    _textSearch.clear();
+    Fluttertoast.showToast(msg: 'Data sedang diperbarui, tunggu sebentar...');
+    setState(() {
+      cekToken();
     });
   }
 
@@ -45,7 +55,6 @@ class _MesinSearchPageState extends State<MesinSearchPage> {
   initState() {
     transaksi = widget.transaksi;
     cekToken();
-    print(token);
     super.initState();
   }
 
@@ -53,63 +62,69 @@ class _MesinSearchPageState extends State<MesinSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('Daftar Mesin'),
+          title: transaksi == 'masalah'
+              ? Text('Pilih Mesin')
+              : Text('Daftar Mesin'),
           centerTitle: true,
           backgroundColor: thirdcolor,
           actions: <Widget>[
             Padding(
               padding: EdgeInsets.only(right: 20.0),
               child: GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  refreshData();
+                },
                 child: Icon(
-                  Icons.search,
+                  Icons.refresh_rounded,
                   size: 26.0,
                 ),
               ),
             )
           ]),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Bott().modalAddSite(context, 'tambah', token!, '', '', '');
-          // _modalAddSite(context, 'tambah');
-        },
-        label: Text(
-          'Tambah Mesin',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: secondcolor,
-        icon: Icon(
-          Icons.cabin_outlined,
-          color: Colors.white,
-        ),
-      ),
-      body: SafeArea(
-        child: Container(
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              if (!_isLoading) {
-                return index == 0
-                    ? _searchBar()
-                    : MesinTile(
-                        mesin: this._mesinDisplay[index - 1],
-                        token: token!,
-                        transaksi: transaksi.toString());
-                // : SiteTile(site: this._sitesDisplay[index - 1]);
-              } else {
-                return LoadingView();
-              }
-            },
-            itemCount: _mesinDisplay.length + 1,
+      floatingActionButton: transaksi == 'masalah'
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
+                // Bott().modalAddSite(context, 'tambah', token!, '', '', '');
+                // _modalAddSite(context, 'tambah');
+              },
+              backgroundColor: secondcolor,
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
+            ),
+      body: RefreshIndicator(
+        onRefresh: refreshData,
+        child: SafeArea(
+          child: Container(
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                if (!_isLoading) {
+                  return index == 0
+                      ? searchBar()
+                      : MesinTile(
+                          mesin: this._mesinDisplay[index - 1],
+                          token: token!,
+                          transaksi: transaksi.toString());
+                  // : SiteTile(site: this._sitesDisplay[index - 1]);
+                } else {
+                  return LoadingView();
+                }
+              },
+              itemCount: _mesinDisplay.length + 1,
+            ),
           ),
         ),
       ),
     );
   }
 
-  _searchBar() {
+  searchBar() {
     return Padding(
       padding: EdgeInsets.all(12.0),
       child: TextField(
+        controller: _textSearch,
         autofocus: false,
         onChanged: (searchText) {
           searchText = searchText.toLowerCase();

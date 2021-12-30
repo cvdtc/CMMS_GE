@@ -2,10 +2,12 @@ import 'package:cmmsge/services/models/masalah/masalahModel.dart';
 import 'package:cmmsge/services/models/mesin/mesinModel.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/masalah/bottommasalah.dart';
 import 'package:cmmsge/views/pages/mesin/mesintile.dart';
 import 'package:cmmsge/views/pages/mesin/mesinwithsearch.dart';
 import 'package:cmmsge/views/pages/mesin/networkmesin.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'masalahtile.dart';
@@ -21,8 +23,8 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
   String? token = "", username = "", jabatan = "";
   List<MasalahModel> _masalah = <MasalahModel>[];
   List<MasalahModel> _masalahDisplay = <MasalahModel>[];
-  List<MesinModel> _mesin = <MesinModel>[];
-  List<MesinModel> _mesinDisplay = <MesinModel>[];
+
+  TextEditingController _textSearch = TextEditingController(text: "");
 
   bool _isLoading = true;
 
@@ -35,21 +37,26 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
       jabatan = sp.getString("jabatan");
     });
     fetchMasalah(token!, 'all').then((value) {
-      print("IN? " + token!);
       setState(() {
         _isLoading = false;
         _masalah.addAll(value);
         _masalahDisplay = _masalah;
-        print(_masalahDisplay.length);
       });
+    });
+  }
+
+  Future refreshData() async {
+    _masalahDisplay.clear();
+    _textSearch.clear();
+    Fluttertoast.showToast(msg: 'Data sedang diperbarui, tunggu sebentar...');
+    setState(() {
+      cekToken();
     });
   }
 
   @override
   initState() {
     cekToken();
-    print(token);
-
     super.initState();
   }
 
@@ -57,11 +64,25 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Daftar Site'),
+        title: Text('Daftar Masalah'),
         centerTitle: true,
         backgroundColor: thirdcolor,
+        actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: () {
+                refreshData();
+              },
+              child: Icon(
+                Icons.refresh_rounded,
+                size: 26.0,
+              ),
+            ),
+          )
+        ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
               context,
@@ -69,34 +90,35 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
                   builder: (context) => MesinSearchPage(
                         transaksi: 'masalah',
                       )));
+          // BottomMasalah().modalAddMasalah(
+          //     context, 'tambah', token!, "", "", "", "", "", "", "");
         },
-        label: Text(
-          'Tambah Masalah',
-          style: TextStyle(color: Colors.white),
-        ),
         backgroundColor: secondcolor,
-        icon: Icon(
-          Icons.warning_amber_rounded,
+        child: Icon(
+          Icons.add,
           color: Colors.white,
         ),
       ),
-      body: SafeArea(
-        child: Container(
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              if (!_isLoading) {
-                return index == 0
-                    ? _searchBar()
-                    : MasalahTile(
-                        masalah: this._masalahDisplay[index - 1],
-                        token: token!,
-                      );
-                // : SiteTile(site: this._sitesDisplay[index - 1]);
-              } else {
-                return LoadingView();
-              }
-            },
-            itemCount: _masalahDisplay.length + 1,
+      body: RefreshIndicator(
+        onRefresh: refreshData,
+        child: SafeArea(
+          child: Container(
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                if (!_isLoading) {
+                  return index == 0
+                      ? _searchBar()
+                      : MasalahTile(
+                          masalah: this._masalahDisplay[index - 1],
+                          token: token!,
+                        );
+                  // : SiteTile(site: this._sitesDisplay[index - 1]);
+                } else {
+                  return LoadingView();
+                }
+              },
+              itemCount: _masalahDisplay.length + 1,
+            ),
           ),
         ),
       ),
@@ -107,6 +129,7 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
     return Padding(
       padding: EdgeInsets.all(12.0),
       child: TextField(
+        controller: _textSearch,
         autofocus: false,
         onChanged: (searchText) {
           searchText = searchText.toLowerCase();

@@ -1,18 +1,19 @@
 import 'dart:convert';
 
-import 'package:cmmsge/services/models/site/siteModel.dart';
+import 'package:cmmsge/services/models/checkout/checkoutModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 final String _apiService = ApiService().BaseUrl;
-List<SiteModel> parseSite(String responseBody) {
+List<CheckoutModel> parseSite(String responseBody) {
   var listSite = json.decode(responseBody)['data'] as List<dynamic>;
-  return listSite.map((e) => SiteModel.fromJson(e)).toList();
+  return listSite.map((e) => CheckoutModel.fromJson(e)).toList();
 }
 
-Future<List<SiteModel>> fetchSite(String token) async {
-  var url = Uri.parse(_apiService + 'site');
+Future<List<CheckoutModel>> fetchCheckout(
+    String token, String idmasalah) async {
+  var url = Uri.parse(_apiService + 'checkout/' + idmasalah);
   var response = await http.get(url, headers: {
     'content-type': 'application/json',
     // ++ fyi : sending token with BEARER

@@ -51,7 +51,6 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
       audioCache.fixedPlayer?.notificationService.startHeadlessService();
     }
     cekToken();
-    print("token? " + token.toString());
   }
 
   void playSound() async {
@@ -84,12 +83,6 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  // if (result != null)
-                  //   Text(
-                  //       'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
-                  // else
-                  //   Text('Scan a code'),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -152,7 +145,6 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
                       : ElevatedButton(
                           onPressed: () {
                             // _PaymentDetail();                Navigator.push(context,
-                            print('Hallo' + result!.code.toString());
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -210,10 +202,6 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
     controller.scannedDataStream.listen((scanData) {
       setState(() {
         result = scanData;
-        print('PRINT QR VALUE? ' +
-            result.toString() +
-            ' ~ ' +
-            result!.code!.split('2b')[0].toString());
       });
     });
     setState(() {

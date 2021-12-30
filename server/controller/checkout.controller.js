@@ -1,8 +1,6 @@
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const mysql = require('mysql')
-var fcm = require('firebase-admin')
-const tonotification = 'CMMSGE_SERVICE'
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -12,19 +10,24 @@ const pool = mysql.createPool({
     timezone: 'utc-8'
 })
 
+var nows = {
+    toSqlString: function () { return "NOW()" }
+}
+
 /**
  * @swagger
  * tags:
- *  name: Penyelesaian
- *  description: Api untuk Penyelesaian
+ *  name: Checkout
+ *  description: Api untuk Checkout Barang
  */
+
 
 /**
  * @swagger
- * /penyelesaian:
+ * /checkout/:idmasalah:
  *  get:
- *      summary: api untuk load data penyelesaian
- *      tags: [Penyelesaian]
+ *      summary: api untuk load data checkout barang
+ *      tags: [Barang]
  *      responses:
  *          200:
  *              description: jika data berhasil di fetch
@@ -38,20 +41,22 @@ const pool = mysql.createPool({
  *              description: kesalahan pada query sql
  */
 
-async function getPenyelesaian(req, res) {
-    const token = req.headers.authorization.split(' ')[1]
+function getCheckout(req, res) {
+    const token = req.headers.authorization
+    const idmasalah = req.params.idmasalah
+    console.log('Load Barang...')
     try {
-        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+        jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwtresult) {
                 pool.getConnection(function (error, database) {
                     if (error) {
                         return res.status(400).send({
-                            message: "Pool refushed, sorry :(, try again or contact developer",
+                            message: "Pool refushed, sorry :(, please try again or contact developer.",
                             data: error
                         })
                     } else {
-                        var sqlquery = "SELECT * FROM penyelesaian"
-                        database.query(sqlquery, (error, rows) => {
+                        var sqlquery = `SELECT c.idcheckout, c.idmasalah, c.idbarang, c.idsatuan, DATE_FORMAT( c.tanggal, "%Y-%m-%d") as tanggal, c.keterangan, c.qty, b.BB_NAMA as barang, b.BB_SATUAN as satuan, m.masalah FROM checkout c, masalah m, bb b WHERE c.idmasalah=m.idmasalah and c.idbarang=b.BB_ID AND m.idmasalah = ?`
+                        database.query(sqlquery,idmasalah, (error, rows) => {
                             database.release()
                             if (error) {
                                 return res.status(500).send({
@@ -78,10 +83,11 @@ async function getPenyelesaian(req, res) {
                 return res.status(401).send({
                     message: "Sorry, Token tidak valid!",
                     data: jwterror
-                })
+                });
             }
         })
     } catch (error) {
+        console.log(error)
         return res.status(403).send({
             message: "Forbidden.",
             error: error
@@ -91,82 +97,10 @@ async function getPenyelesaian(req, res) {
 
 /**
  * @swagger
- * /penyelesaian/:idmasalah:
- *  get:
- *      summary: api untuk load data penyelesaian berdasarkan idmasalah
- *      tags: [Masalah]
- *      responses:
- *          200:
- *              description: jika data berhasil di fetch
- *          204:
- *              description: jika data yang dicari tidak ada
- *          400:
- *              description: kendala koneksi pool database
- *          401:
- *              description: token tidak valid
- *          500:
- *              description: kesalahan pada query sql
- */
-
-async function getPenyelesaianByMasalah(req, res) {
-    var idmasalah = req.params.idmasalah
-    const token = req.headers.authorization.split(' ')[1]
-    try {
-        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwtresult) {
-
-                pool.getConnection(function (error, database) {
-                    if (error) {
-                        return res.status(400).send({
-                            message: "Pool refushed, sorry :(, try again or contact developer",
-                            data: error
-                        })
-                    } else {
-                        var sqlquery = "SELECT * FROM penyelesaian WHERE idmasalah = ?"
-                        database.query(sqlquery, [idmasalah], (error, rows) => {
-                            database.release()
-                            if (error) {
-                                return res.status(500).send({
-                                    message: "Sorry :(, my query has been error",
-                                    data: error
-                                })
-                            } else {
-                                if (rows.length <= 0) {
-                                    return res.status(204).send({
-                                        message: "Data masih kosong",
-                                        data: rows
-                                    })
-                                } else {
-                                    return res.status(200).send({
-                                        message: "Data berhasil fetch.",
-                                        data: rows
-                                    })
-                                }
-                            }
-                        })
-                    }
-                })
-            } else {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                })
-            }
-        })
-    } catch (error) {
-        return res.status(403).send({
-            message: "Forbidden.",
-            error: error
-        })
-    }
-}
-
-/**
- * @swagger
- * /penyelesaian:
+ * /checkout:
  *  post:
- *      summary: menambah data Penyelesaian
- *      tags: [Penyelesaian]
+ *      summary: menambah checkout barang
+ *      tags: [Checkout]
  *      consumes:
  *          - application/json
  *      parameters:
@@ -174,12 +108,18 @@ async function getPenyelesaianByMasalah(req, res) {
  *            name: parameter yang dikirim
  *            schema:
  *              properties:
- *                  tanggal: 
+ *                  idmasalah: 
+ *                      type: integer
+ *                  idbarang:
+ *                      type: integer
+ *                  idsatuan:
+ *                      type: integer
+ *                  tanggal:
  *                      type: date
+ *                  qty:
+ *                      type: integer
  *                  keterangan:
  *                      type: string
- *                  idmasalah:
- *                      type: int
  *      responses:
  *          201:
  *              description: jika data berhasil di fetch
@@ -197,12 +137,15 @@ async function getPenyelesaianByMasalah(req, res) {
  *              description: kesalahan pada query sql
  */
 
-async function addPenyelesaian(req, res) {
-    var tanggal = req.body.tanggal
-    var keterangan = req.body.keterangan
+async function addCheckout(req, res) {
     var idmasalah = req.body.idmasalah
+    var idbarang = req.body.idbarang
+    var tanggal = req.body.tanggal
+    var idsatuan = req.body.idsatuan
+    var qty = req.body.qty
+    var keterangan = req.body.keterangan
     const token = req.headers.authorization
-    console.log('Mencoba insert penyelesaian...', token, tanggal, keterangan, idmasalah)
+    console.log('Mencoba insert checkout...')
     try {
         jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwtresult) {
@@ -214,13 +157,17 @@ async function addPenyelesaian(req, res) {
                         })
                     } else {
                         database.beginTransaction(function (error) {
-                            let datapenyelesaian = {
+                            let datacheckout = {
+                                idmasalah: idmasalah,
+                                idbarang: idbarang,
                                 tanggal: tanggal,
+                                idsatuan: idsatuan,
+                                qty: qty,
                                 keterangan: keterangan,
-                                idmasalah: idmasalah
+                                timestamp: nows
                             }
-                            var sqlquery = "INSERT INTO penyelesaian SET ?"
-                            database.query(sqlquery, datapenyelesaian, (error, result) => {
+                            var sqlquery = "INSERT INTO checkout SET ?"
+                            database.query(sqlquery, datacheckout, (error, result) => {
                                 database.release()
                                 console.log(result)
                                 if (error) {
@@ -234,7 +181,7 @@ async function addPenyelesaian(req, res) {
                                     database.commit(function (errcommit) {
                                         if (errcommit) {
                                             database.rollback(function () {
-                                                
+
                                                 return res.status(407).send({
                                                     message: 'data gagal disimpan!'
                                                 })
@@ -258,9 +205,8 @@ async function addPenyelesaian(req, res) {
             }
         })
     } catch (error) {
-        console.log(error, 'xxx')
         return res.status(403).send({
-            message: "Forbidden.xxx",
+            message: "Forbidden.",
             error: error
         })
     }
@@ -268,10 +214,10 @@ async function addPenyelesaian(req, res) {
 
 /**
  * @swagger
- * /penyelesaian/:idpenyelesaian:
+ * /checkout/:idcheckout:
  *  put:
- *      summary: mengubah data Masalah
- *      tags: [Masalah]
+ *      summary: mengubah data progress
+ *      tags: [Progress]
  *      consumes:
  *          - application/json
  *      parameters:
@@ -279,11 +225,123 @@ async function addPenyelesaian(req, res) {
  *            name: parameter yang dikirim
  *            schema:
  *              properties:
- *                  tanggal: 
- *                      type: date
- *                  keterangan:
+ *                  masalah: 
  *                      type: string
- *                  idmasalah:
+ *                  tanggal:
+ *                      type: string
+ *                  idmesin:
+ *                      type: int
+ *                  shift:
+ *                      type: int
+ *                  namamesin:
+ *                      type: string
+ *      responses:
+ *          201:
+ *              description: jika data berhasil di fetch
+ *          204:
+ *              description: jika data yang dicari tidak ada
+ *          400:
+ *              description: kendala koneksi pool database
+ *          401:
+ *              description: token tidak valid
+ *          405:
+ *              description: parameter yang dikirim tidak sesuai
+ *          407:
+ *              description: gagal generate encrypt password 
+ *          500:
+ *              description: kesalahan pada query sql
+ */
+
+async function editCheckout(req, res) {
+    var idcheckout = req.params.idcheckout
+    var idmasalah = req.body.idmasalah
+    var idbarang = req.body.idbarang
+    var tanggal = req.body.tanggal
+    var idsatuan = req.body.idsatuan
+    var qty = req.body.qty
+    var keterangan = req.body.keterangan
+    const token = req.headers.authorization
+    try {
+        jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+            if (jwtresult) {
+                console.log('Mencoba edit...')
+                pool.getConnection(function (error, database) {
+                    if (error) {
+                        return res.status(400).send({
+                            message: "Soory, Pool Refushed",
+                            data: error
+                        })
+                    } else {
+                        database.beginTransaction(function (error) {
+                            let datacheckout = {
+                                idmasalah: idmasalah,
+                                idbarang: idbarang,
+                                tanggal: tanggal,
+                                idsatuan: idsatuan,
+                                qty: qty,
+                                keterangan: keterangan,
+                                timestamp: nows
+                            }
+                            var sqlquery = "UPDATE checkout SET ? WHERE idcheckout = ?"
+                            database.query(sqlquery, [datacheckout, idcheckout], (error, result) => {
+                                database.release()
+                                console.log(result);
+                                if (error) {
+                                    database.rollback(function () {
+                                        return res.status(407).send({
+                                            message: 'Sorry :(, we have problems sql query!',
+                                            error: error
+                                        })
+                                    })
+                                } else {
+                                    database.commit(function (errcommit) {
+                                        if (errcommit) {
+                                            database.rollback(function () {
+                                                return res.status(407).send({
+                                                    message: 'data gagal disimpan!'
+                                                })
+                                            })
+                                        } else {
+                                            return res.status(200).send({
+                                                message: 'Data berhasil disimpan!'
+                                            })
+                                        }
+                                    })
+                                }
+                            })
+                        })
+                    }
+                })
+            } else {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
+                })
+            }
+        })
+    } catch (error) {
+        return res.status(403).send({
+            message: "Forbidden.",
+            error: error
+        })
+    }
+}
+
+
+/**
+ * @swagger
+ * /checkout/:idcheckout:
+ *  delete:
+ *      summary: Menghapus data Checkout barang
+ *      tags: [Checkout]
+ *      consumes:
+ *          - application/json
+ *      parameters:
+ *          - in: body
+ *            name: parameter yang dikirim
+ *            schema:
+ *              properties:
+ *                  idcheckout: 
  *                      type: int
  *      responses:
  *          200:
@@ -302,124 +360,24 @@ async function addPenyelesaian(req, res) {
  *              description: kesalahan pada query sql
  */
 
-async function editPenyelesaian(req, res) {
-    var idpenyelesaian = req.params.idpenyelesaian
-    var tanggal = req.body.tanggal
-    var keterangan = req.body.keterangan
-    var idmasalah = req.body.idmasalah
-    const token = req.headers.authorization.split(' ')[1]
-    if (Object.keys(req.body).length != 3) {
-        return res.status(405).send({
-            message: 'parameter tidak sesuai!'
-        })
-    } else {
-        try {
-            jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-                if (jwtresult) {
-
-                    pool.getConnection(function (error, database) {
-                        if (error) {
-                            return res.status(400).send({
-                                message: "Soory, Pool Refushed",
-                                data: error
-                            })
-                        } else {
-                            database.beginTransaction(function (error) {
-                                let datapenyelesaian = {
-                                    tanggal: tanggal,
-                                    keterangan: keterangan,
-                                    idmasalah: idmasalah
-                                }
-                                var sqlquery = "UPDATE penyelesaian SET ? WHERE idpenyelesaian = ?"
-                                database.query(sqlquery, [datapenyelesaian, idpenyelesaian], (error, result) => {
-                                    if (error) {
-                                        database.rollback(function () {
-                                            database.release()
-                                            return res.status(407).send({
-                                                message: 'Sorry :(, we have problems sql query!',
-                                                error: error
-                                            })
-                                        })
-                                    } else {
-                                        database.commit(function (errcommit) {
-                                            if (errcommit) {
-                                                database.rollback(function () {
-                                                    database.release()
-                                                    return res.status(407).send({
-                                                        message: 'data gagal disimpan!'
-                                                    })
-                                                })
-                                            } else {
-                                                database.release()
-                                                return res.status(201).send({
-                                                    message: 'Data berhasil disimpan!'
-                                                })
-                                            }
-                                        })
-                                    }
-                                })
-                            })
-                        }
-                    })
-                } else {
-                    return res.status(401).send({
-                        message: "Sorry, Token tidak valid!",
-                        data: jwterror
-                    })
-                }
-            })
-        } catch (error) {
-            return res.status(403).send({
-                message: "Forbidden.",
-                error: error
-            })
-        }
-    }
-}
-
-/**
- * @swagger
- * /penyelesaian/:idpenyelesaian:
- *  delete:
- *      summary: Menghapus data Penyelesaian
- *      tags: [Penyelesaian]
- *      consumes:
- *          - application/json
- *      responses:
- *          200:
- *              description: jika data berhasil di fetch
- *          204:
- *              description: jika data yang dicari tidak ada
- *          400:
- *              description: kendala koneksi pool database
- *          401:
- *              description: token tidak valid
- *          405:
- *              description: parameter yang dikirim tidak sesuai
- *          407:
- *              description: gagal generate encrypt password 
- *          500:
- *              description: kesalahan pada query sql
- */
-
- async function deletePenyelesaian(req, res) {
-    var idpenyelesaian = req.params.idpenyelesaian
+async function deleteCheckout(req, res) {
+    var idcheckout = req.params.idcheckout
     const token = req.headers.authorization
     try {
         jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwtresult) {
-                
+
                 pool.getConnection(function (error, database) {
                     if (error) {
                         return res.status(400).send({
-                            message: "Soory, Pool Refushed",
+                            message: "Sorry, Pool Refushed",
                             data: error
                         })
                     } else {
                         database.beginTransaction(function (error) {
-                            
-                            var sqlquery = "DELETE FROM penyelesaian WHERE idpenyelesaian = ?"
-                            database.query(sqlquery, [idpenyelesaian], (error, result) => {
+
+                            var sqlquery = "DELETE FROM checkout WHERE idcheckout = ?"
+                            database.query(sqlquery, [idcheckout], (error, result) => {
                                 if (error) {
                                     database.rollback(function () {
                                         database.release()
@@ -461,12 +419,9 @@ async function editPenyelesaian(req, res) {
             message: "Forbidden.",
             error: error
         })
-    }}
+    }
+}
 
 module.exports = {
-    getPenyelesaian,
-    getPenyelesaianByMasalah,
-    addPenyelesaian,
-    editPenyelesaian, 
-    deletePenyelesaian
+    getCheckout, addCheckout, editCheckout, deleteCheckout
 }
