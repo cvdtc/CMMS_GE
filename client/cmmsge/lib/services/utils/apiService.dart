@@ -129,6 +129,43 @@ class ApiService {
     }
   }
 
+  // ! Add Data MESIN
+  Future<bool> addMesin(String token, MesinModel data) async {
+    var url = Uri.parse(BaseUrl + 'mesin');
+    var response = await client.post(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: mesinToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    print("ADD MESIN? " + response.body);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // ! Edit Data MESIN
+  Future<bool> editMesin(String token, MesinModel data, String idmesin) async {
+    var url = Uri.parse(BaseUrl + 'mesin/' + idmesin);
+    var response = await client.put(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: mesinToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   /**
    * ! TIMELINE
    * ++ LIST SITE

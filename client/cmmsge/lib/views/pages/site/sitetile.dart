@@ -1,22 +1,29 @@
 import 'package:cmmsge/services/models/site/siteModel.dart';
+import 'package:cmmsge/views/pages/mesin/bottommesin.dart';
 import 'package:flutter/material.dart';
 
 import 'bottommodalsite.dart';
 
 class SiteTile extends StatelessWidget {
   late final SiteModel site;
-  final String token;
-  SiteTile({required this.site, required this.token});
+  final String token, tipetransaksi;
+  SiteTile(
+      {required this.site, required this.token, required this.tipetransaksi});
   @override
   Widget build(BuildContext context) {
     return Padding(
         padding: const EdgeInsets.all(5.0),
         child: Card(
-            elevation: 0.0,
+            elevation: 4.0,
             child: InkWell(
               onTap: () {
-                BottomSite().modalActionItem(context, token, site.nama,
-                    site.keterangan, site.idsite.toString());
+                if (tipetransaksi == 'addmesin') {
+                  BottomMesin().modalAddMesin(context, token, 'tambah', '', '',
+                      '', site.idsite.toString(), site.nama);
+                } else {
+                  BottomSite().modalActionItem(context, token, site.nama,
+                      site.keterangan, site.idsite.toString());
+                }
               },
               child: Padding(
                 padding:

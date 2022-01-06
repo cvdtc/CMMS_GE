@@ -160,8 +160,12 @@ class _LoginPageState extends State<LoginPage> {
           _isLoading = false;
         });
         if (isSuccess) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => BottomNavigation()));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BottomNavigation(
+                        numberOfPage: 0,
+                      )));
         } else {
           ReusableClasses().modalbottomWarning(
               context,

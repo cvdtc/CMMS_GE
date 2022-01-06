@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BottomNavigation extends StatefulWidget {
+  int numberOfPage;
+  BottomNavigation({required this.numberOfPage});
   @override
   _BottomNavigationState createState() => _BottomNavigationState();
 }
@@ -24,12 +26,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
     });
   }
 
-  @override
-  void initState() {
-    cekToken();
-    super.initState();
-  }
-
   // ! Initialize Variable
   // * please all variable drop here!
   // * and make sure variable have value don't let variable null
@@ -41,6 +37,13 @@ class _BottomNavigationState extends State<BottomNavigation> {
     MenuPage(),
     AkunPage()
   ];
+
+  @override
+  void initState() {
+    _currentTab = widget.numberOfPage;
+    cekToken();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

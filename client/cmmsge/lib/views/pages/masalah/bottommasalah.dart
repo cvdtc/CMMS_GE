@@ -6,6 +6,7 @@ import 'package:cmmsge/views/pages/barang/barangwithsearch.dart';
 import 'package:cmmsge/views/pages/checkout/bottomcheckout.dart';
 import 'package:cmmsge/views/pages/progress/bottomprogress.dart';
 import 'package:cmmsge/views/pages/timeline/timelinepage.dart';
+import 'package:cmmsge/views/utils/bottomnavigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -297,6 +298,7 @@ class BottomMasalah {
                                   idmasalah,
                                   idpenyelesaian,
                                   _kategoriValue.toString());
+                              // Navigator.of(context).pop();
                             }
                           : null,
                       style: ElevatedButton.styleFrom(
@@ -492,6 +494,7 @@ class BottomMasalah {
                   status == 1
                       ? ElevatedButton(
                           onPressed: () {
+                            // Navigator.of(context).pop();
                             BottomCheckout().modalKonfirmasi(context, token,
                                 'hapus', '', 'x', 'x', '', idpenyelesaian);
                             // _modalKonfirmasi(context, token, 'hapus',
@@ -670,7 +673,7 @@ class BottomMasalah {
                                       idpenyelesaian,
                                       kategori);
                                   buttonSimpanHandler = false;
-                                  Navigator.of(context).pop();
+                                  // Navigator.of(context).pop();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     side: BorderSide(
@@ -726,6 +729,14 @@ class BottomMasalah {
         jenis_masalah: kategori);
     if (tipe == 'tambah') {
       _apiService.addMasalah(token, addData).then((isSuccess) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => BottomNavigation(
+                    numberOfPage: 2,
+                  )),
+          (Route<dynamic> route) => false,
+        );
         if (isSuccess) {
           _tecMasalah.clear();
           _tecTanggal.clear();
@@ -742,6 +753,14 @@ class BottomMasalah {
       });
     } else if (tipe == 'ubah') {
       _apiService.editMasalah(token, addData, idmasalah).then((isSuccess) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => BottomNavigation(
+                    numberOfPage: 2,
+                  )),
+          (Route<dynamic> route) => false,
+        );
         if (isSuccess) {
           _tecMasalah.clear();
           _tecTanggal.clear();

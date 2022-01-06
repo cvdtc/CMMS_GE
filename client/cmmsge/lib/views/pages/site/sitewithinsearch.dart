@@ -1,23 +1,28 @@
 import 'package:cmmsge/services/models/site/siteModel.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/mesin/bottommesin.dart';
 import 'package:cmmsge/views/pages/site/networksite.dart';
 import 'package:cmmsge/views/pages/site/sitetile.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'bottommodalsite.dart';
 
 class SiteSearchPage extends StatefulWidget {
+  String tipetransaksi;
+  SiteSearchPage({required this.tipetransaksi});
   @override
   _SiteSearchPageState createState() => _SiteSearchPageState();
 }
 
 class _SiteSearchPageState extends State<SiteSearchPage> {
   late SharedPreferences sp;
-  String? token = "", username = "", jabatan = "";
+  String? token = "", tipetransaksi = "menu";
   List<SiteModel> _sites = <SiteModel>[];
   List<SiteModel> _sitesDisplay = <SiteModel>[];
+  TextEditingController _textSearch = TextEditingController(text: "");
 
   bool _isLoading = true;
 
@@ -26,8 +31,6 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
     sp = await SharedPreferences.getInstance();
     setState(() {
       token = sp.getString("access_token");
-      username = sp.getString("username");
-      jabatan = sp.getString("jabatan");
     });
     fetchSite(token!).then((value) {
       setState(() {
@@ -38,8 +41,18 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
     });
   }
 
+  Future refreshData() async {
+    _sitesDisplay.clear();
+    _textSearch.clear();
+    Fluttertoast.showToast(msg: 'Data sedang diperbarui, tunggu sebentar...');
+    setState(() {
+      cekToken();
+    });
+  }
+
   @override
   initState() {
+    tipetransaksi = widget.tipetransaksi;
     cekToken();
     super.initState();
   }
@@ -48,7 +61,8 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text('Daftar Site'),
+          title:
+              Text(tipetransaksi == 'addmesin' ? 'Pilih Site' : 'Daftar Site'),
           centerTitle: true,
           backgroundColor: thirdcolor,
           actions: <Widget>[
@@ -63,38 +77,45 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
               ),
             )
           ]),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          BottomSite().modalAddSite(context, 'tambah', token!, '', '', '');
-          // _modalAddSite(context, 'tambah');
-        },
-        label: Text(
-          'Tambah Site',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: secondcolor,
-        icon: Icon(
-          Icons.cabin_outlined,
-          color: Colors.white,
-        ),
-      ),
-      body: SafeArea(
-        child: Container(
-          child: ListView.builder(
-            itemBuilder: (context, index) {
-              if (!_isLoading) {
-                return index == 0
-                    ? _searchBar()
-                    : SiteTile(
-                        site: this._sitesDisplay[index - 1],
-                        token: token!,
-                      );
-                // : SiteTile(site: this._sitesDisplay[index - 1]);
-              } else {
-                return LoadingView();
-              }
-            },
-            itemCount: _sitesDisplay.length + 1,
+      floatingActionButton:
+
+          /// filter jika tipe transaksi adalah add mesin maka tidak perlu ditampilkan floating button add site
+          tipetransaksi == 'addmesin'
+              ? null
+              : FloatingActionButton(
+                  onPressed: () {
+                    BottomSite()
+                        .modalAddSite(context, 'tambah', token!, '', '', '');
+
+                    // _modalAddSite(context, 'tambah');
+                  },
+                  backgroundColor: secondcolor,
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                ),
+      body: RefreshIndicator(
+        onRefresh: refreshData,
+        child: SafeArea(
+          child: Container(
+            child: ListView.builder(
+              itemBuilder: (context, index) {
+                if (!_isLoading) {
+                  return index == 0
+                      ? _searchBar()
+                      : SiteTile(
+                          site: this._sitesDisplay[index - 1],
+                          token: token!,
+                          tipetransaksi: tipetransaksi!,
+                        );
+                  // : SiteTile(site: this._sitesDisplay[index - 1]);
+                } else {
+                  return LoadingView();
+                }
+              },
+              itemCount: _sitesDisplay.length + 1,
+            ),
           ),
         ),
       ),
@@ -105,6 +126,7 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
     return Padding(
       padding: EdgeInsets.all(12.0),
       child: TextField(
+        controller: _textSearch,
         autofocus: false,
         onChanged: (searchText) {
           searchText = searchText.toLowerCase();

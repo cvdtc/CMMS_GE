@@ -1,5 +1,6 @@
 import 'package:cmmsge/services/models/mesin/mesinModel.dart';
 import 'package:cmmsge/views/pages/masalah/bottommasalah.dart';
+import 'package:cmmsge/views/pages/mesin/bottommesin.dart';
 import 'package:flutter/material.dart';
 
 class MesinTile extends StatelessWidget {
@@ -31,6 +32,16 @@ class MesinTile extends StatelessWidget {
                     '',
                     '',
                     0);
+              } else {
+                BottomMesin().modalAddMesin(
+                    context,
+                    token,
+                    'ubah',
+                    mesin.idmesin.toString(),
+                    mesin.nomesin.toString(),
+                    mesin.keterangan,
+                    mesin.idsite.toString(),
+                    mesin.site);
               }
               // BottomSite().modalActionItem(context, token, site.nama,
               //     site.keterangan, site.idsite.toString());

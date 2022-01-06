@@ -10,7 +10,7 @@ class BottomKomponen {
   TextEditingController _tecJumlah = TextEditingController(text: "");
 
   // ++ BOTTOM MODAL INPUT FORM
-  void modalAddSite(
+  void modalAddKomponen(
       context, String tipe, String token, String idkomponen, String idmesin) {
     showModalBottomSheet(
         context: context,
@@ -40,8 +40,8 @@ class BottomKomponen {
                       textCapitalization: TextCapitalization.characters,
                       decoration: InputDecoration(
                           icon: Icon(Icons.cabin_rounded),
-                          labelText: 'Nama Site',
-                          hintText: 'Masukkan Nama Site',
+                          labelText: 'Nama Komponen',
+                          hintText: 'Masukkan Nama Komponen',
                           suffixIcon:
                               Icon(Icons.check_circle_outline_outlined))),
                   SizedBox(
@@ -134,7 +134,7 @@ class BottomKomponen {
                       height: 20,
                     ),
                     tipe == 'hapus'
-                        ? Text('Apakah anda yakin akan menghapus site ' +
+                        ? Text('Apakah anda yakin akan menghapus komponen ' +
                             nama +
                             '?')
                         : Text('Apakah data yang anda masukkan sudah sesuai.?',
@@ -332,7 +332,7 @@ class BottomKomponen {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        modalAddSite(
+                        modalAddKomponen(
                             context, 'ubah', token, idkomponen, idmesin);
                       },
                       style: ElevatedButton.styleFrom(

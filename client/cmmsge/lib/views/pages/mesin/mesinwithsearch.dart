@@ -2,6 +2,7 @@ import 'package:cmmsge/services/models/mesin/mesinModel.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/mesin/networkmesin.dart';
+import 'package:cmmsge/views/pages/site/sitewithinsearch.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -85,8 +86,12 @@ class MesinSearchPageState extends State<MesinSearchPage> {
           ? null
           : FloatingActionButton(
               onPressed: () {
-                // Bott().modalAddSite(context, 'tambah', token!, '', '', '');
-                // _modalAddSite(context, 'tambah');
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SiteSearchPage(
+                              tipetransaksi: 'addmesin',
+                            )));
               },
               backgroundColor: secondcolor,
               child: Icon(

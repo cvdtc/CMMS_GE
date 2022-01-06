@@ -2,13 +2,16 @@ import 'package:cmmsge/services/models/site/siteModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/utils/bottomnavigation.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class BottomSite {
   ApiService _apiService = new ApiService();
   TextEditingController _tecNama = TextEditingController(text: "");
   TextEditingController _tecKeterangan = TextEditingController(text: "");
   String _dropdownValue = "";
+  bool buttonSimpanHandler = true;
 
   // ++ BOTTOM MODAL INPUT FORM
   void modalAddSite(context, String tipe, String token, String nama,
@@ -69,20 +72,26 @@ class BottomSite {
                           suffixIcon:
                               Icon(Icons.check_circle_outline_outlined))),
                   SizedBox(
-                    height: 15.0,
+                    height: 25.0,
                   ),
                   ElevatedButton(
-                      onPressed: () {
-                        _modalKonfirmasi(
-                            context,
-                            token,
-                            tipe,
-                            tipe == 'ubah' ? idsite.toString() : '0',
-                            _tecNama.text.toString(),
-                            _tecKeterangan.text.toString());
-                      },
+                      onPressed: buttonSimpanHandler
+                          ? () {
+                              // Navigator.pop(context);
+                              _modalKonfirmasi(
+                                  context,
+                                  token,
+                                  tipe,
+                                  tipe == 'ubah' ? idsite.toString() : '0',
+                                  _tecNama.text.toString(),
+                                  _tecKeterangan.text.toString());
+                            }
+                          : null,
                       style: ElevatedButton.styleFrom(
-                          elevation: 0.0, primary: Colors.white),
+                          elevation: 0.0,
+                          onSurface: thirdcolor,
+                          primary: thirdcolor,
+                          shadowColor: thirdcolor),
                       child: Ink(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(18.0)),
@@ -92,7 +101,7 @@ class BottomSite {
                             alignment: Alignment.center,
                             child: Text('S I M P A N',
                                 style: TextStyle(
-                                  color: primarycolor,
+                                  color: Colors.white,
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
                                 )),
@@ -108,7 +117,7 @@ class BottomSite {
   void _modalKonfirmasi(context, String token, String tipe, String idsite,
       String nama, String keterangan) {
     if (nama == "" || keterangan == "") {
-      _modalbottomSite(
+      ReusableClasses().modalbottomWarning(
           context,
           "Tidak Valid!",
           "Pastikan semua kolom terisi dengan benar",
@@ -159,47 +168,59 @@ class BottomSite {
                       children: [
                         ElevatedButton(
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              buttonSimpanHandler = true;
+                              Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(
-                              elevation: 0.0,
-                              primary: Colors.red,
-                            ),
+                                side: BorderSide(width: 2, color: Colors.red),
+                                elevation: 0.0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                                primary: Colors.white),
                             child: Ink(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(18)),
-                              child: Container(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Batal",
-                                ),
-                              ),
-                            )),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(18)),
+                                child: Container(
+                                  width: 125,
+                                  height: 45,
+                                  alignment: Alignment.center,
+                                  child: Text('B A T A L',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                      )),
+                                ))),
                         SizedBox(
-                          width: 55,
+                          width: 10,
                         ),
                         ElevatedButton(
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              // Navigator.of(context).pop();
                               _actiontoapi(context, token, tipe, idsite, nama,
                                   keterangan);
-                              Navigator.of(context).pop();
+                              buttonSimpanHandler = false;
                             },
                             style: ElevatedButton.styleFrom(
-                              elevation: 0.0,
-                              primary: Colors.white,
-                            ),
+                                side: BorderSide(width: 2, color: Colors.green),
+                                elevation: 0.0,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                                primary: Colors.white),
                             child: Ink(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(18)),
-                              child: Container(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Submit",
-                                  style: TextStyle(color: primarycolor),
-                                ),
-                              ),
-                            )),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(18)),
+                                child: Container(
+                                  width: 125,
+                                  height: 45,
+                                  alignment: Alignment.center,
+                                  child: Text('SUDAH SESUAI',
+                                      style: TextStyle(
+                                        color: Colors.green,
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                      )),
+                                ))),
                       ],
                     ),
                   ],
@@ -214,7 +235,7 @@ class BottomSite {
   void _actiontoapi(context, String token, String tipe, String idsite,
       String nama, String keterangan) {
     if (nama == "" || keterangan == "") {
-      _modalbottomSite(
+      ReusableClasses().modalbottomWarning(
           context,
           "Tidak Valid!",
           "Pastikan semua kolom terisi dengan benar",
@@ -225,17 +246,23 @@ class BottomSite {
       if (tipe == 'tambah') {
         _apiService.addRumah(token, data).then((isSuccess) {
           if (isSuccess) {
-            Navigator.of(context).pop();
+            // Navigator.of(context, rootNavigator: true).pop(context);
             _tecNama.clear();
             _tecKeterangan.clear();
-            _modalbottomSite(
-                context,
-                "Berhasil!",
-                "${_apiService.responseCode.messageApi}",
-                "f200",
-                "assets/images/congratulations.png");
+            Fluttertoast.showToast(
+                msg: '${_apiService.responseCode.messageApi}',
+                backgroundColor: Colors.green);
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BottomNavigation(
+                        numberOfPage: 2,
+                      )),
+              (Route<dynamic> route) => false,
+            );
+            buttonSimpanHandler = true;
           } else {
-            _modalbottomSite(
+            ReusableClasses().modalbottomWarning(
                 context,
                 "Gagal!",
                 "${_apiService.responseCode.messageApi}",
@@ -247,17 +274,22 @@ class BottomSite {
       } else if (tipe == 'ubah') {
         _apiService.ubahSite(token, idsite, data).then((isSuccess) {
           if (isSuccess) {
-            Navigator.of(context).pop();
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BottomNavigation(
+                        numberOfPage: 2,
+                      )),
+              (Route<dynamic> route) => false,
+            );
             _tecNama.clear();
             _tecKeterangan.clear();
-            _modalbottomSite(
-                context,
-                "Berhasil!",
-                "${_apiService.responseCode.messageApi}",
-                "f200",
-                "assets/images/congratulations.png");
+            Fluttertoast.showToast(
+                msg: '${_apiService.responseCode.messageApi}',
+                backgroundColor: Colors.green);
+            buttonSimpanHandler = true;
           } else {
-            _modalbottomSite(
+            ReusableClasses().modalbottomWarning(
                 context,
                 "Gagal!",
                 "${_apiService.responseCode.messageApi}",
@@ -269,14 +301,20 @@ class BottomSite {
       } else if (tipe == 'hapus') {
         _apiService.hapusSite(token, idsite).then((isSuccess) {
           if (isSuccess) {
-            _modalbottomSite(
-                context,
-                "Berhasil!",
-                "${_apiService.responseCode.messageApi}",
-                "f200",
-                "assets/images/congratulations.png");
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BottomNavigation(
+                        numberOfPage: 2,
+                      )),
+              (Route<dynamic> route) => false,
+            );
+            Fluttertoast.showToast(
+                msg: '${_apiService.responseCode.messageApi}',
+                backgroundColor: Colors.green);
+            buttonSimpanHandler = true;
           } else {
-            _modalbottomSite(
+            ReusableClasses().modalbottomWarning(
                 context,
                 "Gagal!",
                 "${_apiService.responseCode.messageApi}",
@@ -286,8 +324,8 @@ class BottomSite {
           return;
         });
       } else {
-        _modalbottomSite(context, "Tidak Valid!", "Action anda tidak sesuai",
-            'f404', 'assets/images/sorry.png');
+        ReusableClasses().modalbottomWarning(context, "Tidak Valid!",
+            "Action anda tidak sesuai", 'f404', 'assets/images/sorry.png');
       }
     }
   }
@@ -336,7 +374,7 @@ class BottomSite {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        // Navigator.of(context).pop();
                         modalAddSite(
                             context, 'ubah', token, nama, keterangan, idsite);
                       },
@@ -365,7 +403,7 @@ class BottomSite {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        // Navigator.of(context).pop();
                         _modalKonfirmasi(context, token, 'hapus',
                             idsite.toString(), nama, '-');
                       },
@@ -391,58 +429,6 @@ class BottomSite {
                           ))),
                 ],
               ),
-            ),
-          );
-        });
-  }
-
-  _modalbottomSite(context, String title, String message, String kode,
-      String imagelocation) {
-    dynamic navigation;
-    showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(15.0),
-                topRight: Radius.circular(15.0))),
-        builder: (BuildContext context) {
-          return Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      title.toUpperCase(),
-                      style: TextStyle(
-                          fontSize: 22.0, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      "[ " + kode.toUpperCase() + " ]",
-                      style: TextStyle(fontSize: 11.0),
-                    )
-                  ],
-                ),
-                SizedBox(height: 10.0),
-                Image.asset(
-                  imagelocation,
-                  height: 150,
-                  width: 250,
-                ),
-                SizedBox(height: 10.0),
-                Text(
-                  message.toString(),
-                  style: TextStyle(fontSize: 16.0),
-                ),
-                SizedBox(
-                  height: 10.0,
-                )
-              ],
             ),
           );
         });

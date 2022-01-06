@@ -16,12 +16,7 @@ class MesinModel {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      "idmesin": idmesin,
-      "nomesin": nomesin,
-      "keterangan": keterangan,
-      "idsite": idsite
-    };
+    return {"nomesin": nomesin, "keterangan": keterangan, "idsite": idsite};
   }
 
   @override

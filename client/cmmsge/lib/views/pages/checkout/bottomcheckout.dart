@@ -1,12 +1,9 @@
-import 'package:cmmsge/services/models/checkout/checkoutModel.dart';
 import 'package:cmmsge/services/models/penyelesaian/penyelesaianModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
-import 'package:cmmsge/views/pages/checkout/checkoutwithsearch.dart';
 import 'package:cmmsge/views/utils/bottomnavigation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
@@ -133,6 +130,7 @@ class BottomCheckout {
                   ElevatedButton(
                       onPressed: buttonSimpanHandler
                           ? () {
+                              Navigator.of(context).pop();
                               modalKonfirmasi(
                                   context,
                                   token,
@@ -228,7 +226,7 @@ class BottomCheckout {
                             ElevatedButton(
                                 onPressed: () {
                                   buttonSimpanHandler = true;
-                                  Navigator.pop(context);
+                                  Navigator.of(context).pop();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     side:
@@ -257,6 +255,7 @@ class BottomCheckout {
                             ),
                             ElevatedButton(
                                 onPressed: () {
+                                  Navigator.of(context).pop();
                                   _actionToApi(
                                       context,
                                       token,
@@ -267,7 +266,6 @@ class BottomCheckout {
                                       masalah,
                                       idpenyelesaian);
                                   buttonSimpanHandler = false;
-                                  Navigator.of(context).pop();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     side: BorderSide(
@@ -316,7 +314,10 @@ class BottomCheckout {
         if (isSuccess) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => BottomNavigation()),
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(
+                      numberOfPage: 2,
+                    )),
             (Route<dynamic> route) => false,
           );
           _tecTanggal.clear();
@@ -335,7 +336,10 @@ class BottomCheckout {
         if (isSuccess) {
           Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => BottomNavigation()),
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(
+                      numberOfPage: 2,
+                    )),
             (Route<dynamic> route) => false,
           );
           Fluttertoast.showToast(

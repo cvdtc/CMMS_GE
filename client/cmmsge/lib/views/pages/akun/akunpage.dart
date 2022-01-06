@@ -60,7 +60,7 @@ class _AkunPageState extends State<AkunPage> {
             ],
           ),
           _option(),
-          Text('v.1.0.4 debuging')
+          Text('v.1.0.5 Debuging')
         ],
       ),
     ));

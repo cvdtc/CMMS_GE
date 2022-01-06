@@ -66,41 +66,42 @@ class _MenuPageState extends State<MenuPage> {
           Divider(
             height: 5,
           ),
-          Container(
-            padding: EdgeInsets.only(
-                left: 1 - .0, right: 1 - .0, top: 5.0, bottom: 5.0),
-            alignment: Alignment.center,
-            width: double.infinity,
-            child: ListTile(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => KomponenPageSearch()));
-              },
-              title: (Text(
-                'Komponen',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue),
-              )),
-              leading: CircleAvatar(
-                  backgroundColor: Colors.blue,
-                  child: Icon(
-                    Icons.account_tree_rounded,
-                    color: Colors.white,
-                    size: 22,
-                  )),
-              trailing: Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: Colors.blue,
-              ),
-            ),
-          ),
-          Divider(
-            height: 5,
-          ),
+          // ! Menu Komponen ditutup karena tidak dipakai
+          // Container(
+          //   padding: EdgeInsets.only(
+          //       left: 1 - .0, right: 1 - .0, top: 5.0, bottom: 5.0),
+          //   alignment: Alignment.center,
+          //   width: double.infinity,
+          //   child: ListTile(
+          //     onTap: () {
+          //       Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //               builder: (context) => KomponenPageSearch()));
+          //     },
+          //     title: (Text(
+          //       'Komponen',
+          //       style: TextStyle(
+          //           fontSize: 18,
+          //           fontWeight: FontWeight.bold,
+          //           color: Colors.blue),
+          //     )),
+          //     leading: CircleAvatar(
+          //         backgroundColor: Colors.blue,
+          //         child: Icon(
+          //           Icons.account_tree_rounded,
+          //           color: Colors.white,
+          //           size: 22,
+          //         )),
+          //     trailing: Icon(
+          //       Icons.arrow_forward_ios_rounded,
+          //       color: Colors.blue,
+          //     ),
+          //   ),
+          // ),
+          // Divider(
+          //   height: 5,
+          // ),
           Container(
             padding: EdgeInsets.only(
                 left: 1 - .0, right: 1 - .0, top: 5.0, bottom: 5.0),
@@ -146,8 +147,12 @@ class _MenuPageState extends State<MenuPage> {
             width: double.infinity,
             child: ListTile(
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SiteSearchPage()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SiteSearchPage(
+                              tipetransaksi: 'menu',
+                            )));
               },
               title: (Text(
                 'Site',
