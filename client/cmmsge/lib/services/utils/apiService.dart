@@ -370,6 +370,7 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: penyelesaianToJson(data));
+    print(response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 201) {

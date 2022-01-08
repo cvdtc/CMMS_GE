@@ -25,7 +25,7 @@ var nows = {
 
 /**
  * @swagger
- * /masalah:
+ * /masalah/:flag_activity:
  *  get:
  *      summary: api untuk load data masalah
  *      tags: [Masalah]
@@ -42,10 +42,9 @@ var nows = {
  *              description: kesalahan pada query sql
  */
 
-
-
 function getMasalah(req, res) {
     const token = req.headers.authorization.split(' ')[1]
+    var flag_activity = req.params.flag_activity
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwtresult) {
@@ -56,8 +55,8 @@ function getMasalah(req, res) {
                             data: error
                         })
                     } else {
-                        var sqlquery = `SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as status, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite ORDER BY m.tanggal DESC`
-                        database.query(sqlquery, (error, rows) => {
+                        var sqlquery = `SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as status, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite WHERE m.flag_activity=? ORDER BY m.tanggal DESC;`
+                        database.query(sqlquery, flag_activity, (error, rows) => {
                             database.release()
                             if (error) {
                                 return res.status(500).send({
@@ -193,6 +192,8 @@ async function getMasalahByMesin(req, res) {
  *                      type: int
  *                  jenis_masalah:
  *                      type: string
+ *                  flag_activity:
+ *                      type: int
  *      responses:
  *          201:
  *              description: jika data berhasil di fetch
@@ -217,6 +218,7 @@ async function addMasalah(req, res) {
     var idmesin = req.body.idmesin
     var shift = req.body.shift
     var jenis_masalah = req.body.jenis_masalah
+    var flag_activity = req.body.flag_activity
     const token = req.headers.authorization
     console.log('Mencoba insert...')
     try {
@@ -238,6 +240,7 @@ async function addMasalah(req, res) {
                                 idmesin: idmesin,
                                 shift: shift,
                                 jenis_masalah: jenis_masalah,
+                                flag_activity: flag_activity,
                                 created: nows,
                                 idpengguna: jwtresult.idpengguna
                             }
@@ -361,6 +364,7 @@ async function editMasalah(req, res) {
     var jam = req.body.jam
     var idmesin = req.body.idmesin
     var shift = req.body.shift
+    var flag_activity = req.body.flag_activity
     var jenis_masalah = req.body.jenis_masalah
     const token = req.headers.authorization.split(' ')[1]
     try {
@@ -382,13 +386,13 @@ async function editMasalah(req, res) {
                                 idmesin: idmesin,
                                 shift: shift,
                                 jenis_masalah: jenis_masalah,
+                                flag_activity: flag_activity,
                                 edited: nows,
                                 idpengguna: jwtresult.idpengguna
                             }
                             var sqlquery = "UPDATE masalah SET ? WHERE idmasalah = ?"
                             database.query(sqlquery, [datamasalah, idmasalah], (error, result) => {
                                 database.release()
-                                print(result);
                                 if (error) {
                                     database.rollback(function () {
                                         return res.status(407).send({

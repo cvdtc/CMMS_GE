@@ -3,26 +3,29 @@ import 'dart:io';
 
 import 'package:cmmsge/utils/warna.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class WebviewScanResult extends StatefulWidget {
-  String urlwebview;
-  WebviewScanResult({required this.urlwebview});
+  String urlwebview, token;
+  WebviewScanResult({required this.urlwebview, required this.token});
 
   @override
   _WebviewScanResultState createState() => _WebviewScanResultState();
 }
 
 class _WebviewScanResultState extends State<WebviewScanResult> {
-  var urlweb;
+  String urlweb = "";
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
+  late SharedPreferences sp;
+  String? token = "";
+
   @override
   void initState() {
-    urlweb = widget.urlwebview;
+    urlweb = widget.urlwebview + '&&token=' + widget.token.toString();
     final _key = UniqueKey();
     print('WEBVIEW? ' + urlweb + ' ~ ' + _key.toString());
-
     // Enable hybrid composition.
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
     super.initState();

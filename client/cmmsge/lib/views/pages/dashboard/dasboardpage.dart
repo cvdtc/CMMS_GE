@@ -47,6 +47,7 @@ class _DashboardPageState extends State<DashboardPage> {
     // TODO: implement initState
     super.initState();
     cekToken();
+    print(token);
   }
 
   @override

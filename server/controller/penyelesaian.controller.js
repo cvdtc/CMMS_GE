@@ -234,15 +234,18 @@ async function addPenyelesaian(req, res) {
                                     database.commit(function (errcommit) {
                                         if (errcommit) {
                                             database.rollback(function () {
-                                                
+
                                                 return res.status(407).send({
                                                     message: 'data gagal disimpan!'
                                                 })
                                             })
                                         } else {
-                                            return res.status(201).send({
-                                                message: "Done!,  Data has been stored!2",
-                                            })
+                                            var sqlquery = 'UPDATE masalah SET flag_activity = 1 WHERE idmasalah = ?'
+                                            database.query(sqlquery, idmasalah, (error, resultupdatemasalah)=>{
+                                                return res.status(201).send({
+                                                    message: "Done!,  Data has been stored!",
+                                                })
+                                            });
                                         }
                                     })
                                 }
@@ -402,13 +405,13 @@ async function editPenyelesaian(req, res) {
  *              description: kesalahan pada query sql
  */
 
- async function deletePenyelesaian(req, res) {
+async function deletePenyelesaian(req, res) {
     var idpenyelesaian = req.params.idpenyelesaian
     const token = req.headers.authorization
     try {
         jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwtresult) {
-                
+
                 pool.getConnection(function (error, database) {
                     if (error) {
                         return res.status(400).send({
@@ -417,7 +420,7 @@ async function editPenyelesaian(req, res) {
                         })
                     } else {
                         database.beginTransaction(function (error) {
-                            
+
                             var sqlquery = "DELETE FROM penyelesaian WHERE idpenyelesaian = ?"
                             database.query(sqlquery, [idpenyelesaian], (error, result) => {
                                 if (error) {
@@ -461,12 +464,13 @@ async function editPenyelesaian(req, res) {
             message: "Forbidden.",
             error: error
         })
-    }}
+    }
+}
 
 module.exports = {
     getPenyelesaian,
     getPenyelesaianByMasalah,
     addPenyelesaian,
-    editPenyelesaian, 
+    editPenyelesaian,
     deletePenyelesaian
 }

@@ -10,15 +10,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'mesintile.dart';
 
 class MesinSearchPage extends StatefulWidget {
-  String transaksi;
-  MesinSearchPage({required this.transaksi});
+  String transaksi, flag_activity;
+  MesinSearchPage({required this.transaksi, required this.flag_activity});
   @override
   MesinSearchPageState createState() => MesinSearchPageState();
 }
 
 class MesinSearchPageState extends State<MesinSearchPage> {
   late SharedPreferences sp;
-  String? token = "", username = "", jabatan = "", transaksi = "";
+  String? token = "", transaksi = "", flag_activity = "";
   List<MesinModel> _mesin = <MesinModel>[];
   List<MesinModel> _mesinDisplay = <MesinModel>[];
 
@@ -31,8 +31,6 @@ class MesinSearchPageState extends State<MesinSearchPage> {
     sp = await SharedPreferences.getInstance();
     setState(() {
       token = sp.getString("access_token");
-      username = sp.getString("username");
-      jabatan = sp.getString("jabatan");
     });
     fetchMesin(token!, '0').then((value) {
       setState(() {
@@ -55,6 +53,7 @@ class MesinSearchPageState extends State<MesinSearchPage> {
   @override
   initState() {
     transaksi = widget.transaksi;
+    flag_activity = widget.flag_activity;
     cekToken();
     super.initState();
   }
@@ -111,7 +110,8 @@ class MesinSearchPageState extends State<MesinSearchPage> {
                       : MesinTile(
                           mesin: this._mesinDisplay[index - 1],
                           token: token!,
-                          transaksi: transaksi.toString());
+                          transaksi: transaksi.toString(),
+                          flag_activity: flag_activity!);
                   // : SiteTile(site: this._sitesDisplay[index - 1]);
                 } else {
                   return LoadingView();

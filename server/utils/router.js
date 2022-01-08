@@ -42,10 +42,12 @@ var RouteToLogin = require('../controller/login.controller')
 router.post('/login', function(req, res){
     RouteToLogin.Login(req, res)
 })
-
+router.get('/cekvalidasi/:token', function(req, res){
+    RouteToLogin.cekingToken(req, res)
+})
 //MASALAH
 var RouteToMasalah = require('../controller/masalah.controller')
-router.get('/masalah', function(req, res){
+router.get('/masalah/:flag_activity', function(req, res){
     RouteToMasalah.getMasalah(req, res)
 })
 router.get('/masalah/:idmesin', function(req, res){

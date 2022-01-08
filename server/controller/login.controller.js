@@ -58,16 +58,15 @@ async function Login(req, res) {
                                 const access_token = jwt.sign(user, process.env.ACCESS_SECRET, {
                                     expiresIn: process.env.ACCESS_EXPIRED
                                 })
-                                fs.appendFile('notificationlog.txt',  `[ ${tipe} ] `+new Date().getUTCMinutes+` [ Login ] - ${username}\n`, function (err){
-                                    if(err){
+                                fs.appendFile('notificationlog.txt', `[ ${tipe} ] ` + new Date().getUTCMinutes + ` [ Login ] - ${username}\n`, function (err) {
+                                    if (err) {
                                         console.log('gagal')
-                                    }else{
-                                        console.log('berhasil')        
+                                    } else {
+                                        console.log('berhasil')
                                     }
                                 })
-                                console.log('berhasil')      
+                                console.log('berhasil')
                                 return res.status(200).send({
-                                    
                                     message: 'Selamat, Anda Berhasil Login',
                                     data: {
                                         access_token: access_token,
@@ -88,6 +87,59 @@ async function Login(req, res) {
         }
     }
 }
+
+async function cekingToken(req, res) {
+    var token = req.params.token
+    try {
+        jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+            if (jwtresult) {
+                pool.getConnection(function (error, database) {
+                    if (error) {
+                        return res.status(400).send({
+                            message: "Pool refushed, sorry :(, try again or contact developer",
+                            data: error
+                        })
+                    } else {
+                        var sqlquery = "SELECT * FROM pengguna where idpengguna = ?"
+                        database.query(sqlquery, jwtresult.idpengguna, (error, rows) => {
+                            database.release()
+                            if (error) {
+                                return res.status(500).send({
+                                    message: "Sorry :(, my query has been error",
+                                    data: error
+                                })
+                            } else {
+                                if (rows.length <= 0) {
+                                    return res.status(204).send({
+                                        message: "Data masih kosong",
+                                        data: rows
+                                    })
+                                } else {
+                                    return res.status(200).send({
+                                        message: "Data berhasil fetch.",
+                                        data: rows
+                                    })
+                                }
+                            }
+                        })
+                    }
+                })
+            } else {
+                return res.status(401).send({
+                    message: "Sorry, Token tidak valid!",
+                    data: jwterror
+                });
+            }
+        })
+    } catch (error) {
+        res.status(403).send({
+            message: "Forbidden",
+            error: error
+        })
+    }
+}
+
 module.exports = {
-    Login
+    Login,
+    cekingToken
 }

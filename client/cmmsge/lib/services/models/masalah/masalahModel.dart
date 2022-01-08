@@ -1,20 +1,7 @@
 import 'dart:convert';
 
-// "idmasalah": 3016,
-//             "jam": "11:00:00",
-//             "tanggal": "2021-10-19T08:00:00.000Z",
-//             "masalah": "Ban Dalam + Ban Perut Sobek",
-//             "shift": 1,
-//             "idmesin": 145,
-//             "idpengguna": null,
-//             "nomesin": "L 9281 UK",
-//             "ketmesin": "Canter FE 75 SHD ( SIGK )",
-//             "site": "Otomotif",
-//             "idpenyelesaian": "3035",
-//             "status": 1
-
 class MasalahModel {
-  var idmasalah, idmesin, idpenyelesaian, status, shift;
+  var idmasalah, idmesin, idpenyelesaian, status, shift, flag_activity;
   var jam, tanggal, masalah, nomesin, ketmesin, site, created, jenis_masalah;
 
   MasalahModel(
@@ -30,7 +17,8 @@ class MasalahModel {
       this.ketmesin,
       this.site,
       this.created,
-      this.jenis_masalah});
+      this.jenis_masalah,
+      this.flag_activity});
 
   factory MasalahModel.fromJson(Map<String, dynamic> map) {
     return MasalahModel(
@@ -46,7 +34,8 @@ class MasalahModel {
         ketmesin: map['ketmesin'],
         site: map['site'],
         created: map['created'],
-        jenis_masalah: map['jenis_masalah']);
+        jenis_masalah: map['jenis_masalah'],
+        flag_activity: map['flag_activity']);
   }
 
   Map<String, dynamic> toJson() {
@@ -56,13 +45,14 @@ class MasalahModel {
       "jam": jam,
       "tanggal": tanggal,
       "masalah": masalah,
-      "jenis_masalah": jenis_masalah
+      "jenis_masalah": jenis_masalah,
+      "flag_activity": flag_activity
     };
   }
 
   @override
   String toString() {
-    return 'MasalahModel{idmesin: $idmesin,shift: $shift, jam: $jam, tanggal: $tanggal, masalah: $masalah, jenis_masalah:$jenis_masalah}';
+    return 'MasalahModel{idmesin: $idmesin,shift: $shift, jam: $jam, tanggal: $tanggal, masalah: $masalah, jenis_masalah:$jenis_masalah, flag_activity: $flag_activity}';
   }
 }
 

@@ -150,6 +150,7 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
                                 MaterialPageRoute(
                                     builder: (context) => WebviewScanResult(
                                           urlwebview: result!.code.toString(),
+                                          token: token!,
                                         )));
                           },
                           style: ElevatedButton.styleFrom(

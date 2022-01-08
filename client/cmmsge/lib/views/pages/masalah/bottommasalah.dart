@@ -47,7 +47,8 @@ class BottomMasalah {
       String idmasalah,
       String idpenyelesaian,
       String kategori,
-      int status) {
+      int status,
+      String flag_activity) {
     // * setting value text form field if action is edit
     if (tipe == 'ubah') {
       _tecMasalah.value = TextEditingValue(
@@ -91,7 +92,7 @@ class BottomMasalah {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    tipe.toUpperCase() + ' MASALAH',
+                    tipe.toUpperCase() + ' ACTIVITY',
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10.0),
@@ -130,8 +131,8 @@ class BottomMasalah {
                       controller: _tecMasalah,
                       decoration: InputDecoration(
                           icon: Icon(Icons.warning_amber_rounded),
-                          labelText: 'Deskripsi Masalah',
-                          hintText: 'Masukkan Masalah')),
+                          labelText: 'Deskripsi Activity',
+                          hintText: 'Masukkan Activity')),
                   SizedBox(
                     height: 10.0,
                   ),
@@ -297,7 +298,8 @@ class BottomMasalah {
                                   _tecShift.text.toString(),
                                   idmasalah,
                                   idpenyelesaian,
-                                  _kategoriValue.toString());
+                                  _kategoriValue.toString(),
+                                  flag_activity.toString());
                               // Navigator.of(context).pop();
                             }
                           : null,
@@ -342,7 +344,8 @@ class BottomMasalah {
       String idmasalah,
       String idpenyelesaian,
       String kategori,
-      int status) {
+      int status,
+      String flag_activity) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -403,7 +406,8 @@ class BottomMasalah {
                                 idmasalah,
                                 idpenyelesaian,
                                 kategori,
-                                status);
+                                status,
+                                flag_activity);
                           },
                           style: ElevatedButton.styleFrom(
                               side: BorderSide(width: 2, color: Colors.green),
@@ -418,7 +422,7 @@ class BottomMasalah {
                                 width: 325,
                                 height: 45,
                                 alignment: Alignment.center,
-                                child: Text('EDIT MASALAH',
+                                child: Text('EDIT ACTIVITY',
                                     style: TextStyle(
                                       color: Colors.green,
                                       fontSize: 18.0,
@@ -450,7 +454,7 @@ class BottomMasalah {
                             width: 325,
                             height: 45,
                             alignment: Alignment.center,
-                            child: Text('TIMELINE MASALAH',
+                            child: Text('TIMELINE ACTIVITY',
                                 style: TextStyle(
                                   color: Colors.blue,
                                   fontSize: 18.0,
@@ -515,7 +519,7 @@ class BottomMasalah {
                                 alignment: Alignment.center,
                                 child: Text(
                                     // ++ filter jika status sudah selesai maka text di ubah menjadi hapus penyelesaian
-                                    'HAPUS PENYELESAIAN MASALAH',
+                                    'HAPUS PENYELESAIAN ACTIVITY',
                                     style: TextStyle(
                                       color: Colors.red,
                                       fontSize: 18.0,
@@ -577,7 +581,8 @@ class BottomMasalah {
       String shift,
       String idmasalah,
       String idpenyelesaian,
-      String kategori) {
+      String kategori,
+      String flag_activity) {
     // * KONDISI UNTUK PENGECEKAN APAKAH NILAI/VALUE masalah, shift, tanggal, DAN jam SUDAH ADA VALUENYA APA BELUM
     if (masalah == "" || shift == "" || tanggal == "" || jam == "") {
       ReusableClasses().modalbottomWarning(
@@ -608,17 +613,18 @@ class BottomMasalah {
                         SizedBox(
                           height: 15,
                         ),
-                        Text('KONFIRMASI ' + tipe.toUpperCase() + ' MASALAH',
+                        Text('KONFIRMASI ' + tipe.toUpperCase() + ' ACTIVITY',
                             style: TextStyle(
                                 fontSize: 22, fontWeight: FontWeight.bold)),
                         SizedBox(
                           height: 20,
                         ),
                         tipe == 'hapus'
-                            ? Text('Apakah anda yakin akan menghapus masalah ' +
-                                masalah)
+                            ? Text(
+                                'Apakah anda yakin akan menghapus activity ' +
+                                    masalah)
                             : Text(
-                                'Apakah data yang ada masukkan sudah sesuai? note: Harap refresh kembali halaman masalah untuk melihat data terbaru.'),
+                                'Apakah data yang ada masukkan sudah sesuai? note: Harap refresh kembali halaman untuk melihat data terbaru.'),
                         SizedBox(
                           height: 25,
                         ),
@@ -671,7 +677,8 @@ class BottomMasalah {
                                       shift,
                                       idmasalah,
                                       idpenyelesaian,
-                                      kategori);
+                                      kategori,
+                                      flag_activity);
                                   buttonSimpanHandler = false;
                                   // Navigator.of(context).pop();
                                 },
@@ -719,14 +726,16 @@ class BottomMasalah {
       String shift,
       String idmasalah,
       String idpenyelesaian,
-      String kategori) {
+      String kategori,
+      String flag_activity) {
     MasalahModel addData = MasalahModel(
         masalah: masalah,
         tanggal: tanggal,
         jam: jam,
         shift: shift,
         idmesin: idmesin,
-        jenis_masalah: kategori);
+        jenis_masalah: kategori,
+        flag_activity: flag_activity);
     if (tipe == 'tambah') {
       _apiService.addMasalah(token, addData).then((isSuccess) {
         Navigator.pushAndRemoveUntil(

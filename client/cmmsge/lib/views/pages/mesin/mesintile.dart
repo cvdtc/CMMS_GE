@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 
 class MesinTile extends StatelessWidget {
   late final MesinModel mesin;
-  final String token, transaksi;
+  final String token, transaksi, flag_activity;
   MesinTile(
-      {required this.mesin, required this.token, required this.transaksi});
+      {required this.mesin,
+      required this.token,
+      required this.transaksi,
+      required this.flag_activity});
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -31,7 +34,8 @@ class MesinTile extends StatelessWidget {
                     '',
                     '',
                     '',
-                    0);
+                    0,
+                    flag_activity);
               } else {
                 BottomMesin().modalAddMesin(
                     context,

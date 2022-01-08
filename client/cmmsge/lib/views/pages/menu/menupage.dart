@@ -113,8 +113,7 @@ class _MenuPageState extends State<MenuPage> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => MesinSearchPage(
-                              transaksi: 'menu',
-                            )));
+                            transaksi: 'menu', flag_activity: '')));
               },
               title: (Text(
                 'Mesin',
@@ -136,9 +135,6 @@ class _MenuPageState extends State<MenuPage> {
                 color: Colors.green,
               ),
             ),
-          ),
-          Divider(
-            height: 5,
           ),
           Container(
             padding: EdgeInsets.only(
@@ -207,9 +203,43 @@ class _MenuPageState extends State<MenuPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => MasalahPageSearch()));
+                        builder: (context) => MasalahPageSearch(
+                              jenisActivity: 0,
+                            )));
               },
-              title: (Text('Masalah',
+              title: (Text('Pre Activity',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.blue,
+                      fontWeight: FontWeight.bold))),
+              leading: CircleAvatar(
+                  backgroundColor: Colors.blue,
+                  child: Icon(
+                    Icons.schedule_send,
+                    color: Colors.white,
+                    size: 22,
+                  )),
+              trailing: Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Colors.blue,
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(
+                left: 1 - .0, right: 1 - .0, top: 5.0, bottom: 5.0),
+            alignment: Alignment.center,
+            width: double.infinity,
+            child: ListTile(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MasalahPageSearch(
+                              jenisActivity: 1,
+                            )));
+              },
+              title: (Text('Activity',
                   style: TextStyle(
                       fontSize: 18,
                       color: Colors.orange,

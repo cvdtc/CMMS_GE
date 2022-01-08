@@ -79,7 +79,7 @@ class BottomBarang {
                   ),
                   SizedBox(height: 10.0),
                   Text(
-                    "Masalah : " + masalah,
+                    "Activity : " + masalah,
                     style: TextStyle(fontSize: 18.0),
                   ),
                   Divider(),
@@ -288,7 +288,7 @@ class BottomBarang {
                             ? Text('Apakah anda yakin akan menghapus barang ' +
                                 barang)
                             : Text(
-                                'Apakah data yang ada masukkan sudah sesuai? note: Harap refresh kembali halaman masalah untuk melihat data terbaru.'),
+                                'Apakah data yang ada masukkan sudah sesuai? note: Harap refresh kembali halaman untuk melihat data terbaru.'),
                         SizedBox(
                           height: 25,
                         ),

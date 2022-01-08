@@ -1,11 +1,9 @@
 import 'package:cmmsge/services/models/masalah/masalahModel.dart';
-import 'package:cmmsge/services/models/mesin/mesinModel.dart';
+import 'package:cmmsge/services/utils/apiService.dart';
+import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
-import 'package:cmmsge/views/pages/masalah/bottommasalah.dart';
-import 'package:cmmsge/views/pages/mesin/mesintile.dart';
 import 'package:cmmsge/views/pages/mesin/mesinwithsearch.dart';
-import 'package:cmmsge/views/pages/mesin/networkmesin.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,13 +12,18 @@ import 'masalahtile.dart';
 import 'networkmasalah.dart';
 
 class MasalahPageSearch extends StatefulWidget {
+  int jenisActivity;
+
+  /// for filtering if jenisActivity 0 = preactivity else if jenisActivity 1 = activity
+  MasalahPageSearch({required this.jenisActivity});
   @override
   _MasalahPageSearchState createState() => _MasalahPageSearchState();
 }
 
 class _MasalahPageSearchState extends State<MasalahPageSearch> {
   late SharedPreferences sp;
-  String? token = "", username = "", jabatan = "";
+  ApiService _apiService = new ApiService();
+  String? token = "", flag_activity = "";
   List<MasalahModel> _masalah = <MasalahModel>[];
   List<MasalahModel> _masalahDisplay = <MasalahModel>[];
 
@@ -29,34 +32,37 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
   bool _isLoading = true;
 
   // * ceking token and getting dashboard value from Shared Preferences
-  cekToken() async {
+  cekToken(flag_activity) async {
     sp = await SharedPreferences.getInstance();
     setState(() {
       token = sp.getString("access_token");
-      username = sp.getString("username");
-      jabatan = sp.getString("jabatan");
     });
-    fetchMasalah(token!, 'all').then((value) {
+    fetchMasalah(token!, flag_activity).then((value) {
       setState(() {
         _isLoading = false;
         _masalah.addAll(value);
         _masalahDisplay = _masalah;
       });
+    }).onError((error, stackTrace) {
+      ReusableClasses().modalbottomWarning(context, error.toString(),
+          'Data masih Kosong', 'f204', 'assets/images/sorry.png');
     });
   }
 
   Future refreshData() async {
     _masalahDisplay.clear();
     _textSearch.clear();
+    flag_activity = widget.jenisActivity.toString();
     Fluttertoast.showToast(msg: 'Data sedang diperbarui, tunggu sebentar...');
     setState(() {
-      cekToken();
+      cekToken(flag_activity);
     });
   }
 
   @override
   initState() {
-    cekToken();
+    flag_activity = widget.jenisActivity.toString();
+    cekToken(flag_activity);
     super.initState();
   }
 
@@ -64,7 +70,8 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Daftar Masalah'),
+        title: Text(
+            flag_activity == '0' ? 'Daftar Pre Activity' : 'Daftar Activity'),
         centerTitle: true,
         backgroundColor: thirdcolor,
         actions: <Widget>[
@@ -88,8 +95,7 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
               context,
               MaterialPageRoute(
                   builder: (context) => MesinSearchPage(
-                        transaksi: 'masalah',
-                      )));
+                      transaksi: 'masalah', flag_activity: flag_activity!)));
           // BottomMasalah().modalAddMasalah(
           //     context, 'tambah', token!, "", "", "", "", "", "", "");
         },
@@ -147,7 +153,7 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
           fillColor: thirdcolor,
           border: OutlineInputBorder(),
           prefixIcon: Icon(Icons.search),
-          hintText: 'Cari Masalah',
+          hintText: 'Cari Activity',
         ),
       ),
     );

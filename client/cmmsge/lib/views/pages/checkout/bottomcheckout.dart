@@ -60,7 +60,7 @@ class BottomCheckout {
                   ),
                   SizedBox(height: 10.0),
                   Text(
-                    "Masalah : " + masalah,
+                    "Activity : " + masalah,
                     style: TextStyle(fontSize: 18.0),
                   ),
                   Divider(),
@@ -130,7 +130,7 @@ class BottomCheckout {
                   ElevatedButton(
                       onPressed: buttonSimpanHandler
                           ? () {
-                              Navigator.of(context).pop();
+                              Navigator.pop(context);
                               modalKonfirmasi(
                                   context,
                                   token,
@@ -213,9 +213,9 @@ class BottomCheckout {
                         ),
                         tipe == 'hapus'
                             ? Text(
-                                'Apakah anda yakin akan menghapus penyelesaian masalah?  note: Harap refresh kembali halaman masalah untuk melihat data terbaru.')
+                                'Apakah anda yakin akan menghapus penyelesaian Activity?  note: Harap refresh kembali halaman untuk melihat data terbaru.')
                             : Text(
-                                'Apakah data yang ada masukkan sudah sesuai? note: Harap refresh kembali halaman masalah untuk melihat data terbaru.'),
+                                'Apakah data yang ada masukkan sudah sesuai? note: Harap refresh kembali halaman untuk melihat data terbaru.'),
                         SizedBox(
                           height: 25,
                         ),
@@ -226,7 +226,7 @@ class BottomCheckout {
                             ElevatedButton(
                                 onPressed: () {
                                   buttonSimpanHandler = true;
-                                  Navigator.of(context).pop();
+                                  Navigator.pop(context);
                                 },
                                 style: ElevatedButton.styleFrom(
                                     side:
@@ -255,7 +255,6 @@ class BottomCheckout {
                             ),
                             ElevatedButton(
                                 onPressed: () {
-                                  Navigator.of(context).pop();
                                   _actionToApi(
                                       context,
                                       token,

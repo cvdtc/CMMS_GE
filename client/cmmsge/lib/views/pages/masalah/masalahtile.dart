@@ -29,7 +29,8 @@ class MasalahTile extends StatelessWidget {
                 masalah.idmasalah.toString(),
                 masalah.idpenyelesaian.toString(),
                 masalah.jenis_masalah,
-                masalah.status);
+                masalah.status,
+                masalah.flag_activity.toString());
           },
           child: Container(
             child: Column(

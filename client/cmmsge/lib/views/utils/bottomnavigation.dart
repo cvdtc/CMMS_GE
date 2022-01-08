@@ -54,9 +54,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.white,
-            selectedIconTheme: IconThemeData(color: primarycolor),
-            selectedItemColor: primarycolor,
-            unselectedItemColor: primarycolor.withOpacity(.40),
+            selectedIconTheme: IconThemeData(color: thirdcolor),
+            selectedItemColor: thirdcolor,
+            unselectedItemColor: thirdcolor.withOpacity(.40),
             onTap: (value) {
               setState(() {
                 _currentTab = value;

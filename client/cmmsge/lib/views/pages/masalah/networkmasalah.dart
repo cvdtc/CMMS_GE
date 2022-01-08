@@ -11,13 +11,16 @@ List<MasalahModel> parseSite(String responseBody) {
   return listSite.map((e) => MasalahModel.fromJson(e)).toList();
 }
 
-Future<List<MasalahModel>> fetchMasalah(String token, String parameter) async {
-  var url = Uri.parse(_apiService + 'masalah');
+Future<List<MasalahModel>> fetchMasalah(
+    String token, String flag_activity) async {
+  var url = Uri.parse(_apiService + 'masalah/' + flag_activity);
+  print(url);
   var response = await http.get(url, headers: {
     'content-type': 'application/json',
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
+  print(response.statusCode);
   if (response.statusCode == 200) {
     return compute(parseSite, response.body);
   } else {
