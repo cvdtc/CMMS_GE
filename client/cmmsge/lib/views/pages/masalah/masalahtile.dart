@@ -12,7 +12,7 @@ class MasalahTile extends StatelessWidget {
     return Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
         elevation: 3.0,
-        color: masalah.status == 1 ? Colors.green[100] : Colors.red[100],
+        color: masalah.statusselesai == 1 ? Colors.green[100] : Colors.red[100],
         child: InkWell(
           onTap: () {
             BottomMasalah().modalActionItem(
@@ -29,7 +29,7 @@ class MasalahTile extends StatelessWidget {
                 masalah.idmasalah.toString(),
                 masalah.idpenyelesaian.toString(),
                 masalah.jenis_masalah,
-                masalah.status,
+                masalah.statusselesai,
                 masalah.flag_activity.toString());
           },
           child: Container(
@@ -38,7 +38,7 @@ class MasalahTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  color: masalah.status == 1 ? Colors.green : Colors.red,
+                  color: masalah.statusselesai == 1 ? Colors.green : Colors.red,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -47,7 +47,7 @@ class MasalahTile extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            masalah.status == 1
+                            masalah.statusselesai == 1
                                 ? Text('Sudah Terselesaikan')
                                 : Text('Belum Selesai'),
                             Text('Site: ' + masalah.site)
@@ -84,7 +84,13 @@ class MasalahTile extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text('Kategori : ${masalah.jenis_masalah}'),
+                            Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Kategori : ${masalah.jenis_masalah}'),
+                                  Text('Pengguna : ${masalah.pengguna}'),
+                                ]),
                             Text('Dibuat pada : ${masalah.created}')
                           ],
                         )

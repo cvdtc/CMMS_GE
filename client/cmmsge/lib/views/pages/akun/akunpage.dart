@@ -59,11 +59,46 @@ class _AkunPageState extends State<AkunPage> {
                   children: [Text(username!.toUpperCase()), Text(jabatan!)]),
             ],
           ),
+          _akunMenu(),
           _option(),
-          Text('v.1.1.0 Debuging')
+          Text('v.1.1.2 Debuging')
         ],
       ),
     ));
+  }
+
+  Widget _akunMenu() {
+    return Card(
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: EdgeInsets.fromLTRB(20, 20, 20, 10),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.only(
+                left: 1 - .0, right: 1 - .0, top: 5.0, bottom: 5.0),
+            alignment: Alignment.center,
+            width: double.infinity,
+            child: ListTile(
+              onTap: () {
+                _modalKonfirmasi();
+              },
+              title: (Text(
+                'Ubah Password',
+                style: TextStyle(fontSize: 18, color: Colors.black),
+              )),
+              leading: Icon(
+                Icons.password_rounded,
+                color: Colors.black,
+                size: 22,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _option() {

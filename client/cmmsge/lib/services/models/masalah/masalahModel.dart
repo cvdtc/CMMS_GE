@@ -1,14 +1,22 @@
 import 'dart:convert';
 
 class MasalahModel {
-  var idmasalah, idmesin, idpenyelesaian, status, shift, flag_activity;
-  var jam, tanggal, masalah, nomesin, ketmesin, site, created, jenis_masalah;
+  var idmasalah, idmesin, idpenyelesaian, statusselesai, shift, flag_activity;
+  var jam,
+      tanggal,
+      masalah,
+      nomesin,
+      ketmesin,
+      site,
+      created,
+      jenis_masalah,
+      pengguna;
 
   MasalahModel(
       {this.idmasalah,
       this.idmesin,
       this.idpenyelesaian,
-      this.status,
+      this.statusselesai,
       this.shift,
       this.jam,
       this.tanggal,
@@ -18,14 +26,15 @@ class MasalahModel {
       this.site,
       this.created,
       this.jenis_masalah,
-      this.flag_activity});
+      this.flag_activity,
+      this.pengguna});
 
   factory MasalahModel.fromJson(Map<String, dynamic> map) {
     return MasalahModel(
         idmasalah: map['idmasalah'],
         idmesin: map['idmesin'],
         idpenyelesaian: map['idpenyelesaian'],
-        status: map['status'],
+        statusselesai: map['statusselesai'],
         shift: map['shift'],
         jam: map['jam'],
         tanggal: map['tanggal'],
@@ -35,7 +44,8 @@ class MasalahModel {
         site: map['site'],
         created: map['created'],
         jenis_masalah: map['jenis_masalah'],
-        flag_activity: map['flag_activity']);
+        flag_activity: map['flag_activity'],
+        pengguna: map['pengguna']);
   }
 
   Map<String, dynamic> toJson() {

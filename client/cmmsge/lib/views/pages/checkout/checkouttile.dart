@@ -1,9 +1,11 @@
 import 'package:cmmsge/services/models/checkout/checkoutModel.dart';
+import 'package:cmmsge/views/pages/checkout/bottomcheckout.dart';
 import 'package:flutter/material.dart';
 
 class CheckoutTile extends StatelessWidget {
   late final CheckoutModel checkout;
-  CheckoutTile({required this.checkout});
+  String token;
+  CheckoutTile({required this.checkout, required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +14,15 @@ class CheckoutTile extends StatelessWidget {
         elevation: 3.0,
         color: Colors.white,
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            BottomCheckout().modalActionItem(
+                context,
+                'hapus',
+                token,
+                checkout.idbarang,
+                checkout.barang,
+                checkout.idcheckout.toString());
+          },
           child: Container(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -37,6 +47,8 @@ class CheckoutTile extends StatelessWidget {
                         Text('Keterangan : ${checkout.keterangan}',
                             style: TextStyle(fontSize: 18.0)),
                         Text('Tanggal : ${checkout.tanggal}',
+                            style: TextStyle(fontSize: 18.0)),
+                        Text('Kilometer : ${checkout.kilometer}',
                             style: TextStyle(fontSize: 18.0)),
                       ],
                     ),

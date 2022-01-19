@@ -76,7 +76,7 @@ class BottomMesin {
                   ElevatedButton(
                       onPressed: buttonSimpanHandler
                           ? () {
-                              // Navigator.pop(context);
+                              Navigator.pop(context);
                               modalKonfirmasi(
                                   context,
                                   token,
@@ -201,6 +201,7 @@ class BottomMesin {
                                   _actionToApi(context, token, tipe, idmesin,
                                       nomesin, keteranganmesin, idsite, site);
                                   buttonSimpanHandler = false;
+                                  Navigator.pop(context);
                                   // Navigator.of(context).pop();
                                 },
                                 style: ElevatedButton.styleFrom(

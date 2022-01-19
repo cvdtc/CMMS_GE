@@ -1,4 +1,5 @@
 import 'package:cmmsge/services/models/checkout/checkoutModel.dart';
+import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/checkout/bottomcheckout.dart';
@@ -36,11 +37,15 @@ class _CheckoutPageSearchState extends State<CheckoutPageSearch> {
         _checkout.addAll(value);
         _checkoutDisplay = _checkout;
       });
+    }).onError((error, stackTrace) {
+      ReusableClasses().modalbottomWarning(context, error.toString(),
+          'Data Item Kosong!', 'f204', 'assets/images/sorry.png');
     });
   }
 
   Future refreshData() async {
     _checkoutDisplay.clear();
+    _checkout.clear();
     _textSearch.clear();
     Fluttertoast.showToast(msg: 'Data sedang diperbarui, tunggu sebentar...');
     setState(() {
@@ -63,6 +68,20 @@ class _CheckoutPageSearchState extends State<CheckoutPageSearch> {
         title: Text('Daftar Item'),
         centerTitle: true,
         backgroundColor: thirdcolor,
+        actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: 20.0),
+            child: GestureDetector(
+              onTap: () {
+                refreshData();
+              },
+              child: Icon(
+                Icons.refresh_rounded,
+                size: 26.0,
+              ),
+            ),
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -72,7 +91,7 @@ class _CheckoutPageSearchState extends State<CheckoutPageSearch> {
         backgroundColor: secondcolor,
         label: Text('SELESAIKAN'),
         icon: Icon(
-          Icons.add,
+          Icons.check,
           color: Colors.white,
         ),
       ),
@@ -86,6 +105,7 @@ class _CheckoutPageSearchState extends State<CheckoutPageSearch> {
                     ? _searchBar()
                     : CheckoutTile(
                         checkout: this._checkoutDisplay[index - 1],
+                        token: token!,
                       );
                 // : SiteTile(site: this._sitesDisplay[index - 1]);
               } else {

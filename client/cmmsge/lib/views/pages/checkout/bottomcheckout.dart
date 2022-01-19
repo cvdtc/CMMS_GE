@@ -136,9 +136,10 @@ class BottomCheckout {
                                   token,
                                   tipe,
                                   idmasalah,
-                                  _tecKeterangan.text.toString(),
+                                  _tecTanggal.text.toString(),
                                   _tecKeterangan.text.toString(),
                                   masalah,
+                                  '',
                                   '');
                             }
                           : null,
@@ -168,9 +169,90 @@ class BottomCheckout {
         });
   }
 
+  // ++ BOTTOM MODAL UNTUK ACTION PER ITEM
+  void modalActionItem(context, String tipe, String token, String kode,
+      String barang, String idcheckout) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0))),
+        builder: (BuildContext context) {
+          return Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              padding: EdgeInsets.all(15.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('DETAIL',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text('Kode : ' + kode.toString(),
+                      style: TextStyle(fontSize: 16)),
+                  Text('Nama : ' + barang.toString(),
+                      style: TextStyle(fontSize: 16)),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Divider(
+                    thickness: 1.0,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        modalKonfirmasi(context, token, 'hapuscheckout', 'x',
+                            'x', 'x', 'x', 'x', idcheckout);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          side: BorderSide(width: 2, color: Colors.red),
+                          elevation: 0.0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          primary: Colors.white),
+                      child: Ink(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(18.0)),
+                          child: Container(
+                            width: 325,
+                            height: 45,
+                            alignment: Alignment.center,
+                            child: Text('Hapus Barang',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                          ))),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
 // ++ MODAL UNTUK KONFIRMASI SEBELUM MELAKUKAN KONEKSI KE API
-  void modalKonfirmasi(context, String token, String tipe, String idmasalah,
-      String tanggal, String keterangan, String masalah, idpenyelesaian) {
+  void modalKonfirmasi(
+      context,
+      String token,
+      String tipe,
+      String idmasalah,
+      String tanggal,
+      String keterangan,
+      String masalah,
+      String idpenyelesaian,
+      String idcheckout) {
     // * KONDISI UNTUK PENGECEKAN APAKAH NILAI/VALUE masalah, shift, tanggal, DAN jam SUDAH ADA VALUENYA APA BELUM
     if (keterangan == "" || tanggal == "") {
       ReusableClasses().modalbottomWarning(
@@ -205,17 +287,26 @@ class BottomCheckout {
                             ? Text('KONFIRMASI HAPUS PENYELESAIAN',
                                 style: TextStyle(
                                     fontSize: 22, fontWeight: FontWeight.bold))
-                            : Text('KONFIRMASI PENYELESAIAN',
-                                style: TextStyle(
-                                    fontSize: 22, fontWeight: FontWeight.bold)),
+                            : tipe == 'hapuscheckout'
+                                ? Text('KONFIRMASI HAPUS ITEM',
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold))
+                                : Text('KONFIRMASI PENYELESAIAN',
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.bold)),
                         SizedBox(
                           height: 20,
                         ),
                         tipe == 'hapus'
                             ? Text(
-                                'Apakah anda yakin akan menghapus penyelesaian Activity?  note: Harap refresh kembali halaman untuk melihat data terbaru.')
-                            : Text(
-                                'Apakah data yang ada masukkan sudah sesuai? note: Harap refresh kembali halaman untuk melihat data terbaru.'),
+                                'Apakah anda yakin akan menghapus penyelesaian Activity? note: Harap refresh kembali halaman untuk melihat data terbaru.')
+                            : tipe == 'hapuscheckout'
+                                ? Text(
+                                    'Yakin menghapus item? note: Harap refresh kembali halaman untuk melihat data terbaru.')
+                                : Text(
+                                    'Apakah data yang ada masukkan sudah sesuai? note: Harap refresh kembali halaman untuk melihat data terbaru.'),
                         SizedBox(
                           height: 25,
                         ),
@@ -263,7 +354,9 @@ class BottomCheckout {
                                       tanggal,
                                       keterangan,
                                       masalah,
-                                      idpenyelesaian);
+                                      idpenyelesaian,
+                                      idcheckout);
+                                  // Navigator.pop(context);
                                   buttonSimpanHandler = false;
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -305,20 +398,22 @@ class BottomCheckout {
       String tanggal,
       String keterangan,
       String masalah,
-      String idpenyelesaian) {
+      String idpenyelesaian,
+      String idcheckout) {
+    print(tipe + idcheckout + tanggal);
     PenyelesaianModel data = PenyelesaianModel(
         keterangan: keterangan, tanggal: tanggal, idmasalah: idmasalah);
     if (tipe == 'tambah') {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (context) => BottomNavigation(
+                  numberOfPage: 2,
+                )),
+        (Route<dynamic> route) => false,
+      );
       _apiService.addPenyelesaian(token, data).then((isSuccess) {
         if (isSuccess) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => BottomNavigation(
-                      numberOfPage: 2,
-                    )),
-            (Route<dynamic> route) => false,
-          );
           _tecTanggal.clear();
           _tecKeterangan.clear();
           Fluttertoast.showToast(
@@ -326,23 +421,48 @@ class BottomCheckout {
               backgroundColor: Colors.green);
           buttonSimpanHandler = true;
         }
-      }).onError((error, stackTrace) {
-        ReusableClasses().modalbottomWarning(context, 'Gagal!',
-            error.toString(), 'f4xx', 'assets/images/sorry.png');
       });
+      // .onError((error, stackTrace) {
+      //   Fluttertoast.showToast(msg: '${error}', backgroundColor: Colors.red);
+      //   // ReusableClasses().modalbottomWarning(context, 'Gagal!',
+      //   //     error.toString(), 'f4xx', 'assets/images/sorry.png');
+      // });
     } else if (tipe == 'hapus') {
       _apiService.deletePenyelesaian(token, idpenyelesaian).then((isSuccess) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => BottomNavigation(
+                    numberOfPage: 2,
+                  )),
+          (Route<dynamic> route) => false,
+        );
         if (isSuccess) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => BottomNavigation(
-                      numberOfPage: 2,
-                    )),
-            (Route<dynamic> route) => false,
-          );
           Fluttertoast.showToast(
               msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
+
+          buttonSimpanHandler = true;
+        }
+      });
+      // .onError((error, stackTrace) {
+      //   ReusableClasses().modalbottomWarning(context, 'Gagal!',
+      //       error.toString(), 'f4xx', 'assets/images/sorry.png');
+      // });
+    } else if (tipe == 'hapuscheckout') {
+      _apiService.hapusCheckout(token, idcheckout).then((isSuccess) {
+        if (isSuccess) {
+          // Navigator.pushAndRemoveUntil(
+          //   context,
+          //   MaterialPageRoute(
+          //       builder: (context) => BottomNavigation(
+          //             numberOfPage: 2,
+          //           )),
+          //   (Route<dynamic> route) => false,
+          // );
+          Fluttertoast.showToast(
+              msg:
+                  '${_apiService.responseCode.messageApi}, Refresh halaman terlebih dahulu!',
               backgroundColor: Colors.green);
           buttonSimpanHandler = true;
         }

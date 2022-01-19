@@ -2,7 +2,6 @@ import 'package:cmmsge/services/models/checkout/checkoutModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
-import 'package:cmmsge/views/pages/checkout/checkoutwithsearch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -16,6 +15,7 @@ class BottomBarang {
   TextEditingController _tecQty = TextEditingController(text: "");
   TextEditingController _tecTanggal = TextEditingController(text: "");
   TextEditingController _tecKeterangan = TextEditingController(text: "");
+  TextEditingController _tecKilometer = TextEditingController(text: "");
 
   bool buttonSimpanHandler = true;
 
@@ -35,7 +35,9 @@ class BottomBarang {
       String satuan,
       String qty,
       String tanggal,
-      String keterangan) {
+      String keterangan,
+      String kilometer,
+      String umur_barang) {
     // * setting value text form field if action is edit
     if (tipe == 'ubah') {
       _tecKeterangan.value = TextEditingValue(
@@ -50,6 +52,10 @@ class BottomBarang {
           text: tanggal,
           selection: TextSelection.fromPosition(
               TextPosition(offset: _tecTanggal.text.length)));
+      _tecKilometer.value = TextEditingValue(
+          text: kilometer,
+          selection: TextSelection.fromPosition(
+              TextPosition(offset: _tecKilometer.text.length)));
 
       dateSelected = DateTime.parse(tanggal);
     }
@@ -88,17 +94,31 @@ class BottomBarang {
                     'Barang: ' + barang,
                     style: TextStyle(fontSize: 18.0),
                   ),
-                  Container(
-                    child: TextFormField(
-                        controller: _tecQty,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        decoration: InputDecoration(
-                            focusColor: thirdcolor,
-                            icon: Icon(Icons.add_circle_outline_rounded),
-                            hintText: 'Isi Qty')),
+                  Row(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width / 2.5,
+                        child: TextFormField(
+                            controller: _tecQty,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: InputDecoration(
+                                focusColor: thirdcolor,
+                                icon: Icon(Icons.add_circle_outline_rounded),
+                                hintText: 'Isi Qty')),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width / 2.5,
+                        child: TextFormField(
+                            controller: _tecKilometer,
+                            decoration: InputDecoration(
+                                focusColor: thirdcolor,
+                                icon: Icon(Icons.car_rental_outlined),
+                                hintText: 'Isi Kilometer')),
+                      ),
+                    ],
                   ),
                   TextFormField(
                       controller: _tecKeterangan,
@@ -165,6 +185,7 @@ class BottomBarang {
                   ElevatedButton(
                       onPressed: buttonSimpanHandler
                           ? () {
+                              Navigator.pop(context);
                               modalKonfirmasi(
                                   context,
                                   tipe,
@@ -176,7 +197,9 @@ class BottomBarang {
                                   satuan,
                                   _tecQty.text.toString(),
                                   _tecTanggal.text.toString(),
-                                  _tecKeterangan.text.toString());
+                                  _tecKeterangan.text.toString(),
+                                  _tecKilometer.text.toString(),
+                                  umur_barang);
                             }
                           : null,
                       style: ElevatedButton.styleFrom(
@@ -201,33 +224,33 @@ class BottomBarang {
                   SizedBox(
                     height: 10.0,
                   ),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CheckoutPageSearch(
-                                    idmasalah: idmasalah, masalah: masalah)));
-                      },
-                      style: ElevatedButton.styleFrom(
-                          elevation: 3.0,
-                          onSurface: Colors.green,
-                          primary: Colors.green,
-                          shadowColor: thirdcolor),
-                      child: Ink(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(18.0)),
-                          child: Container(
-                            width: 325,
-                            height: 45,
-                            alignment: Alignment.center,
-                            child: Text('SET SELESAI',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                          )))
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       Navigator.push(
+                  //           context,
+                  //           MaterialPageRoute(
+                  //               builder: (context) => CheckoutPageSearch(
+                  //                   idmasalah: idmasalah, masalah: masalah)));
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //         elevation: 3.0,
+                  //         onSurface: Colors.green,
+                  //         primary: Colors.green,
+                  //         shadowColor: thirdcolor),
+                  //     child: Ink(
+                  //         decoration: BoxDecoration(
+                  //             borderRadius: BorderRadius.circular(18.0)),
+                  //         child: Container(
+                  //           width: 325,
+                  //           height: 45,
+                  //           alignment: Alignment.center,
+                  //           child: Text('SET SELESAI',
+                  //               style: TextStyle(
+                  //                 color: Colors.white,
+                  //                 fontSize: 18.0,
+                  //                 fontWeight: FontWeight.bold,
+                  //               )),
+                  //         )))
                 ],
               ),
             ),
@@ -247,7 +270,9 @@ class BottomBarang {
       String satuan,
       String qty,
       String tanggal,
-      String keterangan) {
+      String keterangan,
+      String kilometer,
+      String umur_barang) {
     // * KONDISI UNTUK PENGECEKAN APAKAH NILAI/VALUE masalah, shift, tanggal, DAN jam SUDAH ADA VALUENYA APA BELUM
     if (qty == "" || keterangan == "" || tanggal == "" || kode == "") {
       ReusableClasses().modalbottomWarning(
@@ -339,7 +364,9 @@ class BottomBarang {
                                       satuan,
                                       qty,
                                       tanggal,
-                                      keterangan);
+                                      keterangan,
+                                      kilometer,
+                                      umur_barang);
                                   buttonSimpanHandler = false;
                                   Navigator.of(context).pop();
                                 },
@@ -385,14 +412,20 @@ class BottomBarang {
       String satuan,
       String qty,
       String tanggal,
-      String keterangan) {
+      String keterangan,
+      String kilometer,
+      String umur_barang) {
     CheckoutModel data = CheckoutModel(
         idmasalah: idmasalah,
         idbarang: kode,
         tanggal: tanggal,
         idsatuan: 1,
         qty: qty,
-        keterangan: keterangan);
+        keterangan: keterangan,
+        kilometer: kilometer,
+
+        /// just send not be inserted, for calculate tgl_reminder + umur_pakai - 30 day in api
+        umur_barang: umur_barang);
 
     if (tipe == 'tambahbarangselesai') {
       _apiService.addCheckoutBarang(token, data).then((isSuccess) {
@@ -400,6 +433,7 @@ class BottomBarang {
           _tecQty.clear();
           _tecTanggal.clear();
           _tecKeterangan.clear();
+          _tecKilometer.clear();
           Fluttertoast.showToast(
               msg: '${_apiService.responseCode.messageApi}',
               backgroundColor: Colors.green);
@@ -409,13 +443,13 @@ class BottomBarang {
         ReusableClasses().modalbottomWarning(context, 'Gagal!',
             error.toString(), 'f4xx', 'assets/images/sorry.png');
       });
-    } else if (tipe == 'ubah') {
-      // _apiService.editMasalah(token, addData, idmasalah).then((isSuccess) {
+    } else if (tipe == 'hapusbarangselesai') {
+      // _apiService.hapusCheckout(token, idcheckout).then((isSuccess) {
       //   if (isSuccess) {
-      //     _tecMasalah.clear();
+      //     _tecQty.clear();
       //     _tecTanggal.clear();
-      //     _tecJam.clear();
-      //     _tecShift.clear();
+      //     _tecKeterangan.clear();
+      //     _tecKilometer.clear();
       //     Fluttertoast.showToast(
       //         msg: '${_apiService.responseCode.messageApi}',
       //         backgroundColor: Colors.green);

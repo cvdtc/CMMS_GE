@@ -43,6 +43,7 @@ class _SiteSearchPageState extends State<SiteSearchPage> {
 
   Future refreshData() async {
     _sitesDisplay.clear();
+    _sites.clear();
     _textSearch.clear();
     Fluttertoast.showToast(msg: 'Data sedang diperbarui, tunggu sebentar...');
     setState(() {

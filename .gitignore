@@ -2,3 +2,4 @@ server/.env
 server/node_modules/
 server/template/
 server/utils/cmmsge.firebasetoken.json
+client/webcmmsge

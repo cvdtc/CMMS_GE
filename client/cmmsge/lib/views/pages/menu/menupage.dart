@@ -1,6 +1,8 @@
+import 'package:cmmsge/views/pages/dashboard/child/scheduleDashboard.dart';
 import 'package:cmmsge/views/pages/komponen/komponenwithsearch.dart';
 import 'package:cmmsge/views/pages/masalah/masalahwithsearch.dart';
 import 'package:cmmsge/views/pages/mesin/mesinwithsearch.dart';
+import 'package:cmmsge/views/pages/schedule/schedulewithsearch.dart';
 import 'package:cmmsge/views/pages/site/sitewithinsearch.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -254,6 +256,34 @@ class _MenuPageState extends State<MenuPage> {
               trailing: Icon(
                 Icons.arrow_forward_ios_rounded,
                 color: Colors.orange,
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(
+                left: 1 - .0, right: 1 - .0, top: 5.0, bottom: 5.0),
+            alignment: Alignment.center,
+            width: double.infinity,
+            child: ListTile(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SchedulePage()));
+              },
+              title: (Text('Schedule',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.pink,
+                      fontWeight: FontWeight.bold))),
+              leading: CircleAvatar(
+                  backgroundColor: Colors.pink,
+                  child: Icon(
+                    Icons.schedule_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  )),
+              trailing: Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Colors.pink,
               ),
             ),
           ),

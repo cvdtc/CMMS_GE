@@ -54,6 +54,7 @@ async function Login(req, res) {
                                 console.log("Login Berhasil")
                                 const user = {
                                     idpengguna: rows[0].idpengguna,
+                                    aktif: rows[0].aktif
                                 };
                                 const access_token = jwt.sign(user, process.env.ACCESS_SECRET, {
                                     expiresIn: process.env.ACCESS_EXPIRED

@@ -1,27 +1,24 @@
-import 'package:cmmsge/services/models/mesin/mesinModel.dart';
+import 'package:cmmsge/services/models/schedule/scheduleModel.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
-import 'package:cmmsge/views/pages/mesin/networkmesin.dart';
-import 'package:cmmsge/views/pages/site/sitewithinsearch.dart';
+import 'package:cmmsge/views/pages/schedule/networkschedule.dart';
+import 'package:cmmsge/views/pages/schedule/scheduletile.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'mesintile.dart';
+class SchedulePage extends StatefulWidget {
+  SchedulePage({Key? key}) : super(key: key);
 
-class MesinSearchPage extends StatefulWidget {
-  String transaksi, flag_activity;
-  MesinSearchPage({required this.transaksi, required this.flag_activity});
   @override
-  MesinSearchPageState createState() => MesinSearchPageState();
+  _SchedulePageState createState() => _SchedulePageState();
 }
 
-class MesinSearchPageState extends State<MesinSearchPage> {
+class _SchedulePageState extends State<SchedulePage> {
   late SharedPreferences sp;
-  String? token = "", transaksi = "", flag_activity = "";
-  List<MesinModel> _mesin = <MesinModel>[];
-  List<MesinModel> _mesinDisplay = <MesinModel>[];
-
+  String? token = "";
+  List<ScheduleModel> _schedule = <ScheduleModel>[];
+  List<ScheduleModel> _scheduleDisplay = <ScheduleModel>[];
   TextEditingController _textSearch = TextEditingController(text: "");
 
   bool _isLoading = true;
@@ -32,18 +29,18 @@ class MesinSearchPageState extends State<MesinSearchPage> {
     setState(() {
       token = sp.getString("access_token");
     });
-    fetchMesin(token!, '0').then((value) {
+    fetchSchedule(token!).then((value) {
       setState(() {
         _isLoading = false;
-        _mesin.addAll(value);
-        _mesinDisplay = _mesin;
+        _schedule.addAll(value);
+        _scheduleDisplay = _schedule;
       });
     });
   }
 
   Future refreshData() async {
-    _mesinDisplay.clear();
-    _mesin.clear();
+    _scheduleDisplay.clear();
+    _schedule.clear();
     _textSearch.clear();
     Fluttertoast.showToast(msg: 'Data sedang diperbarui, tunggu sebentar...');
     setState(() {
@@ -53,8 +50,6 @@ class MesinSearchPageState extends State<MesinSearchPage> {
 
   @override
   initState() {
-    transaksi = widget.transaksi;
-    flag_activity = widget.flag_activity;
     cekToken();
     super.initState();
   }
@@ -63,42 +58,21 @@ class MesinSearchPageState extends State<MesinSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: transaksi == 'masalah'
-              ? Text('Pilih Mesin')
-              : Text('Daftar Mesin'),
+          title: Text('Schedule Pergantian Part'),
           centerTitle: true,
           backgroundColor: thirdcolor,
           actions: <Widget>[
             Padding(
               padding: EdgeInsets.only(right: 20.0),
               child: GestureDetector(
-                onTap: () {
-                  refreshData();
-                },
+                onTap: () {},
                 child: Icon(
-                  Icons.refresh_rounded,
+                  Icons.search,
                   size: 26.0,
                 ),
               ),
             )
           ]),
-      floatingActionButton: transaksi == 'masalah'
-          ? null
-          : FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SiteSearchPage(
-                              tipetransaksi: 'addmesin',
-                            )));
-              },
-              backgroundColor: secondcolor,
-              child: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-            ),
       body: RefreshIndicator(
         onRefresh: refreshData,
         child: SafeArea(
@@ -107,18 +81,16 @@ class MesinSearchPageState extends State<MesinSearchPage> {
               itemBuilder: (context, index) {
                 if (!_isLoading) {
                   return index == 0
-                      ? searchBar()
-                      : MesinTile(
-                          mesin: this._mesinDisplay[index - 1],
-                          token: token!,
-                          transaksi: transaksi.toString(),
-                          flag_activity: flag_activity!);
+                      ? _searchBar()
+                      : ScheduleTile(
+                          schedule: this._scheduleDisplay[index - 1],
+                          token: token!);
                   // : SiteTile(site: this._sitesDisplay[index - 1]);
                 } else {
                   return LoadingView();
                 }
               },
-              itemCount: _mesinDisplay.length + 1,
+              itemCount: _scheduleDisplay.length + 1,
             ),
           ),
         ),
@@ -126,7 +98,7 @@ class MesinSearchPageState extends State<MesinSearchPage> {
     );
   }
 
-  searchBar() {
+  _searchBar() {
     return Padding(
       padding: EdgeInsets.all(12.0),
       child: TextField(
@@ -135,10 +107,10 @@ class MesinSearchPageState extends State<MesinSearchPage> {
         onChanged: (searchText) {
           searchText = searchText.toLowerCase();
           setState(() {
-            _mesinDisplay = _mesin.where((u) {
-              var fNoMesin = u.nomesin.toLowerCase();
+            _scheduleDisplay = _schedule.where((u) {
+              var fNomesin = u.nomesin.toLowerCase();
               var fKeterangan = u.keterangan.toLowerCase();
-              return fNoMesin.contains(searchText) ||
+              return fNomesin.contains(searchText) ||
                   fKeterangan.contains(searchText);
             }).toList();
           });

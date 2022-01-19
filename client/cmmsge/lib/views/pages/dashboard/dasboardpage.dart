@@ -4,6 +4,8 @@ import 'package:cmmsge/services/models/dashboard/dashboardModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/dashboard/child/activityDashboard.dart';
+import 'package:cmmsge/views/pages/dashboard/child/scheduleDashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -67,7 +69,9 @@ class _DashboardPageState extends State<DashboardPage> {
         slivers: <Widget>[
           _buildTextHeader(screenHeight),
           // _buildBanner(screenHeight),
-          _buildContent(screenHeight)
+          _buildContent(screenHeight),
+          _buildSchedule(screenHeight),
+          _buildActivity(screenHeight)
         ],
       ),
     );
@@ -215,18 +219,65 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
       ),
     );
-    // return SliverToBoxAdapter(
-    //   child: Container(
-    //       padding: EdgeInsets.only(left: 20, right: 20),
-    //       child: Column(
-    //         mainAxisAlignment: MainAxisAlignment.center,
-    //         crossAxisAlignment: CrossAxisAlignment.center,
-    //         children: [
-    //           Row(
-    //             children: [Text('Jumlah Masalah'), Text('Jumlah Selesai')],
-    //           )
-    //         ],
-    //       )),
-    // );
+  }
+
+  // * code for load json api schedule
+  SliverToBoxAdapter _buildSchedule(double screenHeight) {
+    return SliverToBoxAdapter(
+      child: Container(
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text('Schedule terbaru',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ScheduleDashboard()
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // * code for load json api pre activity
+  SliverToBoxAdapter _buildActivity(double screenHeight) {
+    return SliverToBoxAdapter(
+      child: Container(
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Text('Pre-Activity terbaru',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                ActivityDashboard(
+                  flag_activity: 0.toString(),
+                )
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

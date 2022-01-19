@@ -1,16 +1,9 @@
 import 'package:cmmsge/services/models/barang/barangModel.dart';
-import 'package:cmmsge/views/pages/barang/bottombarang.dart';
 import 'package:flutter/material.dart';
 
-class BarangTile extends StatelessWidget {
+class SchedulePartTile extends StatelessWidget {
   late final BarangModel barang;
-  final String token, idmasalah, masalah, tipe;
-  BarangTile(
-      {required this.barang,
-      required this.token,
-      required this.idmasalah,
-      required this.masalah,
-      required this.tipe});
+  SchedulePartTile({required this.barang});
 
   @override
   Widget build(BuildContext context) {
@@ -19,22 +12,7 @@ class BarangTile extends StatelessWidget {
         elevation: 3.0,
         color: Colors.white,
         child: InkWell(
-          onTap: () {
-            BottomBarang().addDetailBarang(
-                context,
-                tipe,
-                token,
-                idmasalah,
-                masalah,
-                barang.idbarang,
-                barang.nama,
-                barang.satuan,
-                "",
-                "",
-                "",
-                "",
-                barang.umur_barang.toString());
-          },
+          onTap: () {},
           child: Container(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -56,7 +34,7 @@ class BarangTile extends StatelessWidget {
                             style: TextStyle(fontSize: 18.0)),
                         Text('Satuan : ${barang.satuan}',
                             style: TextStyle(fontSize: 18.0)),
-                        Text('Umur : ${barang.umur_barang}',
+                        Text('Masa pakai : ${barang.lewathari} hari',
                             style: TextStyle(fontSize: 18.0)),
                       ],
                     ),

@@ -25,6 +25,7 @@ class BottomProgress {
 
   // * INITIAL DROPDOWNBUTTON
   String _kategoriValue = 'Masalah';
+  String _shiftValue = '1';
 
   // ++ BOTTOM MODAL UNTUK INPUT DATA
   void modalAddProgress(context, String tipe, String token, String idmasalah,
@@ -43,10 +44,11 @@ class BottomProgress {
           text: tanggal,
           selection: TextSelection.fromPosition(
               TextPosition(offset: _tecTanggal.text.length)));
-      _tecShift.value = TextEditingValue(
-          text: shift,
-          selection: TextSelection.fromPosition(
-              TextPosition(offset: _tecShift.text.length)));
+      // _tecShift.value = TextEditingValue(
+      //     text: shift,
+      //     selection: TextSelection.fromPosition(
+      //         TextPosition(offset: _tecShift.text.length)));
+      _shiftValue = shift;
       dateSelected = DateTime.parse(tanggal);
     }
     showModalBottomSheet(
@@ -141,17 +143,49 @@ class BottomProgress {
                       ),
                     ],
                   ),
-                  Container(
-                    child: TextFormField(
-                        controller: _tecShift,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.digitsOnly
-                        ],
-                        decoration: InputDecoration(
-                            focusColor: thirdcolor,
-                            icon: Icon(Icons.safety_divider),
-                            hintText: 'Isi Shift')),
+
+                  /// diganti combo box
+                  // Container(
+                  //   child: TextFormField(
+                  //       controller: _tecShift,
+                  //       keyboardType: TextInputType.number,
+                  //       inputFormatters: <TextInputFormatter>[
+                  //         FilteringTextInputFormatter.digitsOnly
+                  //       ],
+                  //       decoration: InputDecoration(
+                  //           focusColor: thirdcolor,
+                  //           icon: Icon(Icons.safety_divider),
+                  //           hintText: 'Isi Shift')),
+                  // ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Shift :',
+                        style: TextStyle(fontSize: 16.0),
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      StatefulBuilder(builder: (BuildContext context,
+                          void Function(void Function()) setState) {
+                        return DropdownButton(
+                          dropdownColor: Colors.white,
+                          value: _shiftValue,
+                          onChanged: (String? value) {
+                            setState(() {
+                              _shiftValue = value!;
+                            });
+                          },
+                          items: <String>['1', '2', '3']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                                value: value, child: Text(value));
+                          }).toList(),
+                        );
+                      }),
+                    ],
                   ),
                   SizedBox(
                     height: 25.0,
@@ -159,6 +193,8 @@ class BottomProgress {
                   ElevatedButton(
                       onPressed: buttonSimpanHandler
                           ? () {
+                              print('clicked!');
+                              Navigator.pop(context);
                               modalKonfirmasi(
                                   context,
                                   tipe,
@@ -167,7 +203,7 @@ class BottomProgress {
                                   _tecPerbaikan.text.toString(),
                                   _tecEngineer.text.toString(),
                                   _tecTanggal.text.toString(),
-                                  _tecShift.text.toString());
+                                  _shiftValue.toString());
                             }
                           : null,
                       style: ElevatedButton.styleFrom(
@@ -199,14 +235,28 @@ class BottomProgress {
 // ++ MODAL UNTUK KONFIRMASI SEBELUM MELAKUKAN KONEKSI KE API
   void modalKonfirmasi(context, String tipe, String token, String idmasalah,
       String perbaikan, String engineer, String tanggal, String shift) {
+    print(tipe +
+        ' | ' +
+        idmasalah +
+        ' | ' +
+        perbaikan +
+        ' | ' +
+        engineer +
+        ' | ' +
+        tanggal +
+        ' | ' +
+        shift);
     // * KONDISI UNTUK PENGECEKAN APAKAH NILAI/VALUE masalah, shift, tanggal, DAN jam SUDAH ADA VALUENYA APA BELUM
     if (perbaikan == "" || shift == "" || tanggal == "" || engineer == "") {
-      ReusableClasses().modalbottomWarning(
-          context,
-          'Data tidak valid!',
-          'Pastikan semua kolom terisi dengan sesuai!',
-          'f204',
-          'assets/images/sorry.png');
+      Fluttertoast.showToast(
+          msg: 'Pastikan semua kolom terisi dengan sesuai!',
+          backgroundColor: Colors.green);
+      // ReusableClasses().modalbottomWarning(
+      //     context,
+      //     'Data tidak valid!',
+      //     'Pastikan semua kolom terisi dengan sesuai!',
+      //     'f204',
+      //     'assets/images/sorry.png');
     } else {
       showModalBottomSheet<void>(
         context: context,
@@ -282,7 +332,7 @@ class BottomProgress {
                                   _actionToApi(context, tipe, token, idmasalah,
                                       perbaikan, engineer, tanggal, shift);
                                   buttonSimpanHandler = false;
-                                  Navigator.of(context).pop();
+                                  Navigator.pop(context);
                                 },
                                 style: ElevatedButton.styleFrom(
                                     side: BorderSide(
@@ -335,6 +385,10 @@ class BottomProgress {
               msg: '${_apiService.responseCode.messageApi}',
               backgroundColor: Colors.green);
           buttonSimpanHandler = true;
+        } else {
+          Fluttertoast.showToast(
+              msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
         }
       }).onError((error, stackTrace) {
         ReusableClasses().modalbottomWarning(context, 'Gagal!',

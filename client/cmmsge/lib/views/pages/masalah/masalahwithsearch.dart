@@ -51,6 +51,7 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
 
   Future refreshData() async {
     _masalahDisplay.clear();
+    _masalah.clear();
     _textSearch.clear();
     flag_activity = widget.jenisActivity.toString();
     Fluttertoast.showToast(msg: 'Data sedang diperbarui, tunggu sebentar...');

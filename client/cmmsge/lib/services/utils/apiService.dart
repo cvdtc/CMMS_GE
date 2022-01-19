@@ -10,6 +10,7 @@ import 'package:cmmsge/services/models/mesin/mesinModel.dart';
 import 'package:cmmsge/services/models/penyelesaian/penyelesaianModel.dart';
 import 'package:cmmsge/services/models/progress/progressModel.dart';
 import 'package:cmmsge/services/models/response/responsecode.dart';
+import 'package:cmmsge/services/models/schedule/scheduleModel.dart';
 import 'package:cmmsge/services/models/site/siteModel.dart';
 import 'package:cmmsge/services/models/timeline/timelineModel.dart';
 import 'package:http/http.dart';
@@ -179,6 +180,7 @@ class ApiService {
       // ++ fyi : sending token with BEARER
       'Authorization': 'Bearer ' + token
     });
+    print(response.body);
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
@@ -278,6 +280,7 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: masalahToJson(data));
+    print('send to api add masalah' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 201) {
@@ -297,6 +300,7 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: masalahToJson(data));
+    print('send to api edit masalah' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
@@ -352,12 +356,54 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: checkoutToJson(data));
+    print('send to add checkout' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 201) {
       return true;
     } else {
       return false;
+    }
+  }
+
+  // ! Hapus Data Checkout
+  Future<bool> hapusCheckout(String token, String idcheckout) async {
+    var url = Uri.parse(BaseUrl + 'checkout/' + idcheckout);
+    var response = await client.delete(url, headers: {
+      'content-type': 'application/json',
+      'Authorization': 'Bearer ${token}'
+    });
+    print(response.body);
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * ! List Data Get Masalah
+   * * note : getting data schedule
+   */
+  Future<List<MasalahModel>?> getListMasalah(
+      String token, String flag_activity) async {
+    var url = Uri.parse(BaseUrl + 'masalah/' + flag_activity);
+    print(token + " | " + url.toString());
+    var response = await client.get(url, headers: {
+      'content-type': 'application/json',
+      // ++ fyi : sending token with BEARER
+      'Authorization': 'Bearer ' + token
+    });
+    print(response.body);
+    // ++ fyi : for getting response message from api
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return masalahFromJson(response.body);
+    } else {
+      return null;
     }
   }
 
@@ -370,7 +416,7 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: penyelesaianToJson(data));
-    print(response.body);
+    print('send to add penyelesaian' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 201) {
@@ -387,12 +433,34 @@ class ApiService {
       'content-type': 'application/json',
       'Authorization': 'Bearer ${token}'
     });
+    print('delete data penyelesiaan' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
       return true;
     } else {
       return false;
+    }
+  }
+
+/**
+   * ! List Data Schedule
+   * * note : getting data schedule
+   */
+  Future<List<ScheduleModel>?> getSchedule(String token) async {
+    var url = Uri.parse(BaseUrl + 'schedule');
+    var response = await client.get(url, headers: {
+      'content-type': 'application/json',
+      // ++ fyi : sending token with BEARER
+      'Authorization': 'Bearer ' + token
+    });
+    // ++ fyi : for getting response message from api
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return scheduleFromJson(response.body);
+    } else {
+      return null;
     }
   }
 }

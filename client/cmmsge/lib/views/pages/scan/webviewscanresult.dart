@@ -23,7 +23,10 @@ class _WebviewScanResultState extends State<WebviewScanResult> {
 
   @override
   void initState() {
-    urlweb = widget.urlwebview + '&&token=' + widget.token.toString();
+    urlweb = 'https://produksi.grand-elephant.co.id/datamasalah.php?nomesin=' +
+        widget.urlwebview +
+        '&&token=' +
+        widget.token.toString();
     final _key = UniqueKey();
     print('WEBVIEW? ' + urlweb + ' ~ ' + _key.toString());
     // Enable hybrid composition.

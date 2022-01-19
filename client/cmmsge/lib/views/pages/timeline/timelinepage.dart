@@ -124,6 +124,11 @@ class _TimelinePageState extends State<TimelinePage> {
               child: Container(
                 child: TimelineTile(
                     alignment: TimelineAlign.manual,
+                    indicatorStyle: const IndicatorStyle(
+                        width: 18,
+                        color: primarycolor,
+                        indicatorXY: 0.2,
+                        padding: EdgeInsets.all(3.0)),
                     lineXY: 0.05,
                     endChild: _designItem(
                         dataTimeline.tipe,
@@ -141,7 +146,13 @@ class _TimelinePageState extends State<TimelinePage> {
                         dataTimeline.barang,
                         dataTimeline.satuan,
                         dataTimeline.qty,
-                        dataTimeline.keterangancheckout)),
+                        dataTimeline.keterangancheckout,
+                        dataTimeline.penggunamasalah.toString(),
+                        dataTimeline.penggunaprogress.toString(),
+                        dataTimeline.penggunaselesai.toString(),
+                        dataTimeline.kategori.toString(),
+                        dataTimeline.tanggalbarang,
+                        dataTimeline.kilometer)),
               ));
         });
   }
@@ -162,154 +173,326 @@ class _TimelinePageState extends State<TimelinePage> {
       String barang,
       String satuan,
       String qty,
-      String keterangancheckout) {
+      String keterangancheckout,
+      String penggunamasalah,
+      String penggunaprogress,
+      String penggunaselesai,
+      String kategori,
+      String tanggalbarang,
+      String kilometer) {
     double c_width = MediaQuery.of(context).size.width * 0.8;
     if (tipe == 1) {
       // * show data masalah
-      return Container(
-        color: Colors.orange[300],
-        child: Padding(
-            padding: const EdgeInsets.all(12.0),
+      return Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        color: Colors.orange[200],
+        child: Container(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Masalah Shift ' + shift,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                Divider(
-                  thickness: 2,
-                  height: 8,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Tanggal : '),
-                    Text(tanggal),
-                    Text(' ' + jam),
-                  ],
-                ),
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Keterangan : '),
-                      Text(masalah),
-                    ],
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              child: Column(
+                children: [
+                  Container(
+                    color: Colors.orange,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Activity Shift ' + shift,
+                            style: TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          ),
+                          Text('Pengguna : ' + penggunamasalah)
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            )),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 12.0, right: 12.0, top: 12.0, bottom: 5.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Deskripsi : ' + masalah,
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Divider(
+                          thickness: 1,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Tanggal : '),
+                                Text(tanggal),
+                                Text(' ' + jam),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [Text('Kategori : '), Text(kategori)],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        )),
       );
     } else if (tipe == 2) {
       // * show data progress
-      return Container(
-        width: c_width,
-        color: Colors.green[300],
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Progress',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Divider(
-                thickness: 2,
-                height: 8,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [Text('Engineer : '), Text(engginer)],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
+      return Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        color: Colors.green[200],
+        child: Container(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              child: Column(
                 children: [
-                  Text('Tanggal : '),
-                  Text(tanggalprog),
+                  Container(
+                    color: Colors.green,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Progress Shift ' + shiftprog,
+                            style: TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          ),
+                          Text('Pengguna ' + penggunaprogress),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 12.0, right: 12.0, top: 12.0, bottom: 5.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Deskripsi : ' + perbaikan,
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Engineer : ',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                            Text(
+                              engginer,
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Divider(
+                          thickness: 1,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [Text('Tanggal : '), Text(tanggalprog)],
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
-              Flexible(
-                child: Text('Keterangan : ' + perbaikan),
-              ),
-            ],
-          ),
-        ),
+            ),
+          ],
+        )),
       );
     } else if (tipe == 3) {
       // * show data penyelesaian
-      return Container(
-        color: Colors.blue[300],
-        child: Padding(
-            padding: const EdgeInsets.all(12.0),
+      return Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        color: Colors.blue[200],
+        child: Container(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Penyelesaian',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                Divider(
-                  thickness: 2,
-                  height: 8,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Tanggal : '),
-                    Text(tanggalselesai),
-                  ],
-                ),
-                Flexible(
-                  child: Text('Keterangan : ' + keteranganselesai),
-                )
-              ],
-            )),
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              child: Column(
+                children: [
+                  Container(
+                    color: Colors.blue,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Penyelesaian',
+                            style: TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            'Pengguna ' + penggunaselesai,
+                            style: TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 12.0, right: 12.0, top: 12.0, bottom: 5.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Deskripsi : ' + keteranganselesai,
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Divider(
+                          thickness: 1,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [Text('Tanggal : '), Text(tanggalselesai)],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        )),
       );
     } else if (tipe == 4) {
       // * show data barang
-      return Container(
-        color: Colors.red[300],
-        child: Padding(
-            padding: const EdgeInsets.all(12.0),
+      // * show data penyelesaian
+      return Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        color: Colors.red[200],
+        child: Container(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Barang',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                Divider(
-                  thickness: 2,
-                  height: 8,
-                ),
-                Flexible(
-                  child: Text('Barang : (' + kode + ') ' + barang),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Jumlah : '),
-                    Text(qty),
-                    Text(' ' + satuan),
-                  ],
-                ),
-                Flexible(
-                  child: Text('Keterangan : ' + keterangancheckout),
-                )
-              ],
-            )),
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              child: Column(
+                children: [
+                  Container(
+                    color: Colors.red,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Item Penyelesaian',
+                            style: TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 12.0, right: 12.0, top: 12.0, bottom: 5.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Deskripsi : ' + keterangancheckout,
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                        Text(
+                          'Nama Item : ' + '(' + kode + ') ' + barang,
+                          style: TextStyle(fontSize: 16.0),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'QTY : ',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                            Text(
+                              qty + ' ' + satuan,
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Kilometer : ',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                            Text(
+                              kilometer,
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Divider(
+                          thickness: 1,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [Text('Tanggal : '), Text(tanggalbarang)],
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
+        )),
       );
     } else {
       return Container();

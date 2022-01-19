@@ -8,7 +8,6 @@ import 'package:cmmsge/views/pages/progress/bottomprogress.dart';
 import 'package:cmmsge/views/pages/timeline/timelinepage.dart';
 import 'package:cmmsge/views/utils/bottomnavigation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
@@ -31,6 +30,7 @@ class BottomMasalah {
 
   // * INITIAL DROPDOWNBUTTON
   String _kategoriValue = 'Masalah';
+  String _shiftValue = '1';
 
   // ++ BOTTOM MODAL UNTUK INPUT DATA
   void modalAddMasalah(
@@ -63,11 +63,14 @@ class BottomMasalah {
           text: tanggal,
           selection: TextSelection.fromPosition(
               TextPosition(offset: _tecTanggal.text.length)));
-      _tecShift.value = TextEditingValue(
-          text: shift,
-          selection: TextSelection.fromPosition(
-              TextPosition(offset: _tecShift.text.length)));
+
+      /// diganti jadi dropdown
+      // _tecShift.value = TextEditingValue(
+      //     text: shift,
+      //     selection: TextSelection.fromPosition(
+      //         TextPosition(offset: _tecShift.text.length)));
       _kategoriValue = kategori;
+      _shiftValue = shift;
       dateSelected = DateTime.parse(tanggal);
       timeSelected = TimeOfDay(
           hour: int.parse(jam.split(':')[0]),
@@ -232,18 +235,52 @@ class BottomMasalah {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width / 2.5,
-                        child: TextFormField(
-                            controller: _tecShift,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            decoration: InputDecoration(
-                                focusColor: thirdcolor,
-                                icon: Icon(Icons.safety_divider),
-                                hintText: 'Isi Shift')),
+                      /// diganti jadi dropdown
+                      // Container(
+                      //   width: MediaQuery.of(context).size.width / 2.5,
+                      //   child: TextFormField(
+                      //       controller: _tecShift,
+                      //       keyboardType: TextInputType.number,
+                      //       inputFormatters: <TextInputFormatter>[
+                      //         FilteringTextInputFormatter.digitsOnly
+                      //       ],
+                      //       decoration: InputDecoration(
+                      //           focusColor: thirdcolor,
+                      //           icon: Icon(Icons.safety_divider),
+                      //           hintText: 'Isi Shift')),
+                      // ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Tipe :',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          StatefulBuilder(builder: (BuildContext context,
+                              void Function(void Function()) setState) {
+                            return DropdownButton(
+                              dropdownColor: Colors.white,
+                              value: _shiftValue,
+                              onChanged: (String? value) {
+                                setState(() {
+                                  _shiftValue = value!;
+                                });
+                              },
+                              items: <String>[
+                                '1',
+                                '2',
+                                '3'
+                              ].map<DropdownMenuItem<String>>((String value) {
+                                return DropdownMenuItem<String>(
+                                    value: value, child: Text(value));
+                              }).toList(),
+                            );
+                          }),
+                        ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -285,6 +322,7 @@ class BottomMasalah {
                   ElevatedButton(
                       onPressed: buttonSimpanHandler
                           ? () {
+                              Navigator.pop(context);
                               modalKonfirmasi(
                                   context,
                                   tipe,
@@ -295,7 +333,8 @@ class BottomMasalah {
                                   _tecMasalah.text.toString(),
                                   _tecTanggal.text.toString(),
                                   _tecJam.text.toString(),
-                                  _tecShift.text.toString(),
+                                  // _tecShift.text.toString(),
+                                  _shiftValue.toString(),
                                   idmasalah,
                                   idpenyelesaian,
                                   _kategoriValue.toString(),
@@ -392,6 +431,7 @@ class BottomMasalah {
                       ? Container()
                       : ElevatedButton(
                           onPressed: () {
+                            Navigator.pop(context);
                             modalAddMasalah(
                                 context,
                                 tipe,
@@ -469,6 +509,7 @@ class BottomMasalah {
                       ? Container()
                       : ElevatedButton(
                           onPressed: () {
+                            Navigator.pop(context);
                             BottomProgress().modalAddProgress(context, 'tambah',
                                 token, idmasalah.toString(), "", "", "", "");
                           },
@@ -498,9 +539,9 @@ class BottomMasalah {
                   status == 1
                       ? ElevatedButton(
                           onPressed: () {
-                            // Navigator.of(context).pop();
+                            Navigator.pop(context);
                             BottomCheckout().modalKonfirmasi(context, token,
-                                'hapus', '', 'x', 'x', '', idpenyelesaian);
+                                'hapus', '', 'x', 'x', '', idpenyelesaian, '');
                             // _modalKonfirmasi(context, token, 'hapus',
                             //     idsite.toString(), nama, '-');
                           },
@@ -664,6 +705,7 @@ class BottomMasalah {
                             ),
                             ElevatedButton(
                                 onPressed: () {
+                                  // Navigator.pop(context);
                                   _actionToApi(
                                       context,
                                       tipe,
@@ -679,8 +721,8 @@ class BottomMasalah {
                                       idpenyelesaian,
                                       kategori,
                                       flag_activity);
+                                  Navigator.pop(context);
                                   buttonSimpanHandler = false;
-                                  // Navigator.of(context).pop();
                                 },
                                 style: ElevatedButton.styleFrom(
                                     side: BorderSide(
@@ -736,17 +778,18 @@ class BottomMasalah {
         idmesin: idmesin,
         jenis_masalah: kategori,
         flag_activity: flag_activity);
+    print(addData.toString());
     if (tipe == 'tambah') {
       _apiService.addMasalah(token, addData).then((isSuccess) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-              builder: (context) => BottomNavigation(
-                    numberOfPage: 2,
-                  )),
-          (Route<dynamic> route) => false,
-        );
         if (isSuccess) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(
+                      numberOfPage: 2,
+                    )),
+            (Route<dynamic> route) => false,
+          );
           _tecMasalah.clear();
           _tecTanggal.clear();
           _tecJam.clear();
@@ -755,22 +798,32 @@ class BottomMasalah {
               msg: '${_apiService.responseCode.messageApi}',
               backgroundColor: Colors.green);
           buttonSimpanHandler = true;
+        } else {
+          Fluttertoast.showToast(
+              msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
         }
-      }).onError((error, stackTrace) {
-        ReusableClasses().modalbottomWarning(context, 'Gagal!',
-            error.toString(), 'f4xx', 'assets/images/sorry.png');
       });
+      // .onError((error, stackTrace) {
+      //   print('Error Masalah' + error.toString());
+      //   Fluttertoast.showToast(
+      //       msg: '${_apiService.responseCode.messageApi}',
+      //       backgroundColor: Colors.green);
+      //   buttonSimpanHandler = true;
+      //   //   ReusableClasses().modalbottomWarning(context, 'Gagal!',
+      //   //       error.toString(), 'f4xx', 'assets/images/sorry.png');
+      // });
     } else if (tipe == 'ubah') {
       _apiService.editMasalah(token, addData, idmasalah).then((isSuccess) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-              builder: (context) => BottomNavigation(
-                    numberOfPage: 2,
-                  )),
-          (Route<dynamic> route) => false,
-        );
         if (isSuccess) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(
+                      numberOfPage: 2,
+                    )),
+            (Route<dynamic> route) => false,
+          );
           _tecMasalah.clear();
           _tecTanggal.clear();
           _tecJam.clear();
@@ -779,11 +832,16 @@ class BottomMasalah {
               msg: '${_apiService.responseCode.messageApi}',
               backgroundColor: Colors.green);
           buttonSimpanHandler = true;
+        } else {
+          Fluttertoast.showToast(
+              msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
         }
-      }).onError((error, stackTrace) {
-        ReusableClasses().modalbottomWarning(context, 'Gagal!',
-            error.toString(), 'f4xx', 'assets/images/sorry.png');
       });
+      // .onError((error, stackTrace) {
+      //   ReusableClasses().modalbottomWarning(context, 'Gagal!',
+      //       error.toString(), 'f4xx', 'assets/images/sorry.png');
+      // });
     }
   }
 }
