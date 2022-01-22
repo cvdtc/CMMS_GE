@@ -3,3 +3,7 @@ server/node_modules/
 server/template/
 server/utils/cmmsge.firebasetoken.json
 client/webcmmsge
+server/.env.example
+server/cmmsflow.drawio
+server/utils/firebase.configuration.js
+server/notificationlog.txt
