@@ -43,10 +43,10 @@ var nows = {
  */
 
 function getMasalah(req, res) {
-    const token = req.headers.authorization.split(' ')[1]
+    const token = req.headers.authorization
     var flag_activity = req.params.flag_activity
     try {
-        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+        jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwtresult) {
                 pool.getConnection(function (error, database) {
                     if (error) {
@@ -55,15 +55,17 @@ function getMasalah(req, res) {
                             data: error
                         })
                     } else {
-                        var sqlquery = `SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as status, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite WHERE m.flag_activity=? ORDER BY m.tanggal DESC;`
+                        var sqlquery = `SELECT * FROM (SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as statusselesai, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity, pe.nama as pengguna FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite INNER JOIN pengguna pe ON m.idpengguna=pe.idpengguna WHERE m.flag_activity = ? AND m.tanggal > date_sub(now(), INTERVAL 3 MONTH) ORDER BY m.tanggal DESC)a ORDER BY a.statusselesai ASC, a.created DESC;`
                         database.query(sqlquery, flag_activity, (error, rows) => {
                             database.release()
                             if (error) {
+                                console.log(error)
                                 return res.status(500).send({
                                     message: "Sorry :(, my query has been error",
                                     data: error
                                 })
                             } else {
+                                console.log('masalah', rows)
                                 if (rows.length <= 0) {
                                     return res.status(204).send({
                                         message: "Data masih kosong",
@@ -97,7 +99,7 @@ function getMasalah(req, res) {
 
 /**
  * @swagger
- * /masalah/:idmesin:
+ * /masalah/:flag_activity/:idmesin:
  *  get:
  *      summary: api untuk load data masalah
  *      tags: [Masalah]
@@ -116,9 +118,10 @@ function getMasalah(req, res) {
 
 async function getMasalahByMesin(req, res) {
     var idmesin = req.params.idmesin
-    const token = req.headers.authorization.split(' ')[1]
+    var flag_activity = req.params.flag_activity
+    const token = req.headers.authorization
     try {
-        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+        jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwtresult) {
 
                 pool.getConnection(function (error, database) {
@@ -128,8 +131,8 @@ async function getMasalahByMesin(req, res) {
                             data: error
                         })
                     } else {
-                        var sqlquery = "SELECT m.*, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as status FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite WHERE m.idmesin=? ORDER BY m.idmasalah DESC"
-                        database.query(sqlquery, [idmesin], (error, rows) => {
+                        var sqlquery = `SELECT * FROM (SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as statusselesai, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity, pe.nama as pengguna FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite INNER JOIN pengguna pe ON m.idpengguna=pe.idpengguna WHERE m.flag_activity = ? AND m.idmesin = ? AND m.tanggal > date_sub(now(), INTERVAL 3 MONTH) ORDER BY m.tanggal DESC)a ORDER BY a.statusselesai ASC;`
+                        database.query(sqlquery, [flag_activity, idmesin], (error, rows) => {
                             database.release()
                             if (error) {
                                 return res.status(500).send({
@@ -242,6 +245,7 @@ async function addMasalah(req, res) {
                                 jenis_masalah: jenis_masalah,
                                 flag_activity: flag_activity,
                                 created: nows,
+                                timestamp:nows, /// untuk update field lama, aplikasi baru tidak dipakai!
                                 idpengguna: jwtresult.idpengguna
                             }
                             var sqlquery = "INSERT INTO masalah SET ?"

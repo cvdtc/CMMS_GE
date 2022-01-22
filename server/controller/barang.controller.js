@@ -56,7 +56,7 @@ function getBarang(req, res) {
                             data: error
                         })
                     } else {
-                        var sqlquery = `SELECT b.BB_ID as idbarang, b.BB_NAMA as nama, b.umur as umur_pakai, '-' as keterangan, '1' as idsatuan, b.BB_SATUAN as satuan FROM bb b, golx, gol WHERE b.gol=golx.G_ID and golx.GOL=gol.kode and gol.JENIS='SPARE PARTS'`
+                        var sqlquery = `SELECT b.BB_ID as idbarang, b.BB_NAMA as nama, b.umur as umur_barang, b.BB_SATUAN as satuan FROM bb b, golx, gol WHERE b.gol=golx.G_ID and golx.GOL=gol.kode and gol.JENIS='SPARE PARTS'`
                         database.query(sqlquery, (error, rows) => {
                             database.release()
                             if (error) {

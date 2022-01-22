@@ -54,25 +54,24 @@ async function Login(req, res) {
                                 console.log("Login Berhasil")
                                 const user = {
                                     idpengguna: rows[0].idpengguna,
-                                    aktif: rows[0].aktif
                                 };
                                 const access_token = jwt.sign(user, process.env.ACCESS_SECRET, {
                                     expiresIn: process.env.ACCESS_EXPIRED
                                 })
-                                fs.appendFile('notificationlog.txt', `[ ${tipe} ] ` + new Date().getUTCMinutes + ` [ Login ] - ${username}\n`, function (err) {
-                                    if (err) {
+                                fs.appendFile('notificationlog.txt',  `[ ${tipe} ] `+new Date().getUTCMinutes+` [ Login ] - ${username}\n`, function (err){
+                                    if(err){
                                         console.log('gagal')
-                                    } else {
-                                        console.log('berhasil')
+                                    }else{
+                                        console.log('berhasil')        
                                     }
                                 })
-                                console.log('berhasil')
                                 return res.status(200).send({
                                     message: 'Selamat, Anda Berhasil Login',
                                     data: {
                                         access_token: access_token,
                                         username: rows[0].nama,
-                                        jabatan: rows[0].jabatan
+                                        jabatan: rows[0].jabatan,
+					aktif: rows[0].aktif+'-'+rows[0].idpengguna
                                     }
                                 })
                             }
@@ -91,8 +90,10 @@ async function Login(req, res) {
 
 async function cekingToken(req, res) {
     var token = req.params.token
+    console.log(token)
     try {
-        jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+            console.log(jwterror, jwtresult)
             if (jwtresult) {
                 pool.getConnection(function (error, database) {
                     if (error) {
@@ -101,7 +102,7 @@ async function cekingToken(req, res) {
                             data: error
                         })
                     } else {
-                        var sqlquery = "SELECT * FROM pengguna where idpengguna = ?"
+                        var sqlquery = "SELECT nama, jabatan, aktif FROM pengguna where idpengguna = ?"
                         database.query(sqlquery, jwtresult.idpengguna, (error, rows) => {
                             database.release()
                             if (error) {
@@ -127,7 +128,7 @@ async function cekingToken(req, res) {
                 })
             } else {
                 return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
+                    message: "Sorry, Token tidak validx!",
                     data: jwterror
                 });
             }

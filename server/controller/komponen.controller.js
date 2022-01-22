@@ -37,11 +37,11 @@ const pool = mysql.createPool({
  */
 
 async function getKomponen(req, res) {
-    const token = req.headers.authorization
+    const token = req.headers.authorization.split(' ')[1]
     var idmesin = req.params.idmesin;
     var filterquery = ""
     try {
-        jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
+        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwtresult) {
                 pool.getConnection(function (error, database) {
                     if (error) {

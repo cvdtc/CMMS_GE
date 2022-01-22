@@ -396,11 +396,12 @@ class ApiService {
       // ++ fyi : sending token with BEARER
       'Authorization': 'Bearer ' + token
     });
-    print(response.body);
+    print('Masalah?' + response.body + flag_activity);
     // ++ fyi : for getting response message from api
-    Map responsemessage = jsonDecode(response.body);
-    responseCode = ResponseCode.fromJson(responsemessage);
+
     if (response.statusCode == 200) {
+      Map responsemessage = jsonDecode(response.body);
+      responseCode = ResponseCode.fromJson(responsemessage);
       return masalahFromJson(response.body);
     } else {
       return null;

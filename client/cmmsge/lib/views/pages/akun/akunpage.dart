@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/login/loginpage.dart';
+import 'package:cmmsge/views/utils/deviceinfo.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AkunPage extends StatefulWidget {
@@ -24,7 +29,6 @@ class _AkunPageState extends State<AkunPage> {
 
   @override
   initState() {
-    // TODO: implement initState
     super.initState();
     cekToken();
   }
@@ -54,14 +58,15 @@ class _AkunPageState extends State<AkunPage> {
               SizedBox(
                 width: 15,
               ),
-              Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [Text(username!.toUpperCase()), Text(jabatan!)]),
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(username!.toUpperCase()),
+                Text(jabatan!),
+              ]),
             ],
           ),
           _akunMenu(),
           _option(),
-          Text('v.1.1.2 Debuging')
+          Text('v.1.2.0 Debuging')
         ],
       ),
     ));

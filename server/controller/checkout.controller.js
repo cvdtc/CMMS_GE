@@ -14,6 +14,8 @@ var nows = {
     toSqlString: function () { return "NOW()" }
 }
 
+function calculateTanggalReminder(umur){return "date_add(now(), INTERVAL "+umur+"-30 DAY)"};
+
 /**
  * @swagger
  * tags:
@@ -55,7 +57,7 @@ function getCheckout(req, res) {
                             data: error
                         })
                     } else {
-                        var sqlquery = `SELECT c.idcheckout, c.idmasalah, c.idbarang, c.idsatuan, DATE_FORMAT( c.tanggal, "%Y-%m-%d") as tanggal, c.keterangan, c.qty, b.BB_NAMA as barang, b.BB_SATUAN as satuan, m.masalah FROM checkout c, masalah m, bb b WHERE c.idmasalah=m.idmasalah and c.idbarang=b.BB_ID AND m.idmasalah = ?`
+                        var sqlquery = `SELECT c.idcheckout, c.idmasalah, c.idbarang, c.idsatuan, DATE_FORMAT( c.tanggal, "%Y-%m-%d") as tanggal, c.keterangan, c.qty, b.BB_NAMA as barang, b.BB_SATUAN as satuan, m.masalah, c.tgl_reminder, c.kilometer FROM checkout c, masalah m, bb b WHERE c.idmasalah=m.idmasalah and c.idbarang=b.BB_ID AND m.idmasalah = ?`
                         database.query(sqlquery,idmasalah, (error, rows) => {
                             database.release()
                             if (error) {
@@ -120,6 +122,10 @@ function getCheckout(req, res) {
  *                      type: integer
  *                  keterangan:
  *                      type: string
+ *                  tgl_reminder:
+ *                      type: date 
+ *                  kilometer:
+ *                      type: string
  *      responses:
  *          201:
  *              description: jika data berhasil di fetch
@@ -144,6 +150,8 @@ async function addCheckout(req, res) {
     var idsatuan = req.body.idsatuan
     var qty = req.body.qty
     var keterangan = req.body.keterangan
+    var tgl_reminder = req.body.tgl_reminder
+    var kilometer = req.body.kilometer
     const token = req.headers.authorization
     console.log('Mencoba insert checkout...')
     try {
@@ -164,6 +172,8 @@ async function addCheckout(req, res) {
                                 idsatuan: idsatuan,
                                 qty: qty,
                                 keterangan: keterangan,
+                                tgl_reminder: nows,
+                                kilometer: kilometer,
                                 timestamp: nows
                             }
                             var sqlquery = "INSERT INTO checkout SET ?"
@@ -260,6 +270,8 @@ async function editCheckout(req, res) {
     var idsatuan = req.body.idsatuan
     var qty = req.body.qty
     var keterangan = req.body.keterangan
+    var tgl_reminder = req.body.tgl_reminder
+    var kilometer = req.body.kilometer
     const token = req.headers.authorization
     try {
         jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
@@ -280,6 +292,8 @@ async function editCheckout(req, res) {
                                 idsatuan: idsatuan,
                                 qty: qty,
                                 keterangan: keterangan,
+                                tgl_reminder: tgl_reminder,
+                                kilometer: kilometer,
                                 timestamp: nows
                             }
                             var sqlquery = "UPDATE checkout SET ? WHERE idcheckout = ?"

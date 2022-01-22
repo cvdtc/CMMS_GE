@@ -12,6 +12,10 @@ const pool = mysql.createPool({
     timezone: 'utc-8'
 })
 
+var nows = {
+    toSqlString: function () { return "NOW()" }
+}
+
 /**
  * @swagger
  * tags:
@@ -217,7 +221,9 @@ async function addPenyelesaian(req, res) {
                             let datapenyelesaian = {
                                 tanggal: tanggal,
                                 keterangan: keterangan,
-                                idmasalah: idmasalah
+                                idmasalah: idmasalah,
+                                created: nows,
+                                idpengguna: jwtresult.idpengguna
                             }
                             var sqlquery = "INSERT INTO penyelesaian SET ?"
                             database.query(sqlquery, datapenyelesaian, (error, result) => {
@@ -241,7 +247,7 @@ async function addPenyelesaian(req, res) {
                                             })
                                         } else {
                                             var sqlquery = 'UPDATE masalah SET flag_activity = 1 WHERE idmasalah = ?'
-                                            database.query(sqlquery, idmasalah, (error, resultupdatemasalah)=>{
+                                            database.query(sqlquery, idmasalah, (error, resultupdatemasalah) => {
                                                 return res.status(201).send({
                                                     message: "Done!,  Data has been stored!",
                                                 })
@@ -331,7 +337,8 @@ async function editPenyelesaian(req, res) {
                                 let datapenyelesaian = {
                                     tanggal: tanggal,
                                     keterangan: keterangan,
-                                    idmasalah: idmasalah
+                                    idmasalah: idmasalah,
+                                    idpengguna: jwtresult.idpengguna
                                 }
                                 var sqlquery = "UPDATE penyelesaian SET ? WHERE idpenyelesaian = ?"
                                 database.query(sqlquery, [datapenyelesaian, idpenyelesaian], (error, result) => {

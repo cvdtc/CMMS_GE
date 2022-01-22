@@ -45,7 +45,9 @@ class _ActivityDashboardState extends State<ActivityDashboard> {
         // ++ 0 in getlistmesin for getting all data mesin without filter
         future: _apiService.getListMasalah(token!, flag_activity.toString()),
         builder: (context, AsyncSnapshot<List<MasalahModel>?> snapshot) {
+          print(snapshot);
           if (snapshot.hasError) {
+            print(snapshot.hasError);
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

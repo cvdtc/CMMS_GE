@@ -51,10 +51,10 @@ async function getMesin(req, res) {
                         })
                     } else {
                         // * if idsite == 0 run all query without where idsite
-                        if(idsite != 0) filterquery = 'idsite = ?'
+                        if (idsite != 0) filterquery = 'idsite = ?'
                         ///////////////////////////////////////////////
-                        var sqlquery = "SELECT m.*, s.nama as site FROM mesin m, site s WHERE m.idsite=s.idsite "+filterquery+" ORDER BY m.nomesin ASC"
-                        database.query(sqlquery, [idsite],(error, rows) => {
+                        var sqlquery = "SELECT m.*, s.nama as site FROM mesin m, site s WHERE m.idsite=s.idsite " + filterquery + " ORDER BY m.nomesin ASC"
+                        database.query(sqlquery, [idsite], (error, rows) => {
                             database.release()
                             if (error) {
                                 return res.status(500).send({
@@ -77,7 +77,7 @@ async function getMesin(req, res) {
                         })
                     }
                 })
-                
+
             } else {
                 return res.status(401).send({
                     message: "Sorry, Token tidak valid!",
@@ -134,11 +134,7 @@ async function addMesin(req, res) {
     var keterangan = req.body.keterangan
     var idsite = req.body.idsite
     const token = req.headers.authorization.split(' ')[1]
-    if (Object.keys(req.body).length != 3) {
-        return res.status(405).send({
-            message: 'parameter tidak sesuai!'
-        })
-    } else {
+
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwterror) {
@@ -165,7 +161,7 @@ async function addMesin(req, res) {
                                 database.release()
                                 if (error) {
                                     database.rollback(function () {
-                                        
+
                                         return res.status(407).send({
                                             message: 'Sorry :(, we have problems sql query!',
                                             error: error
@@ -197,7 +193,7 @@ async function addMesin(req, res) {
             message: "Forbidden.",
             error: error
         })
-    }}
+    }
 }
 
 /**
@@ -242,11 +238,6 @@ async function editMesin(req, res) {
     var keterangan = req.body.keterangan
     var idsite = req.body.idsite
     const token = req.headers.authorization.split(' ')[1]
-    if (Object.keys(req.body).length != 3) {
-        return res.status(405).send({
-            message: 'parameter tidak sesuai!'
-        })
-    } else {
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             if (jwterror) {
@@ -304,7 +295,7 @@ async function editMesin(req, res) {
             message: "Forbidden.",
             error: error
         })
-    }}
+    }
 }
 
 

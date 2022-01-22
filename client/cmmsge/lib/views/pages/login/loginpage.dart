@@ -3,7 +3,10 @@ import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/utils/bottomnavigation.dart';
+import 'package:cmmsge/views/utils/deviceinfo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {
@@ -22,6 +25,16 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _tecUsername = TextEditingController(text: "");
   TextEditingController _tecPassword = TextEditingController(text: "");
   ApiService _apiService = ApiService();
+  String? uuid;
+  cekuuid() async {
+    uuid = await GetDeviceID().getDeviceID(context);
+  }
+
+  @override
+  initState() {
+    super.initState();
+    cekuuid();
+  }
 
   // * method for show or hide password
   void _toggle() {
@@ -102,6 +115,47 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       )),
+                  SizedBox(
+                    height: 22,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Device ID :  ' + uuid.toString().toUpperCase(),
+                        style: TextStyle(color: primarycolor),
+                      ),
+                      SizedBox(
+                        width: 10.0,
+                      ),
+                      SizedBox(
+                        height: 25.0,
+                        width: 75.0,
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(text: uuid)).then(
+                                  (value) => Fluttertoast.showToast(
+                                      msg: 'ID tersalin!',
+                                      backgroundColor: Colors.green));
+                            },
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0.0,
+                              primary: Colors.green,
+                            ),
+                            child: Ink(
+                              child: Container(
+                                width: 75,
+                                height: 50,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "Salin",
+                                ),
+                              ),
+                            )),
+                      ),
+                    ],
+                  ),
                 ],
               ))
             ],

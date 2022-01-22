@@ -50,6 +50,7 @@ async function getSite(req, res) {
                     } else {
                         var sqlquery = "SELECT * FROM site"
                         database.query(sqlquery,(error, rows) => {
+                            database.release()
                             if (error) {
                                 return res.status(500).send({
                                     message: "Sorry :(, my query has been error",
