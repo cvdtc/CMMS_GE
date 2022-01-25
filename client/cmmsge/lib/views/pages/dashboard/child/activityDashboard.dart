@@ -47,7 +47,6 @@ class _ActivityDashboardState extends State<ActivityDashboard> {
         builder: (context, AsyncSnapshot<List<MasalahModel>?> snapshot) {
           print(snapshot);
           if (snapshot.hasError) {
-            print(snapshot.hasError);
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

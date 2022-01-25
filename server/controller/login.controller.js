@@ -13,16 +13,20 @@ const pool = mysql.createPool({
 var fs = require('fs')
 
 async function Login(req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
-    var tipe = req.body.tipe;
-    console.log('Ada yang mencoba masuk', Object.keys(req.body).length)
-    if (Object.keys(req.body).length != 3) {
-        res.status(405).send({
-            message: "Parameter tidak sesuai",
+    var username = req.body.username
+    var password = req.body.password
+    var device = req.body.device
+    var appversion = req.body.appversion
+    var uuid = req.body.uuid
+    console.log(username, password, device, appversion, uuid)
+    console.log(appversion < process.env.API_VERSION, appversion, process.env.API_VERSION)
+    if(appversion < process.env.API_VERSION){
+        return res.status(401).send({
+            message: 'Sorry 😞, Invalid Version, please update.',
+            error: null,
             data: null
         })
-    } else {
+    }else{
         try {
             pool.getConnection(function (error, database) {
                 if (error) {
@@ -31,8 +35,8 @@ async function Login(req, res) {
                         data: error
                     })
                 } else {
-                    var sqlquery = "SELECT idpengguna, username, password, jabatan, nama, aktif FROM pengguna WHERE username = ? and password = ?"
-                    database.query(sqlquery, [username, password], function (error, rows) {
+                    var sqlquery = "SELECT idpengguna, username, password, jabatan, nama, aktif FROM pengguna WHERE username = ? and password = ? and newuuid = ?"
+                    database.query(sqlquery, [username, password, uuid], function (error, rows) {
                         database.release()
                         if (error) {
                             res.status(407).send({
@@ -54,15 +58,17 @@ async function Login(req, res) {
                                 console.log("Login Berhasil")
                                 const user = {
                                     idpengguna: rows[0].idpengguna,
+                                    device: device,
+                                    appversion: appversion
                                 };
                                 const access_token = jwt.sign(user, process.env.ACCESS_SECRET, {
                                     expiresIn: process.env.ACCESS_EXPIRED
                                 })
-                                fs.appendFile('notificationlog.txt',  `[ ${tipe} ] `+new Date().getUTCMinutes+` [ Login ] - ${username}\n`, function (err){
-                                    if(err){
+                                fs.appendFile('notificationlog.txt', `[ ${device} ] ` + new Date().getUTCMinutes + ` [ Login ] - ${username}\n`, function (err) {
+                                    if (err) {
                                         console.log('gagal')
-                                    }else{
-                                        console.log('berhasil')        
+                                    } else {
+                                        console.log('berhasil')
                                     }
                                 })
                                 return res.status(200).send({
@@ -71,7 +77,7 @@ async function Login(req, res) {
                                         access_token: access_token,
                                         username: rows[0].nama,
                                         jabatan: rows[0].jabatan,
-					aktif: rows[0].aktif+'-'+rows[0].idpengguna
+                                        aktif: rows[0].aktif + '-' + rows[0].idpengguna
                                     }
                                 })
                             }
@@ -90,7 +96,6 @@ async function Login(req, res) {
 
 async function cekingToken(req, res) {
     var token = req.params.token
-    console.log(token)
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             console.log(jwterror, jwtresult)

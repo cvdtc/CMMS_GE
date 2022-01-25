@@ -19,10 +19,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiService {
   // ? make sure api url true, change variable BaseUrl if api url has changed.
   /// for server
-  final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
+  // final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
 
   /// for development
-  // final String BaseUrl = "http://192.168.1.211:9994/api/v1/";
+  final String BaseUrl = "http://192.168.1.213:9994/api/v1/";
 
   Client client = Client();
   ResponseCode responseCode = ResponseCode();
@@ -36,13 +36,14 @@ class ApiService {
     var url = Uri.parse(BaseUrl + 'login');
     var response = await client.post(url,
         headers: {'content-type': 'application/json'}, body: loginToJson(data));
-    // ++ fyi : this code below for getting login result if success.
-    Map resultLogin = jsonDecode(response.body)['data'];
-    var loginresult = LoginResult.fromJson(resultLogin);
+    print(response.body);
     // ++ fyi : this code below for getting response and message from api response.
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
+      // ++ fyi : this code below for getting login result if success.
+      Map resultLogin = jsonDecode(response.body)['data'];
+      var loginresult = LoginResult.fromJson(resultLogin);
       // ++ fyi : for set shared preferences from LoginResult model, this shared preferences fot save access token credentials for request to api.
       SharedPreferences sp = await SharedPreferences.getInstance();
       sp.setString('access_token', "${loginresult.access_token}");
@@ -455,10 +456,10 @@ class ApiService {
       // ++ fyi : sending token with BEARER
       'Authorization': 'Bearer ' + token
     });
-    // ++ fyi : for getting response message from api
-    Map responsemessage = jsonDecode(response.body);
-    responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
+      // ++ fyi : for getting response message from api
+      Map responsemessage = jsonDecode(response.body);
+      responseCode = ResponseCode.fromJson(responsemessage);
       return scheduleFromJson(response.body);
     } else {
       return null;

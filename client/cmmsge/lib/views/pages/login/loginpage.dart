@@ -2,6 +2,7 @@ import 'package:cmmsge/services/models/login/LoginModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/utils/appversion.dart';
 import 'package:cmmsge/views/utils/bottomnavigation.dart';
 import 'package:cmmsge/views/utils/deviceinfo.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +27,11 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _tecPassword = TextEditingController(text: "");
   ApiService _apiService = ApiService();
   String? uuid;
-  cekuuid() async {
-    uuid = await GetDeviceID().getDeviceID(context);
+
+  Future cekuuid() async {
+    setState(() async {
+      uuid = await GetDeviceID().getDeviceID(context);
+    });
   }
 
   @override
@@ -133,12 +137,14 @@ class _LoginPageState extends State<LoginPage> {
                         height: 25.0,
                         width: 75.0,
                         child: ElevatedButton(
-                            onPressed: () {
-                              Clipboard.setData(ClipboardData(text: uuid)).then(
-                                  (value) => Fluttertoast.showToast(
-                                      msg: 'ID tersalin!',
-                                      backgroundColor: Colors.green));
-                            },
+                            onPressed: uuid == null
+                                ? () {}
+                                : () {
+                                    Clipboard.setData(ClipboardData(text: uuid))
+                                        .then((value) => Fluttertoast.showToast(
+                                            msg: 'ID tersalin!',
+                                            backgroundColor: Colors.green));
+                                  },
                             style: ElevatedButton.styleFrom(
                               elevation: 0.0,
                               primary: Colors.green,
@@ -149,13 +155,14 @@ class _LoginPageState extends State<LoginPage> {
                                 height: 50,
                                 alignment: Alignment.center,
                                 child: Text(
-                                  "Salin",
+                                  uuid == null ? 'Wait' : "Salin",
                                 ),
                               ),
                             )),
                       ),
                     ],
                   ),
+                  Text('Versi : ' + appVersion.versionnumber.toString())
                 ],
               ))
             ],
@@ -207,8 +214,12 @@ class _LoginPageState extends State<LoginPage> {
           'f400',
           'assets/images/sorry.png');
     } else {
-      LoginModel dataparams =
-          LoginModel(username: username, password: password, tipe: 'mobile');
+      LoginModel dataparams = LoginModel(
+          username: username,
+          password: password,
+          device: 'mobile',
+          uuid: uuid,
+          appversion: appVersion.versionnumber);
       _apiService.LoginApp(dataparams).then((isSuccess) {
         setState(() {
           _isLoading = false;
@@ -224,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
           ReusableClasses().modalbottomWarning(
               context,
               'Login Gagal!',
-              '${_apiService.responseCode.messageApi} [error : ${isSuccess}]',
+              '${_apiService.responseCode.messageApi}',
               'f400',
               'assets/images/sorry.png');
         }

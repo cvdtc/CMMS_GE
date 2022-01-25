@@ -1,16 +1,6 @@
 require('dotenv').config()
-const jwt = require('jsonwebtoken')
-var fs = require('fs')
-const mysql = require('mysql')
 const fcmadmin = require('../utils/firebase.configuration')
-const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-    timezone: 'utc-8'
-})
+var pool = require('../utils/pool.configuration')
 
 var nows = {
     toSqlString: function () { return "NOW()" }
@@ -43,58 +33,39 @@ var nows = {
  */
 
 function getMasalah(req, res) {
-    const token = req.headers.authorization
     var flag_activity = req.params.flag_activity
-    try {
-        jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwtresult) {
-                pool.getConnection(function (error, database) {
-                    if (error) {
-                        return res.status(400).send({
-                            message: "Pool refushed, sorry :(, please try again or contact developer.",
-                            data: error
+    pool.getConnection(function (error, database) {
+        if (error) {
+            return res.status(400).send({
+                message: "Pool refushed, sorry :(, please try again or contact developer.",
+                data: error
+            })
+        } else {
+            var sqlquery = `SELECT * FROM (SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as statusselesai, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity, pe.nama as pengguna FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite INNER JOIN pengguna pe ON m.idpengguna=pe.idpengguna WHERE m.flag_activity = ? AND m.tanggal > date_sub(now(), INTERVAL 3 MONTH) ORDER BY m.tanggal DESC)a ORDER BY a.statusselesai ASC, a.created DESC;`
+            database.query(sqlquery, flag_activity, (error, rows) => {
+                database.release()
+                if (error) {
+                    console.log(error)
+                    return res.status(500).send({
+                        message: "Sorry :(, my query has been error",
+                        data: error
+                    })
+                } else {
+                    if (rows.length <= 0) {
+                        return res.status(204).send({
+                            message: "Data masih kosong",
+                            data: rows
                         })
                     } else {
-                        var sqlquery = `SELECT * FROM (SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as statusselesai, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity, pe.nama as pengguna FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite INNER JOIN pengguna pe ON m.idpengguna=pe.idpengguna WHERE m.flag_activity = ? AND m.tanggal > date_sub(now(), INTERVAL 3 MONTH) ORDER BY m.tanggal DESC)a ORDER BY a.statusselesai ASC, a.created DESC;`
-                        database.query(sqlquery, flag_activity, (error, rows) => {
-                            database.release()
-                            if (error) {
-                                console.log(error)
-                                return res.status(500).send({
-                                    message: "Sorry :(, my query has been error",
-                                    data: error
-                                })
-                            } else {
-                                console.log('masalah', rows)
-                                if (rows.length <= 0) {
-                                    return res.status(204).send({
-                                        message: "Data masih kosong",
-                                        data: rows
-                                    })
-                                } else {
-                                    return res.status(200).send({
-                                        message: "Data berhasil fetch.",
-                                        data: rows
-                                    })
-                                }
-                            }
+                        return res.status(200).send({
+                            message: "Data berhasil fetch.",
+                            data: rows
                         })
                     }
-                })
-            } else {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                });
-            }
-        })
-    } catch (error) {
-        console.log(error)
-        return res.status(403).send({
-            message: "Forbidden.",
-            error: error
-        })
-    }
+                }
+            })
+        }
+    })
 }
 
 /**
@@ -119,55 +90,37 @@ function getMasalah(req, res) {
 async function getMasalahByMesin(req, res) {
     var idmesin = req.params.idmesin
     var flag_activity = req.params.flag_activity
-    const token = req.headers.authorization
-    try {
-        jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwtresult) {
-
-                pool.getConnection(function (error, database) {
-                    if (error) {
-                        return res.status(400).send({
-                            message: "Pool refushed, sorry :(, try again or contact developer",
-                            data: error
+    pool.getConnection(function (error, database) {
+        if (error) {
+            return res.status(400).send({
+                message: "Pool refushed, sorry :(, try again or contact developer",
+                data: error
+            })
+        } else {
+            var sqlquery = `SELECT * FROM (SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as statusselesai, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity, pe.nama as pengguna FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite INNER JOIN pengguna pe ON m.idpengguna=pe.idpengguna WHERE m.flag_activity = ? AND m.idmesin = ? AND m.tanggal > date_sub(now(), INTERVAL 3 MONTH) ORDER BY m.tanggal DESC)a ORDER BY a.statusselesai ASC;`
+            database.query(sqlquery, [flag_activity, idmesin], (error, rows) => {
+                database.release()
+                if (error) {
+                    return res.status(500).send({
+                        message: "Sorry :(, my query has been error",
+                        data: error
+                    })
+                } else {
+                    if (rows.length <= 0) {
+                        return res.status(204).send({
+                            message: "Data masih kosong",
+                            data: rows
                         })
                     } else {
-                        var sqlquery = `SELECT * FROM (SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as statusselesai, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity, pe.nama as pengguna FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite INNER JOIN pengguna pe ON m.idpengguna=pe.idpengguna WHERE m.flag_activity = ? AND m.idmesin = ? AND m.tanggal > date_sub(now(), INTERVAL 3 MONTH) ORDER BY m.tanggal DESC)a ORDER BY a.statusselesai ASC;`
-                        database.query(sqlquery, [flag_activity, idmesin], (error, rows) => {
-                            database.release()
-                            if (error) {
-                                return res.status(500).send({
-                                    message: "Sorry :(, my query has been error",
-                                    data: error
-                                })
-                            } else {
-                                if (rows.length <= 0) {
-                                    return res.status(204).send({
-                                        message: "Data masih kosong",
-                                        data: rows
-                                    })
-                                } else {
-                                    return res.status(200).send({
-                                        message: "Data berhasil fetch.",
-                                        data: rows
-                                    })
-                                }
-                            }
+                        return res.status(200).send({
+                            message: "Data berhasil fetch.",
+                            data: rows
                         })
                     }
-                })
-            } else {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                })
-            }
-        })
-    } catch (error) {
-        return res.status(403).send({
-            message: "Forbidden.",
-            error: error
-        })
-    }
+                }
+            })
+        }
+    })
 }
 
 /**
@@ -214,7 +167,7 @@ async function getMasalahByMesin(req, res) {
  *              description: kesalahan pada query sql
  */
 
-async function addMasalah(req, res) {
+async function addMasalah(req, res, datatoken) {
     var masalah = req.body.masalah
     var tanggal = req.body.tanggal
     var jam = req.body.jam
@@ -222,101 +175,83 @@ async function addMasalah(req, res) {
     var shift = req.body.shift
     var jenis_masalah = req.body.jenis_masalah
     var flag_activity = req.body.flag_activity
-    const token = req.headers.authorization
     console.log('Mencoba insert...')
-    try {
-        jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwtresult) {
-
-                pool.getConnection(function (error, database) {
+    pool.getConnection(function (error, database) {
+        if (error) {
+            return res.status(400).send({
+                message: "Sorry, Pool Refushed",
+                data: error
+            })
+        } else {
+            database.beginTransaction(function (error) {
+                let datamasalah = {
+                    masalah: masalah,
+                    tanggal: tanggal,
+                    jam: jam,
+                    idmesin: idmesin,
+                    shift: shift,
+                    jenis_masalah: jenis_masalah,
+                    flag_activity: flag_activity,
+                    created: nows,
+                    timestamp: nows, /// untuk update field lama, aplikasi baru tidak dipakai!
+                    idpengguna: datatoken.idpengguna
+                }
+                var sqlquery = "INSERT INTO masalah SET ?"
+                database.query(sqlquery, datamasalah, (error, result) => {
                     if (error) {
-                        return res.status(400).send({
-                            message: "Sorry, Pool Refushed",
-                            data: error
+                        database.rollback(function () {
+                            database.release()
+                            return res.status(407).send({
+                                message: 'Sorry :(, we have problems sql query!',
+                                error: error
+                            })
                         })
                     } else {
-                        database.beginTransaction(function (error) {
-                            let datamasalah = {
-                                masalah: masalah,
-                                tanggal: tanggal,
-                                jam: jam,
-                                idmesin: idmesin,
-                                shift: shift,
-                                jenis_masalah: jenis_masalah,
-                                flag_activity: flag_activity,
-                                created: nows,
-                                timestamp:nows, /// untuk update field lama, aplikasi baru tidak dipakai!
-                                idpengguna: jwtresult.idpengguna
-                            }
-                            var sqlquery = "INSERT INTO masalah SET ?"
-                            database.query(sqlquery, datamasalah, (error, result) => {
-                                if (error) {
-                                    database.rollback(function () {
-                                        database.release()
-                                        return res.status(407).send({
-                                            message: 'Sorry :(, we have problems sql query!',
-                                            error: error
-                                        })
+                        database.commit(function (errcommit) {
+                            if (errcommit) {
+                                database.rollback(function () {
+                                    database.release()
+                                    return res.status(407).send({
+                                        message: 'data gagal disimpan!'
                                     })
-                                } else {
-                                    database.commit(function (errcommit) {
-                                        if (errcommit) {
-                                            database.rollback(function () {
-                                                database.release()
-                                                return res.status(407).send({
-                                                    message: 'data gagal disimpan!'
-                                                })
-                                            })
-                                        } else {
-                                            var getmesin = "SELECT nomesin, keterangan FROM mesin WHERE idmesin = ?"
-                                            database.query(getmesin, idmesin, (error, result) => {
-                                                database.release()
-                                                // * set firebase notification message 
-                                                let notificationMessage = {
-                                                    notification: {
-                                                        title: `Ada Masalah pada ${result[0].keterangan} ( ${result[0].nomesin} )`,
-                                                        body: masalah,
-                                                        sound: 'default',
-                                                        'click_action': 'FCM_PLUGIN_ACTIVITY'
-                                                    },
-                                                    data: {
-                                                        "judul": `Ada Masalah pada ${result[0].keterangan} ( ${result[0].nomesin} )`,
-                                                        "isi": masalah
-                                                    }
-                                                }
-                                                // * sending notification topic RMSPERMINTAAN
-                                                fcmadmin.messaging().sendToTopic('CMMSMASALAH', notificationMessage)
-                                                    .then(function (response) {
-                                                        return res.status(201).send({
-                                                            message: "Done!,  Data has been stored!2",
-
-                                                        })
-                                                    }).catch(function (error) {
-                                                        return res.status(201).send({
-                                                            message: "Done!,  Data has been stored!, but notification can't send to topic.",
-                                                        })
-                                                    })
-                                            })
+                                })
+                            } else {
+                                var getmesin = "SELECT nomesin, keterangan FROM mesin WHERE idmesin = ?"
+                                database.query(getmesin, idmesin, (error, result) => {
+                                    database.release()
+                                    // * set firebase notification message 
+                                    let notificationMessage = {
+                                        notification: {
+                                            title: `Ada Masalah pada ${result[0].keterangan} ( ${result[0].nomesin} )`,
+                                            body: masalah,
+                                            sound: 'default',
+                                            'click_action': 'FCM_PLUGIN_ACTIVITY'
+                                        },
+                                        data: {
+                                            "judul": `Ada Masalah pada ${result[0].keterangan} ( ${result[0].nomesin} )`,
+                                            "isi": masalah
                                         }
-                                    })
-                                }
-                            })
+                                    }
+                                    // * sending notification topic RMSPERMINTAAN
+                                    fcmadmin.messaging().sendToTopic('CMMSMASALAH', notificationMessage)
+                                        .then(function (response) {
+                                            return res.status(201).send({
+                                                message: "Done!,  Data has been stored!2",
+
+                                            })
+                                        }).catch(function (error) {
+                                            return res.status(201).send({
+                                                message: "Done!,  Data has been stored!, but notification can't send to topic.",
+                                            })
+                                        })
+                                })
+                            }
                         })
                     }
                 })
-            } else {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                })
-            }
-        })
-    } catch (error) {
-        return res.status(403).send({
-            message: "Forbidden.",
-            error: error
-        })
-    }
+            })
+        }
+    })
 }
 
 /**
@@ -361,7 +296,7 @@ async function addMasalah(req, res) {
  *              description: kesalahan pada query sql
  */
 
-async function editMasalah(req, res) {
+async function editMasalah(req, res, datatoken) {
     var idmasalah = req.params.idmasalah
     var masalah = req.body.masalah
     var tanggal = req.body.tanggal
@@ -370,72 +305,56 @@ async function editMasalah(req, res) {
     var shift = req.body.shift
     var flag_activity = req.body.flag_activity
     var jenis_masalah = req.body.jenis_masalah
-    const token = req.headers.authorization.split(' ')[1]
-    try {
-        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwtresult) {
-                console.log('Mencoba edit...')
-                pool.getConnection(function (error, database) {
+
+    console.log('Mencoba edit...')
+    pool.getConnection(function (error, database) {
+        if (error) {
+            return res.status(400).send({
+                message: "Sorry, Pool Refushed",
+                data: error
+            })
+        } else {
+            database.beginTransaction(function (error) {
+                let datamasalah = {
+                    masalah: masalah,
+                    tanggal: tanggal,
+                    jam: jam,
+                    idmesin: idmesin,
+                    shift: shift,
+                    jenis_masalah: jenis_masalah,
+                    flag_activity: flag_activity,
+                    edited: nows,
+                    idpengguna: datatoken.idpengguna
+                }
+                var sqlquery = "UPDATE masalah SET ? WHERE idmasalah = ?"
+                database.query(sqlquery, [datamasalah, idmasalah], (error, result) => {
+                    database.release()
                     if (error) {
-                        return res.status(400).send({
-                            message: "Soory, Pool Refushed",
-                            data: error
+                        database.rollback(function () {
+                            return res.status(407).send({
+                                message: 'Sorry :(, we have problems sql query!',
+                                error: error
+                            })
                         })
                     } else {
-                        database.beginTransaction(function (error) {
-                            let datamasalah = {
-                                masalah: masalah,
-                                tanggal: tanggal,
-                                jam: jam,
-                                idmesin: idmesin,
-                                shift: shift,
-                                jenis_masalah: jenis_masalah,
-                                flag_activity: flag_activity,
-                                edited: nows,
-                                idpengguna: jwtresult.idpengguna
+                        database.commit(function (errcommit) {
+                            if (errcommit) {
+                                database.rollback(function () {
+                                    return res.status(407).send({
+                                        message: 'data gagal disimpan!'
+                                    })
+                                })
+                            } else {
+                                return res.status(200).send({
+                                    message: 'Data berhasil disimpan!'
+                                })
                             }
-                            var sqlquery = "UPDATE masalah SET ? WHERE idmasalah = ?"
-                            database.query(sqlquery, [datamasalah, idmasalah], (error, result) => {
-                                database.release()
-                                if (error) {
-                                    database.rollback(function () {
-                                        return res.status(407).send({
-                                            message: 'Sorry :(, we have problems sql query!',
-                                            error: error
-                                        })
-                                    })
-                                } else {
-                                    database.commit(function (errcommit) {
-                                        if (errcommit) {
-                                            database.rollback(function () {
-                                                return res.status(407).send({
-                                                    message: 'data gagal disimpan!'
-                                                })
-                                            })
-                                        } else {
-                                            return res.status(200).send({
-                                                message: 'Data berhasil disimpan!'
-                                            })
-                                        }
-                                    })
-                                }
-                            })
                         })
                     }
                 })
-            } else {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                })
-            }
-        })
-    } catch (error) {
-        return res.status(403).send({
-            message: "Forbidden.",
-            error: error
-        })
-    }
+            })
+        }
+    })
 }
 
 

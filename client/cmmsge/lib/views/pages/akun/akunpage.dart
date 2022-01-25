@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/login/loginpage.dart';
+import 'package:cmmsge/views/utils/appversion.dart';
 import 'package:cmmsge/views/utils/deviceinfo.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
@@ -66,7 +67,7 @@ class _AkunPageState extends State<AkunPage> {
           ),
           _akunMenu(),
           _option(),
-          Text('v.1.2.0 Debuging')
+          Text("Versi : " + appVersion.versionnumber.toString())
         ],
       ),
     ));

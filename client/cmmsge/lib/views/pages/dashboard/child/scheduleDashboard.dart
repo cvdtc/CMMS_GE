@@ -43,7 +43,9 @@ class _ScheduleDashboardState extends State<ScheduleDashboard> {
         // ++ 0 in getlistmesin for getting all data mesin without filter
         future: _apiService.getSchedule(token!),
         builder: (context, AsyncSnapshot<List<ScheduleModel>?> snapshot) {
+          print('Schedule' + snapshot.toString());
           if (snapshot.hasError) {
+            print(snapshot.hasError);
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

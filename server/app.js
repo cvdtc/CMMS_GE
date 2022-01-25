@@ -6,11 +6,17 @@ const docAuth = require('express-basic-auth')
 const swaggerUI = require('swagger-ui-express')
 const swaggerJS = require('swagger-jsdoc')
 const path = require('path')
+const morgan = require('morgan')
+const fs = require('fs')
 
 // var serviceaccount = require('../utils/cmmsgeprivatekey.json')
 // fcm.initializeApp({
 //     credential: fcm.credential.cert(serviceaccount)
 // })
+
+/// CREATE MORGAN CONFIGURATION
+var writeLogConnection = fs.createWriteStream(path.join(__dirname, 'connectionaccess.log'), {flags: 'a'})
+app.use(morgan('combined', {stream: writeLogConnection}))
 
 //setting up express or api to json type
 app.use(express.json())
