@@ -1,15 +1,7 @@
 //Plugin
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
-const mysql = require('mysql')
-const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-    timezone: 'utc-8'
-})
+var pool = require('../utils/pool.configuration')
 var fs = require('fs')
 
 async function Login(req, res) {
@@ -20,13 +12,14 @@ async function Login(req, res) {
     var uuid = req.body.uuid
     console.log(username, password, device, appversion, uuid)
     console.log(appversion < process.env.API_VERSION, appversion, process.env.API_VERSION)
-    if(appversion < process.env.API_VERSION){
+    /// checkin app version and api version
+    if (appversion < process.env.API_VERSION) {
         return res.status(401).send({
-            message: 'Sorry 😞, Invalid Version, please update.',
+            message: 'Sorry 😞, your apps too old, please update your apps or report to administrator.',
             error: null,
             data: null
         })
-    }else{
+    } else {
         try {
             pool.getConnection(function (error, database) {
                 if (error) {
@@ -35,8 +28,12 @@ async function Login(req, res) {
                         data: error
                     })
                 } else {
-                    var sqlquery = "SELECT idpengguna, username, password, jabatan, nama, aktif FROM pengguna WHERE username = ? and password = ? and newuuid = ?"
-                    database.query(sqlquery, [username, password, uuid], function (error, rows) {
+                    var filterdevice = ""
+                    if (device != "WEBAPI") filterdevice = " and newuuid='" + uuid + "'"
+                    //                    var sqlquery = "SELECT idpengguna, username, password, jabatan, nama, aktif FROM pengguna WHERE username = ? and password = ? and newuuid = ?"
+                    //                    database.query(sqlquery, [username, password, uuid], function (error, rows) {
+                    var sqlquery = "SELECT idpengguna, username, password, jabatan, nama, aktif FROM pengguna WHERE username = ? and password = ? "
+                    database.query(sqlquery, [username, password], function (error, rows) {
                         database.release()
                         if (error) {
                             res.status(407).send({
@@ -59,7 +56,8 @@ async function Login(req, res) {
                                 const user = {
                                     idpengguna: rows[0].idpengguna,
                                     device: device,
-                                    appversion: appversion
+                                    appversion: appversion,
+                                    uuid: uuid
                                 };
                                 const access_token = jwt.sign(user, process.env.ACCESS_SECRET, {
                                     expiresIn: process.env.ACCESS_EXPIRED

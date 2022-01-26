@@ -6,6 +6,7 @@ import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/dashboard/child/activityDashboard.dart';
 import 'package:cmmsge/views/pages/dashboard/child/scheduleDashboard.dart';
+import 'package:cmmsge/views/utils/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,9 +39,9 @@ class _DashboardPageState extends State<DashboardPage> {
       // jml_masalah = value as String.toList();
       // jml_selesai = dashboardModel.jml_selesai;
       // belum_selesai = jml_masalah - jml_selesai;
-    }).onError((error, stackTrace) {
-      ReusableClasses().modalbottomWarning(context, 'Gagal', 'Sorry',
-          error.toString(), '/assets/images/sorry.png');
+    }).catchError((error, stackTrace) {
+      ReusableClasses().modalbottomWarning(context, 'Warning!',
+          error.toString(), stackTrace.toString(), 'assets/images/sorry.png');
     });
   }
 

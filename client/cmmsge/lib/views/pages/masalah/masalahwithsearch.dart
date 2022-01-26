@@ -44,8 +44,13 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
         _masalahDisplay = _masalah;
       });
     }).onError((error, stackTrace) {
-      ReusableClasses().modalbottomWarning(context, error.toString(),
-          'Data masih Kosong', 'f204', 'assets/images/sorry.png');
+      if (error == 204) {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            "Data masih kosong", error.toString(), 'assets/images/sorry.png');
+      } else {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            error.toString(), stackTrace.toString(), 'assets/images/sorry.png');
+      }
     });
   }
 

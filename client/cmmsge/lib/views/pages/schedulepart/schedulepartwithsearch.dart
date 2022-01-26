@@ -1,4 +1,6 @@
 import 'package:cmmsge/services/models/barang/barangModel.dart';
+import 'package:cmmsge/services/models/schedule/schedulepartModel.dart';
+import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/schedulepart/networkschedulepart.dart';
@@ -17,8 +19,8 @@ class SchedulePartPage extends StatefulWidget {
 class _SchedulePartPageState extends State<SchedulePartPage> {
   late SharedPreferences sp;
   String? token = "", idmesin = '';
-  List<BarangModel> _barang = <BarangModel>[];
-  List<BarangModel> _barangDisplay = <BarangModel>[];
+  List<SchedulepartModel> _schedulePart = <SchedulepartModel>[];
+  List<SchedulepartModel> _schedulePartDisplay = <SchedulepartModel>[];
   TextEditingController _textSearch = TextEditingController(text: "");
 
   bool _isLoading = true;
@@ -32,9 +34,17 @@ class _SchedulePartPageState extends State<SchedulePartPage> {
     fetchSchedulePart(token!, idmesin).then((value) {
       setState(() {
         _isLoading = false;
-        _barang.addAll(value);
-        _barangDisplay = _barang;
+        _schedulePart.addAll(value);
+        _schedulePartDisplay = _schedulePart;
       });
+    }).catchError((error, stackTrace) {
+      if (error == 204) {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            "Data masih kosong", error.toString(), 'assets/images/sorry.png');
+      } else {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            error.toString(), stackTrace.toString(), 'assets/images/sorry.png');
+      }
     });
   }
 
@@ -71,13 +81,16 @@ class _SchedulePartPageState extends State<SchedulePartPage> {
               if (!_isLoading) {
                 return index == 0
                     ? _searchBar()
-                    : SchedulePartTile(barang: this._barangDisplay[index - 1]);
+                    : SchedulePartTile(
+                        barang: this._schedulePartDisplay[index - 1],
+                        token: token!,
+                      );
                 // : SiteTile(site: this._sitesDisplay[index - 1]);
               } else {
                 return LoadingView();
               }
             },
-            itemCount: _barangDisplay.length + 1,
+            itemCount: _schedulePart.length + 1,
           ),
         ),
       ),
@@ -93,7 +106,7 @@ class _SchedulePartPageState extends State<SchedulePartPage> {
         onChanged: (searchText) {
           searchText = searchText.toLowerCase();
           setState(() {
-            _barangDisplay = _barang.where((u) {
+            _schedulePartDisplay = _schedulePart.where((u) {
               var fKode = u.kode.toLowerCase();
               var fNama = u.nama.toLowerCase();
               return fKode.contains(searchText) || fNama.contains(searchText);

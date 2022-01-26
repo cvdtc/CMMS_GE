@@ -38,9 +38,9 @@ async function getMesin(req, res) {
             })
         } else {
             // * if idsite == 0 run all query without where idsite
-            if (idsite != 0) filterquery = 'idsite = ?'
+            if (idsite != 0) filterquery = ' AND idsite = ?'
             ///////////////////////////////////////////////
-            var sqlquery = "SELECT m.*, s.nama as site FROM mesin m, site s WHERE m.idsite=s.idsite " + filterquery + " ORDER BY m.nomesin ASC"
+            var sqlquery = "SELECT m.*, s.nama as site FROM mesin m, site s WHERE m.idsite=s.idsite " + filterquery + " ORDER BY m.idsite, m.nomesin ASC"
             database.query(sqlquery, [idsite], (error, rows) => {
                 database.release()
                 if (error) {

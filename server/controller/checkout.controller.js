@@ -228,7 +228,6 @@ async function editCheckout(req, res) {
     var keterangan = req.body.keterangan
     var tgl_reminder = req.body.tgl_reminder
     var kilometer = req.body.kilometer
-    const token = req.headers.authorization
     console.log('Mencoba edit...')
     pool.getConnection(function (error, database) {
         if (error) {
@@ -253,6 +252,49 @@ async function editCheckout(req, res) {
                 database.query(sqlquery, [datacheckout, idcheckout], (error, result) => {
                     database.release()
                     console.log(result);
+                    if (error) {
+                        database.rollback(function () {
+                            return res.status(407).send({
+                                message: 'Sorry :(, we have problems sql query!',
+                                error: error
+                            })
+                        })
+                    } else {
+                        database.commit(function (errcommit) {
+                            if (errcommit) {
+                                database.rollback(function () {
+                                    return res.status(407).send({
+                                        message: 'data gagal disimpan!'
+                                    })
+                                })
+                            } else {
+                                return res.status(200).send({
+                                    message: 'Data berhasil diperbarui!'
+                                })
+                            }
+                        })
+                    }
+                })
+            })
+        }
+    })
+}
+
+async function editCheckoutTglReminder(req, res) {
+    var idcheckout = req.params.idcheckout
+    var tgl_reminder = req.body.tgl_reminder
+    console.log('Mencoba edit tgl reminder...')
+    pool.getConnection(function (error, database) {
+        if (error) {
+            return res.status(400).send({
+                message: "Sorry, Pool Refushed",
+                data: error
+            })
+        } else {
+            database.beginTransaction(function (error) {
+                var sqlquery = "UPDATE checkout SET tgl_reminder = ?, timestamp = ? WHERE idcheckout = ?"
+                database.query(sqlquery, [tgl_reminder, nows, idcheckout], (error, result) => {
+                    database.release()
                     if (error) {
                         database.rollback(function () {
                             return res.status(407).send({
@@ -359,5 +401,5 @@ async function deleteCheckout(req, res) {
 }
 
 module.exports = {
-    getCheckout, addCheckout, editCheckout, deleteCheckout
+    getCheckout, addCheckout, editCheckout, editCheckoutTglReminder, deleteCheckout
 }

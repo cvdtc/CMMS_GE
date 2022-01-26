@@ -1,4 +1,5 @@
 import 'package:cmmsge/services/models/schedule/scheduleModel.dart';
+import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/schedule/networkschedule.dart';
@@ -35,7 +36,16 @@ class _SchedulePageState extends State<SchedulePage> {
         _schedule.addAll(value);
         _scheduleDisplay = _schedule;
       });
+    }).catchError((error, stackTrace) {
+      if (error == 204) {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            "Data masih kosong", error.toString(), 'assets/images/sorry.png');
+      } else {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            error.toString(), stackTrace.toString(), 'assets/images/sorry.png');
+      }
     });
+    ;
   }
 
   Future refreshData() async {

@@ -99,7 +99,7 @@ function getSchedulePart(req, res) {
             })
         } else {
             /// reminder schedule part di batasi 14 hari
-            var sqlquery = `select b.BB_ID as idbarang, b.BB_NAMA as nama, b.UMUR as umur, b.BB_SATUAN as satuan, datediff(date(now()), c.tanggal) as lewathari from masalah m, checkout c, bb b WHERE m.idmasalah=c.idmasalah and c.idbarang=b.BB_ID and datediff(date(now()), c.tgl_reminder)  between b.UMUR -14 and b.UMUR + 14 and m.idmesin = ?`
+            var sqlquery = `select b.BB_ID as kode, b.BB_NAMA as nama, b.UMUR as umur, b.BB_SATUAN as satuan, datediff(date(now()), c.tanggal) as lewathari, DATE_FORMAT( c.tgl_reminder, "%Y-%m-%d") as tgl_reminder, c.idcheckout from masalah m, checkout c, bb b WHERE m.idmasalah=c.idmasalah and c.idbarang=b.BB_ID and datediff(date(now()), c.tgl_reminder)  between b.UMUR -14 and b.UMUR + 14 and m.idmesin = ?`
             database.query(sqlquery, idmesin, (error, rows) => {
                 database.release()
                 if (error) {

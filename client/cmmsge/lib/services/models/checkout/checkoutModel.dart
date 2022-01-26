@@ -61,7 +61,7 @@ class CheckoutModel {
 
   @override
   String toString() {
-    return 'CheckoutModel{idmasalah: $idmasalah, idbarang: $idbarang, tanggal: $tanggal, idsatuan: $idsatuan, qty: $qty, keterangan: $keterangan}';
+    return 'CheckoutModel{idmasalah: $idmasalah, idbarang: $idbarang, tanggal: $tanggal, idsatuan: $idsatuan, qty: $qty, keterangan: $keterangan, kilomerter: $kilometer, tgl_reminder: $tgl_reminder}';
   }
 }
 

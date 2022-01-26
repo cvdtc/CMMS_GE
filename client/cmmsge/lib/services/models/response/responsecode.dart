@@ -15,7 +15,7 @@ class ResponseCode {
 
   @override
   String toString() {
-    return 'ResponseCode{statuscode: $statusCode, message: $messageApi';
+    return '$messageApi';
   }
 }
 

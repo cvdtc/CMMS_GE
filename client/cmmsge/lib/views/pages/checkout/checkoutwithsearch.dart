@@ -37,9 +37,14 @@ class _CheckoutPageSearchState extends State<CheckoutPageSearch> {
         _checkout.addAll(value);
         _checkoutDisplay = _checkout;
       });
-    }).onError((error, stackTrace) {
-      ReusableClasses().modalbottomWarning(context, error.toString(),
-          'Data Item Kosong!', 'f204', 'assets/images/sorry.png');
+    }).catchError((error, stackTrace) {
+      if (error == 204) {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            "Data masih kosong", error.toString(), 'assets/images/sorry.png');
+      } else {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            error.toString(), stackTrace.toString(), 'assets/images/sorry.png');
+      }
     });
   }
 

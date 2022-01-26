@@ -1,3 +1,3 @@
 class appVersion {
-  static double versionnumber = 1.2;
+  static double versionnumber = 2.0;
 }

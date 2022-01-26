@@ -1,12 +1,8 @@
-import 'dart:io';
-
+import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/login/loginpage.dart';
 import 'package:cmmsge/views/utils/appversion.dart';
-import 'package:cmmsge/views/utils/deviceinfo.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AkunPage extends StatefulWidget {
@@ -206,7 +202,7 @@ class _AkunPageState extends State<AkunPage> {
                       ),
                       ElevatedButton(
                           onPressed: () {
-                            exit();
+                            ReusableClasses().exit(context);
                             Navigator.of(context).pop();
                           },
                           style: ElevatedButton.styleFrom(
@@ -231,12 +227,5 @@ class _AkunPageState extends State<AkunPage> {
             ),
           );
         });
-  }
-
-  void exit() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    preferences.clear();
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
 }

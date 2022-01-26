@@ -19,10 +19,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiService {
   // ? make sure api url true, change variable BaseUrl if api url has changed.
   /// for server
-  // final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
+  final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
 
   /// for development
-  final String BaseUrl = "http://192.168.1.213:9994/api/v1/";
+  // final String BaseUrl = "http://192.168.1.213:9994/api/v1/";
 
   Client client = Client();
   ResponseCode responseCode = ResponseCode();
@@ -36,7 +36,6 @@ class ApiService {
     var url = Uri.parse(BaseUrl + 'login');
     var response = await client.post(url,
         headers: {'content-type': 'application/json'}, body: loginToJson(data));
-    print(response.body);
     // ++ fyi : this code below for getting response and message from api response.
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
@@ -75,7 +74,9 @@ class ApiService {
     if (response.statusCode == 200) {
       return dashboardFromJson(response.body);
     } else {
-      return null;
+      // throw Exception([response.body, response.statusCode]);
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -104,7 +105,8 @@ class ApiService {
     if (response.statusCode == 200) {
       return komponenFromJson(response.body);
     } else {
-      return null;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -127,7 +129,9 @@ class ApiService {
     if (response.statusCode == 200) {
       return mesinFromJson(response.body);
     } else {
-      return null;
+      // return null;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -142,11 +146,13 @@ class ApiService {
         body: mesinToJson(data));
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
-    print("ADD MESIN? " + response.body);
+    // print("ADD MESIN? " + response.body);
     if (response.statusCode == 201) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -164,7 +170,9 @@ class ApiService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -181,14 +189,16 @@ class ApiService {
       // ++ fyi : sending token with BEARER
       'Authorization': 'Bearer ' + token
     });
-    print(response.body);
+    print('GET TIMELINE' + response.body);
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
       return timelineFromJson(response.body);
     } else {
-      return null;
+      // return null;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -210,7 +220,9 @@ class ApiService {
     if (response.statusCode == 201) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -231,7 +243,9 @@ class ApiService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -250,7 +264,9 @@ class ApiService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -268,7 +284,9 @@ class ApiService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -287,7 +305,9 @@ class ApiService {
     if (response.statusCode == 201) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -307,7 +327,9 @@ class ApiService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -325,7 +347,9 @@ class ApiService {
     if (response.statusCode == 201) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -344,7 +368,9 @@ class ApiService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -357,13 +383,36 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: checkoutToJson(data));
-    print('send to add checkout' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 201) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
+    }
+  }
+
+  // ! EDIT Data Checkout TGL REMINDER
+  Future<bool> ubahDataCheckout(
+      String token, String idcheckout, CheckoutModel data) async {
+    var url = Uri.parse(BaseUrl + 'checkouttglreminder/' + idcheckout);
+    var response = await client.put(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: checkoutToJson(data));
+    print('UBAH DATA TGL REMINDER' + response.body);
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -374,13 +423,15 @@ class ApiService {
       'content-type': 'application/json',
       'Authorization': 'Bearer ${token}'
     });
-    print(response.body);
+    print('HAPUS CHECKOUT' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -391,21 +442,24 @@ class ApiService {
   Future<List<MasalahModel>?> getListMasalah(
       String token, String flag_activity) async {
     var url = Uri.parse(BaseUrl + 'masalah/' + flag_activity);
-    print(token + " | " + url.toString());
     var response = await client.get(url, headers: {
       'content-type': 'application/json',
       // ++ fyi : sending token with BEARER
       'Authorization': 'Bearer ' + token
     });
-    print('Masalah?' + response.body + flag_activity);
+    print('Masalah?' + response.body + response.statusCode.toString());
     // ++ fyi : for getting response message from api
 
     if (response.statusCode == 200) {
       Map responsemessage = jsonDecode(response.body);
       responseCode = ResponseCode.fromJson(responsemessage);
       return masalahFromJson(response.body);
-    } else {
+    } else if (response.statusCode == 204) {
       return null;
+    } else {
+      // return null;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -424,7 +478,9 @@ class ApiService {
     if (response.statusCode == 201) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -441,7 +497,9 @@ class ApiService {
     if (response.statusCode == 200) {
       return true;
     } else {
-      return false;
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 
@@ -462,7 +520,9 @@ class ApiService {
       responseCode = ResponseCode.fromJson(responsemessage);
       return scheduleFromJson(response.body);
     } else {
-      return null;
+      // return null;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
   }
 }

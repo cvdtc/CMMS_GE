@@ -21,6 +21,9 @@ router.post('/checkout', jwtVerify, function (req, res) {
 router.put('/checkout/:idcheckout', jwtVerify, function (req, res) {
     RouteToCheckout.editCheckout(req, res)
 })
+router.put('/checkouttglreminder/:idcheckout', jwtVerify, function (req, res) {
+    RouteToCheckout.editCheckoutTglReminder(req, res)
+})
 router.delete('/checkout/:idcheckout', jwtVerify, function (req, res) {
     RouteToCheckout.deleteCheckout(req, res)
 })
@@ -105,10 +108,16 @@ router.post('/progress', jwtVerify, function (req, res) {
 router.put('/progress/:idprogress', jwtVerify, function (req, res) {
     RouteToProgress.editProgress(req, res, req.decode)
 })
-
+//REPORT
 var RouteToReport = require('../controller/report.controller')
 router.get('/timeline/:idmasalah', jwtVerify, function (req, res) {
     RouteToReport.getTimeline(req, res)
+})
+router.get('/schedule', jwtVerify, function (req, res) {
+    RouteToReport.getSchedule(req, res)
+})
+router.get('/schedulepart/:idmesin', jwtVerify, function (req, res) {
+    RouteToReport.getSchedulePart(req, res)
 })
 
 //SITE

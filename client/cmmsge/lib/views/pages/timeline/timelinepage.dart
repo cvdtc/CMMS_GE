@@ -423,7 +423,7 @@ class _TimelinePageState extends State<TimelinePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Item Penyelesaian',
+                            'Sparepart',
                             style: TextStyle(
                                 fontSize: 16.0, fontWeight: FontWeight.bold),
                           ),

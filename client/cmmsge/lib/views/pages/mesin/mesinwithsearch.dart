@@ -1,4 +1,5 @@
 import 'package:cmmsge/services/models/mesin/mesinModel.dart';
+import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/mesin/networkmesin.dart';
@@ -38,6 +39,14 @@ class MesinSearchPageState extends State<MesinSearchPage> {
         _mesin.addAll(value);
         _mesinDisplay = _mesin;
       });
+    }).catchError((error, stackTrace) {
+      if (error == 204) {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            "Data masih kosong", error.toString(), 'assets/images/sorry.png');
+      } else {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            error.toString(), stackTrace.toString(), 'assets/images/sorry.png');
+      }
     });
   }
 
