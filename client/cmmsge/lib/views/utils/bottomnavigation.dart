@@ -1,16 +1,31 @@
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/akun/akunpage.dart';
 import 'package:cmmsge/views/pages/dashboard/dasboardpage.dart';
 import 'package:cmmsge/views/pages/menu/menupage.dart';
 import 'package:cmmsge/views/pages/scan/scanmesinpage.dart';
-import 'package:cmmsge/views/pages/schedule/scheduleganti.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BottomNavigation extends StatefulWidget {
+  int numberOfPage;
+  BottomNavigation({required this.numberOfPage});
   @override
   _BottomNavigationState createState() => _BottomNavigationState();
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
+  late SharedPreferences sp;
+  String? token = "", username = "", jabatan = "";
+// * ceking token and getting dashboard value from Shared Preferences
+  cekToken() async {
+    sp = await SharedPreferences.getInstance();
+    setState(() {
+      token = sp.getString("access_token")!;
+      username = sp.getString("username")!;
+      jabatan = sp.getString("jabatan")!;
+    });
+  }
+
   // ! Initialize Variable
   // * please all variable drop here!
   // * and make sure variable have value don't let variable null
@@ -19,9 +34,16 @@ class _BottomNavigationState extends State<BottomNavigation> {
   List<Widget> _currentPage = <Widget>[
     DashboardPage(),
     ScanMesinPage(),
-    ScheduleGantiPartPage(),
-    MenuPage()
+    MenuPage(),
+    AkunPage()
   ];
+
+  @override
+  void initState() {
+    _currentTab = widget.numberOfPage;
+    cekToken();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +54,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.white,
-            selectedIconTheme: IconThemeData(color: primarycolor),
-            selectedItemColor: primarycolor,
-            unselectedItemColor: primarycolor.withOpacity(.40),
+            selectedIconTheme: IconThemeData(color: thirdcolor),
+            selectedItemColor: thirdcolor,
+            unselectedItemColor: thirdcolor.withOpacity(.40),
             onTap: (value) {
               setState(() {
                 _currentTab = value;
@@ -47,8 +69,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
               BottomNavigationBarItem(
                   label: 'Scan', icon: Icon(Icons.qr_code_2)),
               BottomNavigationBarItem(
-                  label: 'Schedule', icon: Icon(Icons.schedule_outlined)),
-              BottomNavigationBarItem(label: 'Menu', icon: Icon(Icons.menu)),
+                  label: 'Menu', icon: Icon(Icons.list_alt_rounded)),
+              BottomNavigationBarItem(
+                  label: 'Account', icon: Icon(Icons.account_circle_outlined)),
             ],
           ),
         ));

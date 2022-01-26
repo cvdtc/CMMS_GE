@@ -11,7 +11,7 @@ class DashboardModel {
 
   @override
   String toString() {
-    return 'DashboardModel{jml_masalah: $jml_masalah, jml_selesai: $jml_selesai}';
+    return 'jml_masalah: $jml_masalah, jml_selesai: $jml_selesai';
   }
 }
 

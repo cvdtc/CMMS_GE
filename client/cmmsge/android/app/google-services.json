@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "521460089286",
+    "project_id": "cmmsge-2021",
+    "storage_bucket": "cmmsge-2021.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:521460089286:android:c1dfcc7a3436cf546c32c7",
+        "android_client_info": {
+          "package_name": "com.cvdtc.cmmsge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "521460089286-0b5s4gmodonidisf70722ablo410lr2p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkkyjgCmDRjFc3ovCHGnRXZWyiyrmNPq8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "521460089286-0b5s4gmodonidisf70722ablo410lr2p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

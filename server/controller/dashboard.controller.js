@@ -1,14 +1,5 @@
 require('dotenv').config()
-const jwt = require('jsonwebtoken')
-const mysql = require('mysql')
-const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: process.env.DB_PORT,
-    timezone: 'utc-8'
-})
+var pool = require('../utils/pool.configuration')
 
 /**
  * @swagger
@@ -38,52 +29,37 @@ const pool = mysql.createPool({
 
 async function getDashboard(req, res) {
     const token = req.headers.authorization.split(' ')[1]
-    try {
-        jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
-            if (jwterror) {
-                return res.status(401).send({
-                    message: "Sorry, Token tidak valid!",
-                    data: jwterror
-                });
-            } else {
-                pool.getConnection(function (error, database) {
-                    if (error) {
-                        return res.status(400).send({
-                            message: "Pool refushed, sorry :(, try again or contact developer",
-                            data: error
+    pool.getConnection(function (error, database) {
+        if (error) {
+            return res.status(400).send({
+                message: "Pool refushed, sorry :(, try again or contact developer",
+                data: error
+            })
+        } else {
+            var sqlquery = "SELECT count(m.idmasalah) as jml_masalah, COUNT(p.idpenyelesaian) as jml_selesai FROM masalah m LEFT JOIN penyelesaian p on m.idmasalah=p.idmasalah"
+            database.query(sqlquery, (error, rows) => {
+                database.release()
+                if (error) {
+                    return res.status(500).send({
+                        message: "Sorry :(, my query has been error",
+                        data: error
+                    })
+                } else {
+                    if (rows.length <= 0) {
+                        return res.status(204).send({
+                            message: "Data masih kosong",
+                            data: rows
                         })
                     } else {
-                        var sqlquery = "SELECT count(m.idmasalah) as jml_masalah, COUNT(p.idpenyelesaian) as jml_selesai FROM masalah m LEFT JOIN penyelesaian p on m.idmasalah=p.idmasalah"
-                        database.query(sqlquery, (error, rows) => {
-                            if (error) {
-                                return res.status(500).send({
-                                    message: "Sorry :(, my query has been error",
-                                    data: error
-                                })
-                            } else {
-                                if (rows.length <= 0) {
-                                    return res.status(204).send({
-                                        message: "Data masih kosong",
-                                        data: rows
-                                    })
-                                } else {
-                                    return res.status(200).send({
-                                        message: "Data berhasil fetch.",
-                                        data: rows
-                                    })
-                                }
-                            }
+                        return res.status(200).send({
+                            message: "Data berhasil fetch.",
+                            data: rows
                         })
                     }
-                })
-            }
-        })
-    } catch (error) {
-        return res.status(403).send({
-            message: "Forbidden.",
-            error: error
-        })
-    }
+                }
+            })
+        }
+    })
 }
 
 module.exports = {

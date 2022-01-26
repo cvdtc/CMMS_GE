@@ -2,8 +2,13 @@ import 'package:cmmsge/services/models/login/LoginModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/utils/appversion.dart';
 import 'package:cmmsge/views/utils/bottomnavigation.dart';
+import 'package:cmmsge/views/utils/deviceinfo.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -21,6 +26,19 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _tecUsername = TextEditingController(text: "");
   TextEditingController _tecPassword = TextEditingController(text: "");
   ApiService _apiService = ApiService();
+  String? uuid;
+
+  Future cekuuid() async {
+    setState(() async {
+      uuid = await GetDeviceID().getDeviceID(context);
+    });
+  }
+
+  @override
+  initState() {
+    super.initState();
+    cekuuid();
+  }
 
   // * method for show or hide password
   void _toggle() {
@@ -43,28 +61,36 @@ class _LoginPageState extends State<LoginPage> {
             alignment: Alignment.center,
             fit: StackFit.passthrough,
             children: [
-              Positioned.fill(
-                  top: 20,
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: (Text("PT. SINAR INDOGREEN KENCANA")),
-                  )),
+              // Positioned.fill(
+              //     top: 20,
+              //     child: Align(
+              //       alignment: Alignment.topLeft,
+              //       child: (Text("PT. SINAR INDOGREEN KENCANA")),
+              //     )),
               Positioned(
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 175,
-                    height: 100,
+                    width: 240,
+                    height: 80,
                     child: Image.asset('assets/images/logoge.png'),
                   ),
                   Text(
-                    "[ CMMS ]",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
+                    "CMMS",
+                    style: GoogleFonts.nunito(
+                      textStyle: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xff000912),
+                        letterSpacing: 3,
+                      ),
+                    ),
+                    // style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
                   ),
                   SizedBox(
-                    height: 15,
+                    height: 20,
                   ),
                   _TextEditingUsername(),
                   SizedBox(height: 10),
@@ -77,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                         LoginClick();
                       },
                       style: ElevatedButton.styleFrom(
-                        elevation: 0.0,
+                        elevation: 3.0,
                         primary: thirdcolor,
                       ),
                       child: Ink(
@@ -93,6 +119,50 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       )),
+                  SizedBox(
+                    height: 22,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Device ID :  ' + uuid.toString().toUpperCase(),
+                        style: TextStyle(color: primarycolor),
+                      ),
+                      SizedBox(
+                        width: 10.0,
+                      ),
+                      SizedBox(
+                        height: 25.0,
+                        width: 75.0,
+                        child: ElevatedButton(
+                            onPressed: uuid == null
+                                ? () {}
+                                : () {
+                                    Clipboard.setData(ClipboardData(text: uuid))
+                                        .then((value) => Fluttertoast.showToast(
+                                            msg: 'ID tersalin!',
+                                            backgroundColor: Colors.green));
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0.0,
+                              primary: Colors.green,
+                            ),
+                            child: Ink(
+                              child: Container(
+                                width: 75,
+                                height: 50,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  uuid == null ? 'Wait' : "Salin",
+                                ),
+                              ),
+                            )),
+                      ),
+                    ],
+                  ),
+                  Text('Versi : ' + appVersion.versionnumber.toString())
                 ],
               ))
             ],
@@ -134,7 +204,6 @@ class _LoginPageState extends State<LoginPage> {
 
   // * class for login button action and response
   void LoginClick() {
-    print('hii');
     var username = _tecUsername.text.toString();
     var password = _tecPassword.text.toString();
     if (username == "" || password == "") {
@@ -143,27 +212,43 @@ class _LoginPageState extends State<LoginPage> {
           "Tidak Valid",
           'pastikan username dan password sudah terisi!',
           'f400',
-          'assets/iamges/sorry.png');
+          'assets/images/sorry.png');
     } else {
-      LoginModel dataparams =
-          LoginModel(username: username, password: password, tipe: 'mobile');
+      LoginModel dataparams = LoginModel(
+          username: username,
+          password: password,
+          device: 'mobile',
+          uuid: uuid,
+          appversion: appVersion.versionnumber);
       _apiService.LoginApp(dataparams).then((isSuccess) {
         setState(() {
           _isLoading = false;
         });
         if (isSuccess) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => BottomNavigation()));
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BottomNavigation(
+                        numberOfPage: 0,
+                      )));
         } else {
           ReusableClasses().modalbottomWarning(
               context,
               'Login Gagal!',
               '${_apiService.responseCode.messageApi}',
-              '400',
-              'assets/images/sorry');
+              'f400',
+              'assets/images/sorry.png');
         }
         return;
       });
+      // .onError((error, stackTrace) {
+      //   ReusableClasses().modalbottomWarning(
+      //       context,
+      //       'Koneksi Bermasalah!',
+      //       'Pastikan Koneksi anda stabil terlebih dahulu, apabila masih terkendala hubungi IT. ${error}',
+      //       'f500',
+      //       'assets/images/sorry.png');
+      // });
     }
     return;
   }
