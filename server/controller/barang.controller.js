@@ -2,7 +2,7 @@ require('dotenv').config()
 var connection = require('../utils/pool.configuration')
 
 var nows = {
-    toSqlString: function () { return "NOW()" }
+    toSqlString: function() { return "NOW()" }
 }
 
 /**
@@ -34,8 +34,8 @@ var nows = {
 
 
 function getBarang(req, res) {
-    console.log('geting barang...')
-    connection.getConnection(function (error, database) {
+    console.log('Load barang...')
+    connection.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Pool refushed, sorry :(, please try again or contact developer.",

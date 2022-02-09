@@ -64,6 +64,7 @@ class MesinSearchPageState extends State<MesinSearchPage> {
   initState() {
     transaksi = widget.transaksi;
     flag_activity = widget.flag_activity;
+    print(transaksi);
     cekToken();
     super.initState();
   }
@@ -72,7 +73,7 @@ class MesinSearchPageState extends State<MesinSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: transaksi == 'masalah'
+          title: transaksi == 'masalah' || transaksi == 'komponen'
               ? Text('Pilih Mesin')
               : Text('Daftar Mesin'),
           centerTitle: true,
@@ -91,7 +92,7 @@ class MesinSearchPageState extends State<MesinSearchPage> {
               ),
             )
           ]),
-      floatingActionButton: transaksi == 'masalah'
+      floatingActionButton: transaksi == 'masalah' || transaksi == 'komponen'
           ? null
           : FloatingActionButton(
               onPressed: () {

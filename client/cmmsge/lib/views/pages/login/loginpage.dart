@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   ApiService _apiService = ApiService();
   String? uuid;
 
-  Future cekuuid() async {
+  cekuuid() async {
     setState(() async {
       uuid = await GetDeviceID().getDeviceID(context);
     });
@@ -224,31 +224,22 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _isLoading = false;
         });
-        if (isSuccess) {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => BottomNavigation(
-                        numberOfPage: 0,
-                      )));
-        } else {
-          ReusableClasses().modalbottomWarning(
-              context,
-              'Login Gagal!',
-              '${_apiService.responseCode.messageApi}',
-              'f400',
-              'assets/images/sorry.png');
-        }
-        return;
+        return Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(
+                      numberOfPage: 0,
+                    )));
+      }).onError((error, stackTrace) {
+        return ReusableClasses().modalbottomWarning(
+            context,
+            'Koneksi Bermasalah!',
+            'Pastikan Koneksi anda stabil terlebih dahulu, apabila masih terkendala hubungi IT.' +
+                error.toString() +
+                stackTrace.toString(),
+            'f500',
+            'assets/images/sorry.png');
       });
-      // .onError((error, stackTrace) {
-      //   ReusableClasses().modalbottomWarning(
-      //       context,
-      //       'Koneksi Bermasalah!',
-      //       'Pastikan Koneksi anda stabil terlebih dahulu, apabila masih terkendala hubungi IT. ${error}',
-      //       'f500',
-      //       'assets/images/sorry.png');
-      // });
     }
     return;
   }

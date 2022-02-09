@@ -2,7 +2,58 @@
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 var pool = require('../utils/pool.configuration')
-var fs = require('fs')
+var nows = {
+    toSqlString: function() { return "NOW()" }
+}
+
+/**
+ * @swagger
+ * tags:
+ *  name: Validation
+ *  description: Api untuk Login and validation
+ */
+
+/**
+ * @swagger
+ * /login:
+ *  post:
+ *      summary: Untuk login validasi aplikasi cmms
+ *      tags: [Validation]
+ *      consumes:
+ *          - application/json
+ *      parameters:
+ *          - in: body
+ *            name: parameter yang dikirim
+ *            schema:
+ *              properties:
+ *                  username: 
+ *                      type: string
+ *                  password:
+ *                      type: string
+ *                  device:
+ *                      type: string
+ *                  appversion:
+ *                      type: integer
+ *                  uuid:
+ *                      type: integer
+ *                  ipclient:
+ *                      type: integer
+ *      responses:
+ *          200:
+ *              description: jika data berhasil di fetch
+ *          204:
+ *              description: jika data yang dicari tidak ada
+ *          400:
+ *              description: kendala koneksi pool database
+ *          401:
+ *              description: token tidak valid
+ *          405:
+ *              description: parameter yang dikirim tidak sesuai
+ *          407:
+ *              description: gagal generate encrypt password 
+ *          500:
+ *              description: kesalahan pada query sql
+ */
 
 async function Login(req, res) {
     var username = req.body.username
@@ -10,9 +61,10 @@ async function Login(req, res) {
     var device = req.body.device
     var appversion = req.body.appversion
     var uuid = req.body.uuid
-    console.log(username, password, device, appversion, uuid)
+    var ipclient = req.socket.remoteAddress
+    console.log(username, password, device, appversion, uuid, ipclient.split('f:')[1])
     console.log(appversion < process.env.API_VERSION, appversion, process.env.API_VERSION)
-    /// checkin app version and api version
+        /// checkin app version and api version
     if (appversion < process.env.API_VERSION) {
         return res.status(401).send({
             message: 'Sorry 😞, your apps too old, please update your apps or report to administrator.',
@@ -21,33 +73,42 @@ async function Login(req, res) {
         })
     } else {
         try {
-            pool.getConnection(function (error, database) {
+            pool.getConnection(function(error, database) {
                 if (error) {
-                    res.status(501).send({
+                    return res.status(501).send({
                         message: "Sorry, Pool Refushed",
                         data: error
                     })
                 } else {
                     var filterdevice = ""
-                    if (device != "WEBAPI") filterdevice = " and newuuid='" + uuid + "'"
-                    //                    var sqlquery = "SELECT idpengguna, username, password, jabatan, nama, aktif FROM pengguna WHERE username = ? and password = ? and newuuid = ?"
-                    //                    database.query(sqlquery, [username, password, uuid], function (error, rows) {
+                    if (device == "WEBAPI") {
+                        if (uuid == process.env.UUIDWEB) {
+
+                        } else {
+                            return res.status(401).send({
+                                message: "Sorry, WEB UUID not match!",
+                                data: error
+                            })
+                        }
+                    } else {
+                        filterdevice = " and newuuid='" + uuid + "'"
+                    }
                     var sqlquery = "SELECT idpengguna, username, password, jabatan, nama, aktif FROM pengguna WHERE username = ? and password = ? "
-                    database.query(sqlquery, [username, password], function (error, rows) {
-                        database.release()
+                    database.query(sqlquery, [username, password], function(error, rows) {
+                        // database.release()
                         if (error) {
-                            res.status(407).send({
+                            return res.status(407).send({
                                 message: "Sorry, sql query have problems",
                                 data: error
                             })
                         } else {
                             if (!rows.length) {
-                                res.status(400).send({
+                                return res.status(400).send({
                                     message: "Username atau Password anda salah!",
                                     data: null
                                 });
                             } else if (rows[0].aktif == 0) {
-                                res.status(200).send({
+                                return res.status(200).send({
                                     message: "Akun anda tidak aktif",
                                     data: null
                                 });
@@ -58,24 +119,39 @@ async function Login(req, res) {
                                     device: device,
                                     appversion: appversion,
                                     uuid: uuid
-                                };
+                                }
                                 const access_token = jwt.sign(user, process.env.ACCESS_SECRET, {
                                     expiresIn: process.env.ACCESS_EXPIRED
                                 })
-                                fs.appendFile('notificationlog.txt', `[ ${device} ] ` + new Date().getUTCMinutes + ` [ Login ] - ${username}\n`, function (err) {
-                                    if (err) {
-                                        console.log('gagal')
+                                let datalogpengguna = {
+                                    tipe: device,
+                                    idpengguna: rows[0].idpengguna,
+                                    login_time: nows,
+                                    ipaddress: ipclient.split('f:')[1]
+                                }
+                                var sqlquery = 'INSERT INTO log_pengguna SET ?'
+                                database.query(sqlquery, datalogpengguna, (error, resultlog) => {
+                                    database.release()
+                                    if (resultlog) {
+                                        return res.status(200).send({
+                                            message: 'Selamat, Anda Berhasil Login',
+                                            data: {
+                                                access_token: access_token,
+                                                username: rows[0].nama,
+                                                jabatan: rows[0].jabatan,
+                                                aktif: rows[0].aktif + '-' + rows[0].idpengguna
+                                            }
+                                        })
                                     } else {
-                                        console.log('berhasil')
-                                    }
-                                })
-                                return res.status(200).send({
-                                    message: 'Selamat, Anda Berhasil Login',
-                                    data: {
-                                        access_token: access_token,
-                                        username: rows[0].nama,
-                                        jabatan: rows[0].jabatan,
-                                        aktif: rows[0].aktif + '-' + rows[0].idpengguna
+                                        return res.status(200).send({
+                                            message: 'Selamat, Anda Berhasil Login, tidak terlog!',
+                                            data: {
+                                                access_token: access_token,
+                                                username: rows[0].nama,
+                                                jabatan: rows[0].jabatan,
+                                                aktif: rows[0].aktif + '-' + rows[0].idpengguna
+                                            }
+                                        })
                                     }
                                 })
                             }
@@ -84,7 +160,7 @@ async function Login(req, res) {
                 }
             })
         } catch (error) {
-            res.status(403).send({
+            return res.status(403).send({
                 message: "Forbidden",
                 error: error
             })
@@ -92,13 +168,45 @@ async function Login(req, res) {
     }
 }
 
-async function cekingToken(req, res) {
+/**
+ * @swagger
+ * /cekvalidasi/:token:
+ *  get:
+ *      summary: untuk pengecekan token validasi web
+ *      tags: [Validation]
+ *      consumes:
+ *          - application/json
+ *      parameters:
+ *          - in: path
+ *            name: parameter yang dikirim
+ *            schema:
+ *              properties:
+ *                  token: 
+ *                      type: string
+ *      responses:
+ *          200:
+ *              description: jika data berhasil di fetch
+ *          204:
+ *              description: jika data yang dicari tidak ada
+ *          400:
+ *              description: kendala koneksi pool database
+ *          401:
+ *              description: token tidak valid
+ *          405:
+ *              description: parameter yang dikirim tidak sesuai
+ *          407:
+ *              description: gagal generate encrypt password 
+ *          500:
+ *              description: kesalahan pada query sql
+ */
+
+function cekingToken(req, res) {
     var token = req.params.token
     try {
         jwt.verify(token, process.env.ACCESS_SECRET, (jwterror, jwtresult) => {
             console.log(jwterror, jwtresult)
             if (jwtresult) {
-                pool.getConnection(function (error, database) {
+                pool.getConnection(function(error, database) {
                     if (error) {
                         return res.status(400).send({
                             message: "Pool refushed, sorry :(, try again or contact developer",

@@ -3,7 +3,7 @@ const fcmadmin = require('../utils/firebase.configuration')
 var pool = require('../utils/pool.configuration')
 
 var nows = {
-    toSqlString: function () { return "NOW()" }
+    toSqlString: function() { return "NOW()" }
 }
 
 /**
@@ -17,8 +17,17 @@ var nows = {
  * @swagger
  * /masalah/:flag_activity:
  *  get:
- *      summary: api untuk load data masalah
+ *      summary: api untuk load data masalah berdasarkan flag_activity jika 0 maka akan meload data pre-activity jika 1 maka load data activity
  *      tags: [Masalah]
+ *      consumes:
+ *          - application/json
+ *      parameters:
+ *          - in: path
+ *            name: parameter yang dikirim
+ *            schema:
+ *              properties:
+ *                  flag_activity: 
+ *                      type: integer
  *      responses:
  *          200:
  *              description: jika data berhasil di fetch
@@ -34,18 +43,28 @@ var nows = {
 
 function getMasalah(req, res) {
     var flag_activity = req.params.flag_activity
-    pool.getConnection(function (error, database) {
+    var filter_site = req.params.filter_site
+    console.log(flag_activity, filter_site)
+    if (filter_site == "" || flag_activity == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Pool refushed, sorry :(, please try again or contact developer.",
                 data: error
             })
         } else {
-            var sqlquery = `SELECT * FROM (SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as statusselesai, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity, pe.nama as pengguna FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite INNER JOIN pengguna pe ON m.idpengguna=pe.idpengguna WHERE m.flag_activity = ? AND m.tanggal > date_sub(now(), INTERVAL 3 MONTH) ORDER BY m.tanggal DESC)a ORDER BY a.statusselesai ASC, a.created DESC;`
+            filtersite = ""
+            if (filter_site != 0) filtersite = "AND ms.idsite = " + filter_site
+            var sqlquery = `SELECT * FROM (SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as statusselesai, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity, pe.nama as pengguna FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite INNER JOIN pengguna pe ON m.idpengguna=pe.idpengguna WHERE m.flag_activity = ? ` + filtersite + ` AND m.tanggal > date_sub(now(), INTERVAL 4 MONTH) ORDER BY m.tanggal DESC)a ORDER BY a.statusselesai ASC, a.created DESC;`
             database.query(sqlquery, flag_activity, (error, rows) => {
                 database.release()
+                console.log('masalah')
                 if (error) {
-                    console.log(error)
                     return res.status(500).send({
                         message: "Sorry :(, my query has been error",
                         data: error
@@ -72,8 +91,19 @@ function getMasalah(req, res) {
  * @swagger
  * /masalah/:flag_activity/:idmesin:
  *  get:
- *      summary: api untuk load data masalah
+ *      summary: api untuk load data masalah berdasarkan flag_activity dan idmesin
  *      tags: [Masalah]
+ *      consumes:
+ *          - application/json
+ *      parameters:
+ *          - in: path
+ *            name: parameter yang dikirim
+ *            schema:
+ *              properties:
+ *                  flag_activity: 
+ *                      type: integer
+ *                  idmesin:
+ *                      type: integer
  *      responses:
  *          200:
  *              description: jika data berhasil di fetch
@@ -87,17 +117,17 @@ function getMasalah(req, res) {
  *              description: kesalahan pada query sql
  */
 
-async function getMasalahByMesin(req, res) {
+function getMasalahByMesin(req, res) {
     var idmesin = req.params.idmesin
     var flag_activity = req.params.flag_activity
-    pool.getConnection(function (error, database) {
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Pool refushed, sorry :(, try again or contact developer",
                 data: error
             })
         } else {
-            var sqlquery = `SELECT * FROM (SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as statusselesai, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity, pe.nama as pengguna FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite INNER JOIN pengguna pe ON m.idpengguna=pe.idpengguna WHERE m.flag_activity = ? AND m.idmesin = ? AND m.tanggal > date_sub(now(), INTERVAL 3 MONTH) ORDER BY m.tanggal DESC)a ORDER BY a.statusselesai ASC;`
+            var sqlquery = `SELECT * FROM (SELECT m.idmasalah, m.jam, DATE_FORMAT( m.tanggal, "%Y-%m-%d") as tanggal, m.masalah, m.shift, m.idmesin, m.idpengguna, ms.nomesin, ms.keterangan as ketmesin, s.nama as site, ifnull(p.idpenyelesaian,'-') as idpenyelesaian, if(p.idpenyelesaian is null, 0, 1) as statusselesai, DATE_FORMAT( m.created, "%Y-%m-%d %H:%i") as created, m.jenis_masalah, m.flag_activity, pe.nama as pengguna FROM masalah m LEFT JOIN penyelesaian p ON m.idmasalah=p.idmasalah INNER JOIN mesin ms ON m.idmesin=ms.idmesin INNER JOIN site s ON ms.idsite=s.idsite INNER JOIN pengguna pe ON m.idpengguna=pe.idpengguna WHERE m.flag_activity = ? AND m.idmesin = ? AND m.tanggal > date_sub(now(), INTERVAL 4 MONTH) ORDER BY m.tanggal DESC)a ORDER BY a.statusselesai ASC;`
             database.query(sqlquery, [flag_activity, idmesin], (error, rows) => {
                 database.release()
                 if (error) {
@@ -143,13 +173,13 @@ async function getMasalahByMesin(req, res) {
  *                  jam:
  *                      type: string
  *                  idmesin:
- *                      type: int
+ *                      type: integer
  *                  shift:
- *                      type: int
+ *                      type: integer
  *                  jenis_masalah:
  *                      type: string
  *                  flag_activity:
- *                      type: int
+ *                      type: integer
  *      responses:
  *          201:
  *              description: jika data berhasil di fetch
@@ -176,14 +206,14 @@ async function addMasalah(req, res, datatoken) {
     var jenis_masalah = req.body.jenis_masalah
     var flag_activity = req.body.flag_activity
     console.log('Mencoba insert...')
-    pool.getConnection(function (error, database) {
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Sorry, Pool Refushed",
                 data: error
             })
         } else {
-            database.beginTransaction(function (error) {
+            database.beginTransaction(function(error) {
                 let datamasalah = {
                     masalah: masalah,
                     tanggal: tanggal,
@@ -199,7 +229,7 @@ async function addMasalah(req, res, datatoken) {
                 var sqlquery = "INSERT INTO masalah SET ?"
                 database.query(sqlquery, datamasalah, (error, result) => {
                     if (error) {
-                        database.rollback(function () {
+                        database.rollback(function() {
                             database.release()
                             return res.status(407).send({
                                 message: 'Sorry :(, we have problems sql query!',
@@ -207,9 +237,9 @@ async function addMasalah(req, res, datatoken) {
                             })
                         })
                     } else {
-                        database.commit(function (errcommit) {
+                        database.commit(function(errcommit) {
                             if (errcommit) {
-                                database.rollback(function () {
+                                database.rollback(function() {
                                     database.release()
                                     return res.status(407).send({
                                         message: 'data gagal disimpan!'
@@ -219,27 +249,26 @@ async function addMasalah(req, res, datatoken) {
                                 var getmesin = "SELECT nomesin, keterangan FROM mesin WHERE idmesin = ?"
                                 database.query(getmesin, idmesin, (error, result) => {
                                     database.release()
-                                    // * set firebase notification message 
+                                        // * set firebase notification message 
                                     let notificationMessage = {
-                                        notification: {
-                                            title: `Ada Masalah pada ${result[0].keterangan} ( ${result[0].nomesin} )`,
-                                            body: masalah,
-                                            sound: 'default',
-                                            'click_action': 'FCM_PLUGIN_ACTIVITY'
-                                        },
-                                        data: {
-                                            "judul": `Ada Masalah pada ${result[0].keterangan} ( ${result[0].nomesin} )`,
-                                            "isi": masalah
+                                            notification: {
+                                                title: `Ada Masalah pada ${result[0].keterangan} ( ${result[0].nomesin} )`,
+                                                body: masalah,
+                                                sound: 'default',
+                                                'click_action': 'FLUTTER_CLICK_ACTION'
+                                            },
+                                            data: {
+                                                "judul": `Ada Masalah pada ${result[0].keterangan} ( ${result[0].nomesin} )`,
+                                                "isi": masalah
+                                            }
                                         }
-                                    }
-                                    // * sending notification topic RMSPERMINTAAN
+                                        // * sending notification topic RMSPERMINTAAN
                                     fcmadmin.messaging().sendToTopic('CMMSMASALAH', notificationMessage)
-                                        .then(function (response) {
+                                        .then(function(response) {
                                             return res.status(201).send({
-                                                message: "Done!,  Data has been stored!2",
-
+                                                message: "Done!,  Data berhasil disimpan!",
                                             })
-                                        }).catch(function (error) {
+                                        }).catch(function(error) {
                                             return res.status(201).send({
                                                 message: "Done!,  Data has been stored!, but notification can't send to topic.",
                                             })
@@ -305,16 +334,15 @@ async function editMasalah(req, res, datatoken) {
     var shift = req.body.shift
     var flag_activity = req.body.flag_activity
     var jenis_masalah = req.body.jenis_masalah
-
-    console.log('Mencoba edit...')
-    pool.getConnection(function (error, database) {
+    console.log(' edit masalah...')
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Sorry, Pool Refushed",
                 data: error
             })
         } else {
-            database.beginTransaction(function (error) {
+            database.beginTransaction(function(error) {
                 let datamasalah = {
                     masalah: masalah,
                     tanggal: tanggal,
@@ -330,16 +358,16 @@ async function editMasalah(req, res, datatoken) {
                 database.query(sqlquery, [datamasalah, idmasalah], (error, result) => {
                     database.release()
                     if (error) {
-                        database.rollback(function () {
+                        database.rollback(function() {
                             return res.status(407).send({
                                 message: 'Sorry :(, we have problems sql query!',
                                 error: error
                             })
                         })
                     } else {
-                        database.commit(function (errcommit) {
+                        database.commit(function(errcommit) {
                             if (errcommit) {
-                                database.rollback(function () {
+                                database.rollback(function() {
                                     return res.status(407).send({
                                         message: 'data gagal disimpan!'
                                     })

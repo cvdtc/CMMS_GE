@@ -1,7 +1,7 @@
 require('dotenv').config()
 var pool = require('../utils/pool.configuration')
 var nows = {
-    toSqlString: function () { return "NOW()" }
+    toSqlString: function() { return "NOW()" }
 }
 
 /**
@@ -25,6 +25,8 @@ var nows = {
  *            name: parameter yang dikirim
  *            schema:
  *              properties:
+ *                  username: 
+ *                      type: string
  *                  password: 
  *                      type: string
  *      responses:
@@ -44,18 +46,20 @@ var nows = {
  *              description: kesalahan pada query sql
  */
 
-async function updatePassword(req, res, datatoken) {
+async function updateProfile(req, res, datatoken) {
+    var username = req.body.username
     var password = req.body.password
     console.log('Mencoba edit...')
-    pool.getConnection(function (error, database) {
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
-                message: "Soory, Pool Refushed",
+                message: "Sorry, Pool Refushed",
                 data: error
             })
         } else {
-            database.beginTransaction(function (error) {
+            database.beginTransaction(function(error) {
                 let datapengguna = {
+                    username: username,
                     password: password
                 }
                 var sqlquery = "UPDATE pengguna SET ? WHERE idpengguna = ?"
@@ -63,16 +67,16 @@ async function updatePassword(req, res, datatoken) {
                     database.release()
                     console.log(result);
                     if (error) {
-                        database.rollback(function () {
+                        database.rollback(function() {
                             return res.status(407).send({
                                 message: 'Sorry :(, we have problems sql query!',
                                 error: error
                             })
                         })
                     } else {
-                        database.commit(function (errcommit) {
+                        database.commit(function(errcommit) {
                             if (errcommit) {
-                                database.rollback(function () {
+                                database.rollback(function() {
                                     return res.status(407).send({
                                         message: 'data gagal disimpan!'
                                     })
@@ -91,5 +95,5 @@ async function updatePassword(req, res, datatoken) {
 }
 
 module.exports = {
-    updatePassword
+    updateProfile
 }

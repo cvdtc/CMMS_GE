@@ -3,10 +3,11 @@ import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class KomponenPage extends StatefulWidget {
+  String idmesin;
+  KomponenPage({required this.idmesin});
   @override
   _KomponenPageState createState() => _KomponenPageState();
 }
@@ -15,24 +16,26 @@ class _KomponenPageState extends State<KomponenPage> {
   // ! Declare Variable HERE!
   ApiService _apiService = new ApiService();
   late SharedPreferences sp;
-  String? token = "", username = "", jabatan = "";
+  String token = "", idmesin = "";
   TextEditingController _tecNama = TextEditingController(text: "");
   TextEditingController _tecJumlah = TextEditingController(text: "");
+  List<TextEditingController> _tecKeterangan = [];
+  List<String?> idkomponenList = [];
 
   // * ceking token and getting dashboard value from Shared Preferences
   cekToken() async {
     sp = await SharedPreferences.getInstance();
     setState(() {
-      token = sp.getString("access_token");
-      username = sp.getString("username");
-      jabatan = sp.getString("jabatan");
+      token = sp.getString("access_token")!;
     });
   }
 
   @override
   initState() {
-    super.initState();
+    idmesin = widget.idmesin;
     cekToken();
+    print('TokenKomponen?' + token);
+    super.initState();
   }
 
   @override
@@ -44,28 +47,29 @@ class _KomponenPageState extends State<KomponenPage> {
 
   @override
   Widget build(BuildContext context) {
+    print('Token Komponen Widget' + token);
     return Scaffold(
       appBar: AppBar(
         title: Text('Daftar Komponen'),
         centerTitle: true,
         backgroundColor: thirdcolor,
       ),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: () {
-      //     _modalAddSite();
-      //   },
-      //   label: Text(
-      //     'Tambah Site',
-      //     style: TextStyle(color: Colors.white),
-      //   ),
-      //   backgroundColor: secondcolor,
-      //   icon: Icon(
-      //     Icons.cabin_outlined,
-      //     color: Colors.white,
-      //   ),
-      // ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          print(idkomponenList);
+        },
+        label: Text(
+          'Tambah Komponen',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: secondcolor,
+        icon: Icon(
+          Icons.cabin_outlined,
+          color: Colors.white,
+        ),
+      ),
       body: FutureBuilder(
-          future: _apiService.getListKomponen(token!, 0.toString()),
+          future: _apiService.getListKomponen(token, idmesin.toString()),
           builder: (context, AsyncSnapshot<List<KomponenModel>?> snapshot) {
             if (snapshot.hasError) {
               return Center(
@@ -83,22 +87,22 @@ class _KomponenPageState extends State<KomponenPage> {
                 ),
               );
             } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return Container(
-                child: Lottie.asset('assets/loading.json'),
-              );
-              // return Center(
-              //   child: Column(
-              //     mainAxisAlignment: MainAxisAlignment.center,
-              //     crossAxisAlignment: CrossAxisAlignment.center,
-              //     children: [
-              //       CircularProgressIndicator(),
-              //       SizedBox(
-              //         height: 15,
-              //       ),
-              //       Text('Sebentar ya, sedang antri...')
-              //     ],
-              //   ),
+              // return Container(
+              //   child: Lottie.asset('assets/loading.json'),
               // );
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Text('Sebentar ya, sedang antri...')
+                  ],
+                ),
+              );
             } else if (snapshot.connectionState == ConnectionState.done) {
               if (snapshot.hasData) {
                 List<KomponenModel>? dataKomponen = snapshot.data;
@@ -134,56 +138,49 @@ class _KomponenPageState extends State<KomponenPage> {
         itemCount: dataIndex!.length,
         itemBuilder: (context, index) {
           KomponenModel? dataKomponen = dataIndex[index];
-          return Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Card(
-                  elevation: 0.0,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        left: 20, right: 20, top: 10, bottom: 15),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          _tecKeterangan.add(new TextEditingController());
+          return Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0)),
+            elevation: 3.0,
+            child: InkWell(
+              onTap: () {
+                idkomponenList.add(dataKomponen.idkomponen.toString());
+                idkomponenList.add(_tecKeterangan[index].text.toString());
+                print(idkomponenList.toString());
+                // idkomponenList.add(dataKomponen.idkomponen.toString());
+              },
+              child: Padding(
+                padding:
+                    EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 15),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Nama : ' + dataKomponen.nama,
+                        style: TextStyle(fontSize: 18.0)),
+                    Text('Kategori : ' + dataKomponen.kategori,
+                        style: TextStyle(fontSize: 18.0)),
+                    Text('Keterangan : ' + dataKomponen.keterangan,
+                        style: TextStyle(fontSize: 18.0)),
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            Text('Komponen : ',
-                                style: TextStyle(fontSize: 18.0)),
-                            Text(
-                                dataKomponen.nama +
-                                    ' (' +
-                                    dataKomponen.jumlah.toString() +
-                                    ')',
-                                style: TextStyle(fontSize: 18.0))
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Text('Mesin : ', style: TextStyle(fontSize: 18.0)),
-                            Text(
-                                dataKomponen.nama +
-                                    ' (' +
-                                    dataKomponen.nomesin +
-                                    ')',
-                                style: TextStyle(fontSize: 18.0))
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          children: [
-                            Text('Site : ', style: TextStyle(fontSize: 18.0)),
-                            Text(dataKomponen.site,
-                                style: TextStyle(fontSize: 18.0))
-                          ],
-                        ),
+                        Text('Reminder : ', style: TextStyle(fontSize: 18.0)),
+                        Text(
+                            dataKomponen.flag_reminder.toString() == '0'
+                                ? 'Tidak'
+                                : dataKomponen.jumlah_reminder,
+                            style: TextStyle(fontSize: 18.0)),
                       ],
                     ),
-                  )));
+                    SizedBox(
+                      height: 5,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
         });
   }
 

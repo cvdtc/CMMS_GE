@@ -1,9 +1,8 @@
-
 require('dotenv').config()
 var pool = require('../utils/pool.configuration')
 
 var nows = {
-    toSqlString: function () { return "NOW()" }
+    toSqlString: function() { return "NOW()" }
 }
 
 /**
@@ -35,7 +34,7 @@ var nows = {
 
 function getSchedule(req, res) {
 
-    pool.getConnection(function (error, database) {
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Pool refushed, sorry :(, try again or contact developer",
@@ -90,8 +89,7 @@ function getSchedule(req, res) {
 
 function getSchedulePart(req, res) {
     const idmesin = req.params.idmesin
-
-    pool.getConnection(function (error, database) {
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Pool refushed, sorry :(, try again or contact developer",
@@ -102,6 +100,7 @@ function getSchedulePart(req, res) {
             var sqlquery = `select b.BB_ID as kode, b.BB_NAMA as nama, b.UMUR as umur, b.BB_SATUAN as satuan, datediff(date(now()), c.tanggal) as lewathari, DATE_FORMAT( c.tgl_reminder, "%Y-%m-%d") as tgl_reminder, c.idcheckout from masalah m, checkout c, bb b WHERE m.idmasalah=c.idmasalah and c.idbarang=b.BB_ID and datediff(date(now()), c.tgl_reminder)  between b.UMUR -14 and b.UMUR + 14 and m.idmesin = ?`
             database.query(sqlquery, idmesin, (error, rows) => {
                 database.release()
+                console.log('schedule')
                 if (error) {
                     return res.status(500).send({
                         message: "Sorry :(, my query has been error",
@@ -144,11 +143,9 @@ function getSchedulePart(req, res) {
  *              description: kesalahan pada query sql
  */
 
-
-
 function getTimeline(req, res) {
     var idmasalah = req.params.idmasalah
-    pool.getConnection(function (error, database) {
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Pool refushed, sorry :(, try again or contact developer",
@@ -181,8 +178,64 @@ function getTimeline(req, res) {
     })
 }
 
+/**
+ * @swagger
+ * /stokbarang:
+ *  get:
+ *      summary: api untuk load data Stok barang
+ *      tags: [Report]
+ *      responses:
+ *          200:
+ *              description: jika data berhasil di fetch
+ *          204:
+ *              description: jika data yang dicari tidak ada
+ *          400:
+ *              description: kendala koneksi pool database
+ *          401:
+ *              description: token tidak valid
+ *          500:
+ *              description: kesalahan pada query sql
+ */
+
+function getLaporanStok(req, res) {
+    var namabarang = req.params.namabarang
+    pool.getConnection(function(error, database) {
+        if (error) {
+            return res.status(400).send({
+                message: "Pool refushed, sorry :(, try again or contact developer",
+                data: error
+            })
+        } else {
+            var sqlquery = `SELECT b.BB_ID as kode, b.BB_NAMA as nama, b.jmlt as stok, UMUR as umur, BB_SATUAN as satuan FROM (SELECT BB_ID, BB_NAMA, SUM(jml) as jmlt FROM (SELECT BB_ID, BB_NAMA, COALESCE(SUM(JUMLAH),0) AS jml, 'mrv' AS  tipe FROM mrv a, det_mrv b WHERE a.NOBUKTI=b.NOBUKTI AND BB_NAMA like '%${namabarang}%' GROUP BY BB_ID UNION SELECT BB_ID, BB_NAMA, COALESCE(SUM(-1*JUMLAH),0) AS jml, 'miv' AS  tipe FROM miv a, det_miv b WHERE a.NOBUKTI=b.NOBUKTI AND BB_NAMA like '%${namabarang}%' GROUP BY BB_ID Union SELECT BB_ID, BB_NAMA, COALESCE(SUM(JUMLAH),0) AS jml, 'asm' AS  tipe FROM asm a, det_asm b WHERE a.NOBUKTI=b.NOBUKTI AND BB_NAMA  like '%${namabarang}%' GROUP BY BB_ID Union SELECT BB_ID, BB_NAMA, COALESCE(SUM(-1*JUMLAH),0) AS jml, 'ask' AS  tipe FROM ask a, det_ask b WHERE a.NOBUKTI=b.NOBUKTI AND BB_NAMA like '%${namabarang}%' GROUP BY BB_ID)a GROUP BY BB_ID)b, bb, golx, gol WHERE b.BB_ID=bb.BB_ID AND bb.GOL=golx.G_ID AND golx.GOL=gol.KODE and gol.JENIS='SPARE PARTS'`
+            database.query(sqlquery, (error, rows) => {
+                console.log(sqlquery, error)
+                database.release()
+                if (error) {
+                    return res.status(500).send({
+                        message: "Sorry :(, my query has been error",
+                        data: error
+                    })
+                } else {
+                    if (rows.length <= 0) {
+                        return res.status(204).send({
+                            message: "Data masih kosong",
+                            data: rows
+                        })
+                    } else {
+                        return res.status(200).send({
+                            message: "Data berhasil fetch.",
+                            data: rows
+                        })
+                    }
+                }
+            })
+        }
+    })
+}
+
 module.exports = {
     getSchedule,
     getSchedulePart,
-    getTimeline
+    getTimeline,
+    getLaporanStok
 }

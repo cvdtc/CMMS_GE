@@ -1,4 +1,6 @@
 import 'package:cmmsge/services/models/mesin/mesinModel.dart';
+import 'package:cmmsge/views/pages/komponen/komponenpage.dart';
+import 'package:cmmsge/views/pages/komponen/komponenwithsearch.dart';
 import 'package:cmmsge/views/pages/masalah/bottommasalah.dart';
 import 'package:cmmsge/views/pages/mesin/bottommesin.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +38,17 @@ class MesinTile extends StatelessWidget {
                     '',
                     0,
                     flag_activity);
+              } else if (transaksi == 'komponen') {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => KomponenPageSearch(
+                            idmesin: mesin.idmesin.toString())));
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => KomponenPageSearch(
+                //             idmesin: mesin.idmesin.toString())));
               } else {
                 BottomMesin().modalAddMesin(
                     context,

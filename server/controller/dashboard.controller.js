@@ -27,9 +27,8 @@ var pool = require('../utils/pool.configuration')
  *              description: kesalahan pada query sql
  */
 
-async function getDashboard(req, res) {
-    const token = req.headers.authorization.split(' ')[1]
-    pool.getConnection(function (error, database) {
+function getDashboard(req, res) {
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Pool refushed, sorry :(, try again or contact developer",
@@ -39,6 +38,7 @@ async function getDashboard(req, res) {
             var sqlquery = "SELECT count(m.idmasalah) as jml_masalah, COUNT(p.idpenyelesaian) as jml_selesai FROM masalah m LEFT JOIN penyelesaian p on m.idmasalah=p.idmasalah"
             database.query(sqlquery, (error, rows) => {
                 database.release()
+                console.log('dashboard')
                 if (error) {
                     return res.status(500).send({
                         message: "Sorry :(, my query has been error",

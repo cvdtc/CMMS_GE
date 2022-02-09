@@ -19,10 +19,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ApiService {
   // ? make sure api url true, change variable BaseUrl if api url has changed.
   /// for server
-  final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
+  // final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
 
   /// for development
-  // final String BaseUrl = "http://192.168.1.213:9994/api/v1/";
+  final String BaseUrl = "http://192.168.1.213:9994/api/v1/";
 
   Client client = Client();
   ResponseCode responseCode = ResponseCode();
@@ -92,6 +92,7 @@ class ApiService {
    */
   Future<List<KomponenModel>?> getListKomponen(
       String token, String idmesin) async {
+    print('Token Komponen Api Service' + token + idmesin);
     // ++ reminder don't forget to sending idmesin!
     var url = Uri.parse(BaseUrl + 'komponen/' + idmesin);
     var response = await client.get(url, headers: {
@@ -99,6 +100,7 @@ class ApiService {
       // ++ fyi : sending token with BEARER
       'Authorization': 'Bearer ' + token
     });
+    print("Data Komponen:" + response.body);
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
