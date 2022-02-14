@@ -120,6 +120,12 @@ function getMasalah(req, res) {
 function getMasalahByMesin(req, res) {
     var idmesin = req.params.idmesin
     var flag_activity = req.params.flag_activity
+    if (idmesin == "" || flag_activity == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
@@ -335,6 +341,12 @@ async function editMasalah(req, res, datatoken) {
     var flag_activity = req.body.flag_activity
     var jenis_masalah = req.body.jenis_masalah
     console.log(' edit masalah...')
+    if (idmasalah == "" ) {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({

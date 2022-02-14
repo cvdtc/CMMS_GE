@@ -93,6 +93,12 @@ function getPenyelesaian(req, res) {
 
 async function getPenyelesaianByMasalah(req, res) {
     var idmasalah = req.params.idmasalah
+    if (idmasalah == "" ) {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
@@ -257,6 +263,12 @@ async function editPenyelesaian(req, res, datatoken) {
     var tanggal = req.body.tanggal
     var keterangan = req.body.keterangan
     var idmasalah = req.body.idmasalah
+    if (idpenyelesaian == "" ) {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
@@ -331,6 +343,12 @@ async function editPenyelesaian(req, res, datatoken) {
 
 async function deletePenyelesaian(req, res) {
     var idpenyelesaian = req.params.idpenyelesaian
+    if (idpenyelesaian == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({

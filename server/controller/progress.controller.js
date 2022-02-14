@@ -155,6 +155,12 @@ async function editProgress(req, res, datatoken) {
     var idmasalah = req.body.idmasalah
     var shift = req.body.shift
     console.log(' edit Progress...')
+    if (idprogress == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({

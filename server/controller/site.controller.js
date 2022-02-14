@@ -184,6 +184,12 @@ async function editSite(req, res) {
     var idsite = req.params.idsite
     var nama = req.body.nama
     var keterangan = req.body.keterangan
+    if (idsite == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
@@ -266,6 +272,12 @@ async function editSite(req, res) {
 
 async function deleteSite(req, res) {
     var idsite = req.params.idsite
+    if (idsite == "" ) {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({

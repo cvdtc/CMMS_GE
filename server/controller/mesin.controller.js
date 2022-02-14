@@ -37,6 +37,12 @@ var pool = require('../utils/pool.configuration')
 function getMesin(req, res) {
     var idsite = req.params.idsite
     var filterquery = ""
+    if (idsite == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
@@ -209,6 +215,12 @@ async function editMesin(req, res) {
     var nomesin = req.body.nomesin
     var keterangan = req.body.keterangan
     var idsite = req.body.idsite
+    if (idmesin == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({

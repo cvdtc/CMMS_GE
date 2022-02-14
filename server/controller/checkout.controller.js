@@ -36,6 +36,12 @@ var nows = {
 function getCheckout(req, res) {
   const idmasalah = req.params.idmasalah;
   console.log("Load Checkout...");
+  if (idmasalah == "") {
+    return res.status(400).send({
+      message: "Parameter doesn't match!",
+      data: null,
+    });
+  }
   pool.getConnection(function (error, database) {
     if (error) {
       return res.status(400).send({
@@ -231,6 +237,12 @@ async function editCheckout(req, res) {
   var tgl_reminder = req.body.tgl_reminder;
   var kilometer = req.body.kilometer;
   console.log("Mencoba edit...");
+  if (idcheckout == "") {
+    return res.status(400).send({
+      message: "Parameter doesn't match!",
+      data: null,
+    });
+  }
   pool.getConnection(function (error, database) {
     if (error) {
       return res.status(400).send({
@@ -322,6 +334,12 @@ async function editCheckoutTglReminder(req, res) {
   var idcheckout = req.params.idcheckout;
   var tgl_reminder = req.body.tgl_reminder;
   console.log("edit tgl reminder...");
+  if (idcheckout == "") {
+    return res.status(400).send({
+      message: "Parameter doesn't match!",
+      data: null,
+    });
+  }
   pool.getConnection(function (error, database) {
     if (error) {
       return res.status(400).send({
@@ -401,6 +419,12 @@ async function editCheckoutTglReminder(req, res) {
 async function deleteCheckout(req, res) {
   var idcheckout = req.params.idcheckout;
   console.log("Hapus Checkout...");
+  if (idcheckout == "") {
+    return res.status(400).send({
+      message: "Parameter doesn't match!",
+      data: null,
+    });
+  }
   pool.getConnection(function (error, database) {
     if (error) {
       return res.status(400).send({

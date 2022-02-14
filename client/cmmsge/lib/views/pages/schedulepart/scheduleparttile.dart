@@ -49,6 +49,8 @@ class SchedulePartTile extends StatelessWidget {
                             style: TextStyle(fontSize: 18.0)),
                         Text('Tgl Reminder : ${barang.tgl_reminder}',
                             style: TextStyle(fontSize: 18.0)),
+                        Text('Masalah : ${barang.masalah}',
+                            style: TextStyle(fontSize: 18.0)),
                       ],
                     ),
                   ),

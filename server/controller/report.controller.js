@@ -33,7 +33,6 @@ var nows = {
  */
 
 function getSchedule(req, res) {
-
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
@@ -89,6 +88,12 @@ function getSchedule(req, res) {
 
 function getSchedulePart(req, res) {
     const idmesin = req.params.idmesin
+    if (idmesin == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
@@ -97,7 +102,7 @@ function getSchedulePart(req, res) {
             })
         } else {
             /// reminder schedule part di batasi 14 hari
-            var sqlquery = `select b.BB_ID as kode, b.BB_NAMA as nama, b.UMUR as umur, b.BB_SATUAN as satuan, datediff(date(now()), c.tanggal) as lewathari, DATE_FORMAT( c.tgl_reminder, "%Y-%m-%d") as tgl_reminder, c.idcheckout from masalah m, checkout c, bb b WHERE m.idmasalah=c.idmasalah and c.idbarang=b.BB_ID and datediff(date(now()), c.tgl_reminder)  between b.UMUR -14 and b.UMUR + 14 and m.idmesin = ?`
+            var sqlquery = `select b.BB_ID as kode, b.BB_NAMA as nama, b.UMUR as umur, b.BB_SATUAN as satuan, datediff(date(now()), c.tanggal) as lewathari, DATE_FORMAT( c.tgl_reminder, "%Y-%m-%d") as tgl_reminder, c.idcheckout, m.masalah from masalah m, checkout c, bb b WHERE m.idmasalah=c.idmasalah and c.idbarang=b.BB_ID and datediff(date(now()), c.tgl_reminder)  between b.UMUR -14 and b.UMUR + 14 and m.idmesin = ?`
             database.query(sqlquery, idmesin, (error, rows) => {
                 database.release()
                 console.log('schedule')
@@ -145,6 +150,12 @@ function getSchedulePart(req, res) {
 
 function getTimeline(req, res) {
     var idmasalah = req.params.idmasalah
+    if (idmasalah == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
@@ -199,6 +210,12 @@ function getTimeline(req, res) {
 
 function getLaporanStok(req, res) {
     var namabarang = req.params.namabarang
+    if (namabarang == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
     pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({

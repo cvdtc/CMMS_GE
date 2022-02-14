@@ -92,7 +92,7 @@ class MesinSearchPageState extends State<MesinSearchPage> {
               ),
             )
           ]),
-      floatingActionButton: transaksi == 'masalah' || transaksi == 'komponen'
+      floatingActionButton: transaksi != 'menu' || this._mesin.length < 1
           ? null
           : FloatingActionButton(
               onPressed: () {

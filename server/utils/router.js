@@ -9,6 +9,15 @@ router.get('/barang', jwtVerify, (req, res) => {
     RouteToBarang.getBarang(req, res)
 })
 
+// CHECKLIST
+var RouteToChecklist = require('../controller/checklist.controller')
+router.post('/checklist', (req, res)=>{
+    RouteToChecklist.addChecklist(req, res)
+})
+router.post('/detchecklist', (req, res)=>{
+    RouteToChecklist.addDetChecklist(req, res)
+})
+
 //CHECKOUT
 var RouteToCheckout = require('../controller/checkout.controller')
 router.get('/checkout/:idmasalah', jwtVerify, function(req, res) {

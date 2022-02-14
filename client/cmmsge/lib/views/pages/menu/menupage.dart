@@ -288,7 +288,15 @@ class _MenuPageState extends State<MenuPage> {
             alignment: Alignment.center,
             width: double.infinity,
             child: ListTile(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MesinSearchPage(
+                              flag_activity: '0',
+                              transaksi: 'checklist',
+                            )));
+              },
               title: (Text('Checklist',
                   style: TextStyle(
                       fontSize: 18,

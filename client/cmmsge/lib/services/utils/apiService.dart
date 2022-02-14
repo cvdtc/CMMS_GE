@@ -16,13 +16,15 @@ import 'package:cmmsge/services/models/timeline/timelineModel.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/checklist/checklist.dart';
+
 class ApiService {
   // ? make sure api url true, change variable BaseUrl if api url has changed.
   /// for server
   // final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
 
   /// for development
-  final String BaseUrl = "http://192.168.1.213:9994/api/v1/";
+  final String BaseUrl = "http://192.168.1.211:9994/api/v1/";
 
   Client client = Client();
   ResponseCode responseCode = ResponseCode();
@@ -523,6 +525,57 @@ class ApiService {
       return scheduleFromJson(response.body);
     } else {
       // return null;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
+    }
+  }
+
+/**
+   * ! ADD CHECKLIST
+   */
+  Future<int> addChecklist(String token, ChecklistModel data) async {
+    var url = Uri.parse(BaseUrl + 'checklist');
+    var response = await client.post(url,
+        headers: {
+          'content-type': 'application/json',
+          // 'Authorization': 'Bearer ${token}'
+        },
+        // body: json.encode({'array': data}));
+        body: checklistToJson(data));
+    print(data);
+    print('send to add checklist' +
+        response.body +
+        response.body.split(' : ')[1]);
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 201) {
+      return int.parse(response.body.split(' : ')[1]);
+    } else {
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
+    }
+  }
+
+  /**
+   * ! ADD DETAIL CHECKLIST
+   */
+  Future<bool> addDetChecklist(String token, String data) async {
+    var url = Uri.parse(BaseUrl + 'detchecklist');
+    var response = await client.post(url,
+        headers: {
+          'content-type': 'application/json',
+          // 'Authorization': 'Bearer ${token}'
+        },
+        // body: json.encode({'array': data}));
+        body: data);
+    print(data);
+    print('send to add penyelesaian' + response.body);
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      // return false;
       return Future.error(
           responseCode, StackTrace.fromString(response.statusCode.toString()));
     }
