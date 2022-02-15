@@ -1,21 +1,17 @@
 import 'dart:convert';
 
 class ResponseCode {
-  var statusCode, messageApi;
-  ResponseCode({this.statusCode, this.messageApi});
+  var statusCode, messageApi, data;
+  ResponseCode({this.statusCode, this.messageApi, this.data});
 
   factory ResponseCode.fromJson(Map<dynamic, dynamic> map) {
     return ResponseCode(
-        statusCode: map["statuscode"], messageApi: map["message"]);
-  }
-
-  Map<String, dynamic> toJson() {
-    return {"statuscode": statusCode, "message": messageApi};
+        statusCode: map["statuscode"], messageApi: map["message"], data: map["data"]);
   }
 
   @override
   String toString() {
-    return '$messageApi';
+    return 'message: $messageApi, data: $data';
   }
 }
 

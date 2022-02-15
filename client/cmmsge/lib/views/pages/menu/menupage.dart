@@ -1,3 +1,4 @@
+import 'package:cmmsge/views/pages/checklist/checklistwithsearch.dart';
 import 'package:cmmsge/views/pages/masalah/masalahwithsearch.dart';
 import 'package:cmmsge/views/pages/mesin/mesinwithsearch.dart';
 import 'package:cmmsge/views/pages/report/stokbarang/stokbarang.dart';
@@ -292,10 +293,7 @@ class _MenuPageState extends State<MenuPage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => MesinSearchPage(
-                              flag_activity: '0',
-                              transaksi: 'checklist',
-                            )));
+                        builder: (context) => ChecklistSearchPage()));
               },
               title: (Text('Checklist',
                   style: TextStyle(

@@ -2,6 +2,7 @@ import 'package:cmmsge/services/models/komponen/KomponenModel.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/komponen/bottomkomponen.dart';
 import 'package:cmmsge/views/pages/komponen/networkkomponen.dart';
 import 'package:cmmsge/views/utils/ceksharepreference.dart';
 import 'package:flutter/material.dart';
@@ -106,40 +107,41 @@ class _KomponenPageSearchState extends State<KomponenPageSearch> {
         centerTitle: true,
         backgroundColor: thirdcolor,
       ),
-      floatingActionButton: this._komponents.length > 0
-          ? FloatingActionButton(
-              onPressed: () {},
-              backgroundColor: secondcolor,
-              child: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-            )
-          : null,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height,
-              child: ListView.builder(
-                itemCount: _komponentsDisplay.length,
-                itemBuilder: (context, index) {
-                  if (!_isLoading) {
-                    return index == 0
-                        ? _searchBar()
-                        : KomponenTile(
-                            komponen: this._komponentsDisplay[index - 1],
-                            indexlist: index,
-                            token: token!,
-                          );
-                    // : SiteTile(site: this._sitesDisplay[index - 1]);
-                  } else {
-                    return LoadingView();
-                  }
-                },
-              ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          BottomKomponen().modalFormKomponen(context, 'tambah', token!, '', '',
+              '', '', '', idmesin.toString(), '');
+        },
+        backgroundColor: secondcolor,
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
+      body: RefreshIndicator(
+        onRefresh: refreshData,
+        child: SafeArea(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            child: ListView.builder(
+              itemCount: _komponentsDisplay.length + 1,
+              itemBuilder: (context, index) {
+                print(index);
+                if (!_isLoading) {
+                  return index == 0
+                      ? _searchBar()
+                      : KomponenTile(
+                          komponen: this._komponentsDisplay[index - 1],
+                          indexlist: index,
+                          token: token!,
+                        );
+                  // : SiteTile(site: this._sitesDisplay[index - 1]);
+                } else {
+                  return LoadingView();
+                }
+              },
             ),
-          ],
+          ),
         ),
       ),
     );

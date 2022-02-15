@@ -34,13 +34,6 @@ var nows = {
  */
 
 function getChecklist(req, res) {
-  const idmesin = req.params.idmesin;
-  if (idmesin == "") {
-    return res.status(400).send({
-      message: "Parameter doesn't match!",
-      data: null,
-    });
-  }
   console.log("Load Checklist...");
   pool.getConnection(function (error, database) {
     if (error) {
@@ -50,8 +43,8 @@ function getChecklist(req, res) {
         data: error,
       });
     } else {
-      var sqlquery = `SELECT * FROM checklist WHERE idmesin=?`;
-      database.query(sqlquery, idmesin, (error, rows) => {
+      var sqlquery = `SELECT idchecklist, deskripsi, keterangan, dikerjakan_oleh, diperiksa_oleh, DATE_FORMAT( tanggal_checklist, "%Y-%m-%d") as tanggal_checklist, no_dokumen, idmesin FROM checklist`;
+      database.query(sqlquery, (error, rows) => {
         database.release();
         if (error) {
           return res.status(500).send({
@@ -133,7 +126,6 @@ async function addChecklist(req, res, datatoken) {
   var revisi = req.body.revisi;
   var idmesin = req.body.idmesin;
   var no_dokumen = req.body.no_dokumen;
-  var tanggal_periksa = req.body.tanggal_periksa;
   pool.getConnection(function (error, database) {
     if (error) {
       return res.status(400).send({
@@ -147,16 +139,18 @@ async function addChecklist(req, res, datatoken) {
           keterangan: keterangan,
           dikerjakan_oleh: dikerjakan_oleh,
           diperiksa_oleh: diperiksa_oleh,
-          tanggal_checklist: nows,
-          revisi: 1,
+          tanggal_checklist: tanggal_checklist,
+          revisi:revisi,
           idmesin: idmesin,
           no_dokumen: no_dokumen,
           created: nows,
-          // idpengguna: datatoken.idpengguna,
+          idpengguna: datatoken.idpengguna,
         };
         var sqlquery = "INSERT INTO checklist SET ?";
+        
         database.query(sqlquery, datachecklist, (error, result) => {
           database.release();
+          console.log("CHECKLIST?", result, error)
           if (error) {
             database.rollback(function () {
               return res.status(407).send({
@@ -243,7 +237,6 @@ async function editChecklist(req, res, datatoken) {
   var revisi = req.body.revisi;
   var idmesin = req.body.idmesin;
   var no_dokumen = req.body.no_dokumen;
-  var tanggal_periksa = req.body.tanggal_periksa;
   var idchecklist = req.params.idchecklist;
   if (idchecklist == "") {
     return res.status(400).send({
@@ -264,22 +257,24 @@ async function editChecklist(req, res, datatoken) {
           keterangan: keterangan,
           dikerjakan_oleh: dikerjakan_oleh,
           diperiksa_oleh: diperiksa_oleh,
-          tanggal_checklist: nows,
+          tanggal_checklist: tanggal_checklist,
           revisi: revisi,
           idmesin: idmesin,
           no_dokumen: no_dokumen,
-          tanggal_periksa: nows,
           edited: nows,
           idpengguna: datatoken.idpengguna,
         };
+        console.log(datachecklist,idchecklist);
         var sqlquery = "UPDATE checklist SET ? WHERE idchecklist = ?";
         database.query(
           sqlquery,
           [datachecklist, idchecklist],
           (error, result) => {
+            console.log(result)
             database.release();
             if (error) {
               database.rollback(function () {
+                console.log(error);
                 return res.status(407).send({
                   message: "Sorry :(, we have problems sql query!",
                   error: error,
@@ -494,7 +489,8 @@ function getDetChecklist(req, res) {
  */
 
 async function addDetChecklist(req, res, datatoken) {
-  var array = req.body.array;
+  var array = req.body.array
+  console.log(array);
   pool.getConnection(function (error, database) {
     if (error) {
       return res.status(400).send({
@@ -535,7 +531,94 @@ async function addDetChecklist(req, res, datatoken) {
   });
 }
 
+
+/**
+ * @swagger
+ * /derchecklist/:idchecklist:
+ *  delete:
+ *      summary: Menghapus data Detail Checklist
+ *      tags: [Checklist]
+ *      consumes:
+ *          - application/json
+ *      parameters:
+ *          - in: path
+ *            name: parameter yang dikirim
+ *            schema:
+ *              properties:
+ *                  idcheckout:
+ *                      type: int
+ *      responses:
+ *          200:
+ *              description: jika data berhasil di fetch
+ *          204:
+ *              description: jika data yang dicari tidak ada
+ *          400:
+ *              description: kendala koneksi pool database
+ *          401:
+ *              description: token tidak valid
+ *          405:
+ *              description: parameter yang dikirim tidak sesuai
+ *          407:
+ *              description: gagal generate encrypt password
+ *          500:
+ *              description: kesalahan pada query sql
+ */
+
+ async function deleteDetChecklist(req, res) {
+  var idchecklist = req.params.idchecklist;
+  console.log("Hapus Detail Checklist...");
+  if (idchecklist == "") {
+    return res.status(400).send({
+      message: "Parameter doesn't match!",
+      data: null,
+    });
+  }
+  pool.getConnection(function (error, database) {
+    if (error) {
+      return res.status(400).send({
+        message: "Sorry, Pool Refushed",
+        data: error,
+      });
+    } else {
+      database.beginTransaction(function (error) {
+        var sqlquery = "DELETE FROM checklist_detail WHERE idchecklist = ?";
+        database.query(sqlquery, [idchecklist], (error, result) => {
+          if (error) {
+            database.rollback(function () {
+              database.release();
+              return res.status(407).send({
+                message: "Sorry :(, we have problems sql query!",
+                error: error,
+              });
+            });
+          } else {
+            database.commit(function (errcommit) {
+              if (errcommit) {
+                database.rollback(function () {
+                  database.release();
+                  return res.status(407).send({
+                    message: "data gagal menghapus!",
+                  });
+                });
+              } else {
+                database.release();
+                return res.status(200).send({
+                  message: "Data berhasil dihapus!",
+                });
+              }
+            });
+          }
+        });
+      });
+    }
+  });
+}
+
 module.exports = {
+  getChecklist,
   addChecklist,
+  editChecklist,
+  deleteChecklist,
   addDetChecklist,
+  deleteDetChecklist
 };

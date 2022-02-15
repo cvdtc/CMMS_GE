@@ -29,15 +29,22 @@ class _LoginPageState extends State<LoginPage> {
   String? uuid;
 
   cekuuid() async {
-    setState(() async {
-      uuid = await GetDeviceID().getDeviceID(context);
-    });
+    // setState(() async {
+    uuid = await GetDeviceID().getDeviceID(context);
+    // });
   }
 
   @override
   initState() {
     super.initState();
     cekuuid();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _apiService.client.close();
+    super.dispose();
   }
 
   // * method for show or hide password
@@ -220,16 +227,25 @@ class _LoginPageState extends State<LoginPage> {
           device: 'mobile',
           uuid: uuid,
           appversion: appVersion.versionnumber);
-      _apiService.LoginApp(dataparams).then((isSuccess) {
-        setState(() {
-          _isLoading = false;
-        });
-        return Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => BottomNavigation(
-                      numberOfPage: 0,
-                    )));
+      _apiService.LoginApp(dataparams).then((isSuccess) async {
+        if (isSuccess) {
+          setState(() {
+            _isLoading = false;
+          });
+          return Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => BottomNavigation(
+                        numberOfPage: 0,
+                      )));
+        } else {
+          ReusableClasses().modalbottomWarning(
+              context,
+              'GAGAL!',
+              _apiService.responseCode.messageApi,
+              'f400',
+              'assets/images/sorry.png');
+        }
       }).onError((error, stackTrace) {
         return ReusableClasses().modalbottomWarning(
             context,
@@ -242,11 +258,5 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
     return;
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
   }
 }

@@ -119,16 +119,16 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(right: 20.0),
-            child: GestureDetector(
-              onTap: () {
-                loadFilterSite(token!);
-                // filterBottom(context);
-              },
-              child: Icon(Icons.filter_alt_rounded),
-            ),
-          )
+          // Padding(
+          //   padding: EdgeInsets.only(right: 20.0),
+          //   child: GestureDetector(
+          //     onTap: () {
+          //       loadFilterSite(token!);
+          //       // filterBottom(context);
+          //     },
+          //     child: Icon(Icons.filter_alt_rounded),
+          //   ),
+          // )
         ],
       ),
       floatingActionButton: this._masalah.length > 0

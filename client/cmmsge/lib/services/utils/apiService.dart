@@ -21,10 +21,10 @@ import '../models/checklist/checklist.dart';
 class ApiService {
   // ? make sure api url true, change variable BaseUrl if api url has changed.
   /// for server
-  // final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
+  final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
 
   /// for development
-  final String BaseUrl = "http://192.168.1.211:9994/api/v1/";
+  // final String BaseUrl = "http://192.168.1.211:9994/api/v1/";
 
   Client client = Client();
   ResponseCode responseCode = ResponseCode();
@@ -70,6 +70,7 @@ class ApiService {
       // ++ fyi : sending token with BEARER
       'Authorization': 'Bearer ' + token
     });
+    print("DASHBOARD?" + response.body);
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
@@ -274,15 +275,55 @@ class ApiService {
     }
   }
 
-  // ! Add Data Site
+  // ! Add Data KOMPONEN
   Future<bool> addKomponen(String token, KomponenModel data) async {
-    var url = Uri.parse(BaseUrl + 'site');
+    var url = Uri.parse(BaseUrl + 'komponen');
     var response = await client.post(url,
         headers: {
           'content-type': 'application/json',
           'Authorization': 'Bearer ${token}'
         },
         body: KomponenToJson(data));
+    print(url.toString() + ' | ' + data.toString());
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 201) {
+      return true;
+    } else {
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
+    }
+  }
+
+  // ! EDIT Data KOMPONEN
+  Future<bool> editKomoponen(
+      String token, KomponenModel data, String idkomponen) async {
+    var url = Uri.parse(BaseUrl + 'komponen/' + idkomponen);
+    var response = await client.put(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
+        body: KomponenToJson(data));
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
+    }
+  }
+
+  // ! DELETE Data KOMPONEN
+  Future<bool> deleteKomponen(String token, String idkomponen) async {
+    var url = Uri.parse(BaseUrl + 'komponen/' + idkomponen);
+    var response = await client.post(url, headers: {
+      'content-type': 'application/json',
+      'Authorization': 'Bearer ${token}'
+    });
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
@@ -444,8 +485,9 @@ class ApiService {
    * * note : getting data schedule
    */
   Future<List<MasalahModel>?> getListMasalah(
-      String token, String flag_activity) async {
-    var url = Uri.parse(BaseUrl + 'masalah/' + flag_activity);
+      String token, String flag_activity, String filter_site) async {
+    var url =
+        Uri.parse(BaseUrl + 'masalah/' + flag_activity + '/' + filter_site);
     var response = await client.get(url, headers: {
       'content-type': 'application/json',
       // ++ fyi : sending token with BEARER
@@ -534,22 +576,68 @@ class ApiService {
    * ! ADD CHECKLIST
    */
   Future<int> addChecklist(String token, ChecklistModel data) async {
+    print(token + data.toString());
     var url = Uri.parse(BaseUrl + 'checklist');
     var response = await client.post(url,
         headers: {
           'content-type': 'application/json',
-          // 'Authorization': 'Bearer ${token}'
+          'Authorization': 'Bearer ${token}'
         },
-        // body: json.encode({'array': data}));
+        body: checklistToJson(data));
+    print(data.toString() + ' | ' + token);
+    print('send to add checklist' + response.body[1].toString());
+    // print(responseCode);
+    if (response.statusCode == 201) {
+      Map responsemessage = jsonDecode(response.body);
+      responseCode = ResponseCode.fromJson(responsemessage);
+      print(responseCode.data.toString());
+      return responseCode.data;
+    } else {
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
+    }
+  }
+
+  /**
+   * ! EDIT CHECKLIST
+   */
+  Future<bool> editChecklist(
+      String token, ChecklistModel data, String idchecklist) async {
+    print(token + data.toString());
+    var url = Uri.parse(BaseUrl + 'checklist/' + idchecklist);
+    var response = await client.put(url,
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': 'Bearer ${token}'
+        },
         body: checklistToJson(data));
     print(data);
-    print('send to add checklist' +
-        response.body +
-        response.body.split(' : ')[1]);
+    print('send to edit checklist' + response.body[1].toString());
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
-    if (response.statusCode == 201) {
-      return int.parse(response.body.split(' : ')[1]);
+
+    print(responseCode);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
+    }
+  }
+
+  /**
+   * ! DELETE CHECKLIST
+   */
+  Future<bool> deleteChecklist(String token, String idchecklist) async {
+    var url = Uri.parse(BaseUrl + 'checklist/' + idchecklist);
+    var response = await client.delete(url, headers: {
+      'content-type': 'application/json',
+      'Authorization': 'Bearer ${token}'
+    });
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return true;
     } else {
       return Future.error(
           responseCode, StackTrace.fromString(response.statusCode.toString()));
@@ -564,7 +652,7 @@ class ApiService {
     var response = await client.post(url,
         headers: {
           'content-type': 'application/json',
-          // 'Authorization': 'Bearer ${token}'
+          'Authorization': 'Bearer ${token}'
         },
         // body: json.encode({'array': data}));
         body: data);
@@ -576,6 +664,25 @@ class ApiService {
       return true;
     } else {
       // return false;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
+    }
+  }
+
+  /**
+   * ! DELETE DETAIL CHECKLIST
+   */
+  Future<bool> deleteDetChecklist(String token, String idchecklist) async {
+    var url = Uri.parse(BaseUrl + 'detchecklist/' + idchecklist);
+    var response = await client.delete(url, headers: {
+      'content-type': 'application/json',
+      'Authorization': 'Bearer ${token}'
+    });
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
       return Future.error(
           responseCode, StackTrace.fromString(response.statusCode.toString()));
     }

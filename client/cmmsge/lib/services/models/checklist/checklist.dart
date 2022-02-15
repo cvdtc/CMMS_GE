@@ -24,8 +24,8 @@ class ChecklistModel {
 
   factory ChecklistModel.fromJson(Map<dynamic, dynamic> map) {
     return ChecklistModel(
-        idchecklist: map["idmesin"],
-        deskripsi: map["nomesin"],
+        idchecklist: map["idchecklist"],
+        deskripsi: map["deskripsi"],
         keterangan: map["keterangan"],
         dikerjakan_oleh: map["dikerjakan_oleh"],
         diperiksa_oleh: map["diperiksa_oleh"],
@@ -43,13 +43,14 @@ class ChecklistModel {
       "diperiksa_oleh": diperiksa_oleh,
       "tanggal_checklist": tanggal_checklist,
       "idmesin": idmesin,
+      "revisi": revisi,
       "no_dokumen": no_dokumen,
     };
   }
 
   @override
   String toString() {
-    return 'ChecklistModel{ deskripsi: $deskripsi, keterangan: $keterangan, dikerjakan_oleh: $dikerjakan_oleh, diperiksa_oleh: $diperiksa_oleh, tanggal_checklist: $tanggal_checklist, revisi: $revisi, idmesin: $idmesin, no_dokumen: $no_dokumen }';
+    return 'ChecklistModel{ deskripsi: $deskripsi, keterangan: $keterangan, dikerjakan_oleh: $dikerjakan_oleh, diperiksa_oleh: $diperiksa_oleh, tanggal_checklist: $tanggal_checklist, idmesin: $idmesin, no_dokumen: $no_dokumen }';
   }
 }
 

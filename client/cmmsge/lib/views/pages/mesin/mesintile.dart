@@ -60,6 +60,7 @@ class MesinTile extends StatelessWidget {
                     '',
                     '',
                     '',
+                    '1',
                     mesin.idmesin.toString(),
                     mesin.nomesin.toString(),
                     mesin.keterangan,

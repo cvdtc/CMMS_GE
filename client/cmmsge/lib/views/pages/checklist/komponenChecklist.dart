@@ -11,8 +11,9 @@ import 'package:cmmsge/views/utils/ceksharepreference.dart';
 import 'package:flutter/material.dart';
 
 class KomponenChecklistPage extends StatefulWidget {
-  String idcheckout, idmesin;
-  KomponenChecklistPage({required this.idcheckout, required this.idmesin});
+  String idchecklist, idmesin, token;
+  KomponenChecklistPage(
+      {required this.idchecklist, required this.idmesin, required this.token});
   @override
   State<KomponenChecklistPage> createState() => _KomponenChecklistPageState();
 }
@@ -30,11 +31,12 @@ class _KomponenChecklistPageState extends State<KomponenChecklistPage> {
   var dataList = [];
   int indexLength = 0;
   String valueChecklist = '';
-  int idchecklist = 0;
+  String idchecklist = '';
 
   @override
   void initState() {
     idmesin = widget.idmesin;
+    idchecklist = widget.idchecklist;
     CekSharedPred().cektoken(context).then((value) {
       setState(() {
         token = value![0];
@@ -271,7 +273,7 @@ class _KomponenChecklistPageState extends State<KomponenChecklistPage> {
         color: thirdcolor,
         child: InkWell(
           onTap: () {
-            checklistClick();
+            checklistClick(token);
             print(dataList);
           },
           child: const SizedBox(
@@ -292,7 +294,7 @@ class _KomponenChecklistPageState extends State<KomponenChecklistPage> {
     );
   }
 
-  checklistClick() async {
+  checklistClick(token) async {
     print(dataList.length != indexLength + dataList.length + indexLength);
     if (dataList.length < indexLength) {
       ReusableClasses().modalbottomWarning(
@@ -302,7 +304,7 @@ class _KomponenChecklistPageState extends State<KomponenChecklistPage> {
           'f204',
           'assets/images/sorry.png');
     } else {
-      BottomChecklist().modalKonfirmasi(context, '', valueChecklist);
+      BottomChecklist().modalKonfirmasi(context, token, valueChecklist);
     }
   }
 }

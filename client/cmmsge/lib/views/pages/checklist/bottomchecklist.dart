@@ -123,11 +123,10 @@ class BottomChecklist {
             msg: '${_apiService.responseCode.messageApi}',
             backgroundColor: Colors.green);
       }
+    }).onError((error, stackTrace) {
+      Fluttertoast.showToast(msg: '${error}', backgroundColor: Colors.red);
+      // ReusableClasses().modalbottomWarning(context, 'Gagal!',
+      //     error.toString(), 'f4xx', 'assets/images/sorry.png');
     });
-    // .onError((error, stackTrace) {
-    //   Fluttertoast.showToast(msg: '${error}', backgroundColor: Colors.red);
-    //   // ReusableClasses().modalbottomWarning(context, 'Gagal!',
-    //   //     error.toString(), 'f4xx', 'assets/images/sorry.png');
-    // });
   }
 }

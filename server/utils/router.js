@@ -11,11 +11,23 @@ router.get('/barang', jwtVerify, (req, res) => {
 
 // CHECKLIST
 var RouteToChecklist = require('../controller/checklist.controller')
-router.post('/checklist', (req, res)=>{
-    RouteToChecklist.addChecklist(req, res)
+router.get('/checklist', jwtVerify, function(req, res) {
+    RouteToChecklist.getChecklist(req, res)
 })
-router.post('/detchecklist', (req, res)=>{
+router.post('/checklist',  jwtVerify, function(req, res) {
+    RouteToChecklist.addChecklist(req, res,req.decode )
+})
+router.put('/checklist/:idchecklist', jwtVerify, function(req, res) {
+    RouteToChecklist.editChecklist(req, res, req.decode)
+})
+router.delete('/checklist/:idchecklist', jwtVerify, function(req, res) {
+    RouteToChecklist.deleteChecklist(req, res)
+})
+router.post('/detchecklist', jwtVerify, function(req, res) {
     RouteToChecklist.addDetChecklist(req, res)
+})
+router.delete('/detchecklist/:idchecklist',jwtVerify, function (req, res){
+    RouteToChecklist.deleteDetChecklist(req, res)
 })
 
 //CHECKOUT
@@ -49,13 +61,13 @@ router.get('/komponen/:idmesin', jwtVerify, function(req, res) {
     RouteToKomponen.getKomponen(req, res)
 })
 router.post('/komponen', jwtVerify, function(req, res) {
-    RouteToPenyelesaian.addPenyelesaian(req, res, req.decode)
+    RouteToKomponen.addKomponen(req, res, req.decode)
 })
 router.put('/komponen/:idkomponen', jwtVerify, function(req, res) {
-    RouteToPenyelesaian.editPenyelesaian(req, res, req.decode)
+    RouteToKomponen.editKomponen(req, res, req.decode)
 })
 router.delete('/komponen/:idkomponen', jwtVerify, function(req, res) {
-    RouteToPenyelesaian.deletePenyelesaian(req, res)
+    RouteToKomponen.deleteKomponen(req, res)
 })
 
 //LOGIN

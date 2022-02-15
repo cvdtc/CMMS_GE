@@ -20,7 +20,7 @@ class BottomAddChecklist {
   final TextEditingController _tecDiperiksaOleh = TextEditingController();
   final TextEditingController _tecTanggalChecklist = TextEditingController();
 
-  String tanggalchecklist = "";
+  String tanggal_checklist = "";
   // * DATE AND TIME VARIABLE
   String _setDate = "";
   DateTime dateSelected = DateTime.now();
@@ -36,12 +36,14 @@ class BottomAddChecklist {
       String dikerjakan_oleh,
       String diperiksa_oleh,
       String tanggal_checklist,
+      String revisi,
       String idmesin,
       String nomesin,
       String ketmesin,
       String idchecklist) {
 // * setting value text form field if action is edit
     if (tipe == 'ubah') {
+      print(tanggal_checklist);
       _tecDeskripsi.value = TextEditingValue(
           text: deskripsi,
           selection: TextSelection.fromPosition(
@@ -55,7 +57,7 @@ class BottomAddChecklist {
           selection: TextSelection.fromPosition(
               TextPosition(offset: _tecNoDokumen.text.length)));
       _tecTanggalChecklist.value = TextEditingValue(
-          text: tanggalchecklist,
+          text: tanggal_checklist,
           selection: TextSelection.fromPosition(
               TextPosition(offset: _tecTanggalChecklist.text.length)));
       _tecDikerjakanOleh.value = TextEditingValue(
@@ -92,10 +94,12 @@ class BottomAddChecklist {
                           TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                     SizedBox(height: 10.0),
-                    Text('Mesin : (' + nomesin + ') ' + ketmesin,
-                        style: TextStyle(
-                          fontSize: 16,
-                        )),
+                    tipe == 'ubah'
+                        ? Container()
+                        : Text('Mesin : (' + nomesin + ') ' + ketmesin,
+                            style: TextStyle(
+                              fontSize: 16,
+                            )),
                     SizedBox(
                       height: 20.0,
                     ),
@@ -197,7 +201,7 @@ class BottomAddChecklist {
                                   enabled: false,
                                   controller: _tecTanggalChecklist,
                                   onSaved: (String? val) {
-                                    tanggalchecklist = val.toString();
+                                    tanggal_checklist = val.toString();
                                   },
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
@@ -312,6 +316,7 @@ class BottomAddChecklist {
                             _tecDikerjakanOleh.text.toString(),
                             _tecDiperiksaOleh.text.toString(),
                             _tecTanggalChecklist.text.toString(),
+                            revisi,
                             idmesin,
                             nomesin,
                             ketmesin,
@@ -346,6 +351,198 @@ class BottomAddChecklist {
         });
   }
 
+  // ++ BOTTOM MODAL UNTUK ACTION PER ITEM
+  void modalActionItem(
+      context,
+      String token,
+      String tipe,
+      String deskripsi,
+      String keterangan,
+      String nodokumen,
+      String dikerjakan_oleh,
+      String diperiksa_oleh,
+      String tanggal_checklist,
+      String revisi,
+      String idmesin,
+      String nomesin,
+      String ketmesin,
+      String idchecklist) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0))),
+        builder: (BuildContext context) {
+          return Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+              padding: EdgeInsets.all(15.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('DETAIL',
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text('No. Dokumen: ' + nodokumen.toString(),
+                      style: TextStyle(fontSize: 16)),
+                  Text('Deskripsi : ' + deskripsi,
+                      style: TextStyle(fontSize: 16)),
+                  Text('Keterangan : ' + keterangan.toString(),
+                      style: TextStyle(fontSize: 16)),
+                  Text('Dikerjakan Oleh : ' + dikerjakan_oleh.toString(),
+                      style: TextStyle(fontSize: 16)),
+                  Text('Diperiksa Oleh : ' + diperiksa_oleh.toString(),
+                      style: TextStyle(fontSize: 16)),
+                  Text('Tanggal Checklist : ' + tanggal_checklist.toString(),
+                      style: TextStyle(fontSize: 16)),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Divider(
+                    thickness: 1.0,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  // ++ filter jika status sudah selesai maka tombol edit masalah di hilangkan
+                  SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        modalAddChecklist(
+                            context,
+                            token,
+                            tipe,
+                            deskripsi,
+                            keterangan,
+                            nodokumen,
+                            dikerjakan_oleh,
+                            diperiksa_oleh,
+                            tanggal_checklist,
+                            revisi,
+                            idmesin,
+                            nomesin,
+                            ketmesin,
+                            idchecklist);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          side: BorderSide(width: 2, color: Colors.blue),
+                          elevation: 0.0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          primary: Colors.white),
+                      child: Ink(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(18.0)),
+                          child: Container(
+                            width: 325,
+                            height: 45,
+                            alignment: Alignment.center,
+                            child: Text('EDIT CHECKLIST',
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                          ))),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        modalKonfirmasi(
+                            context,
+                            token,
+                            tipe,
+                            deskripsi,
+                            keterangan,
+                            nodokumen,
+                            dikerjakan_oleh,
+                            diperiksa_oleh,
+                            tanggal_checklist,
+                            revisi,
+                            idmesin,
+                            nomesin,
+                            ketmesin,
+                            idchecklist);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          side: BorderSide(width: 2, color: Colors.red),
+                          elevation: 0.0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          primary: Colors.white),
+                      child: Ink(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(18.0)),
+                          child: Container(
+                            width: 325,
+                            height: 45,
+                            alignment: Alignment.center,
+                            child: Text('HAPUS CHECKLIST',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                          ))),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        modalKonfirmasi(
+                            context,
+                            token,
+                            'hapuskomponen',
+                            deskripsi,
+                            keterangan,
+                            nodokumen,
+                            dikerjakan_oleh,
+                            diperiksa_oleh,
+                            tanggal_checklist,
+                            revisi,
+                            idmesin,
+                            nomesin,
+                            ketmesin,
+                            idchecklist);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          side: BorderSide(width: 2, color: Colors.green),
+                          elevation: 0.0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          primary: Colors.white),
+                      child: Ink(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(18.0)),
+                          child: Container(
+                            width: 325,
+                            height: 45,
+                            alignment: Alignment.center,
+                            child: Text('TAMBAH/UBAH KOMPONEN CHECKLIST',
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                          ))),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
   // ++ MODAL UNTUK KONFIRMASI SEBELUM MELAKUKAN KONEKSI KE API
   void modalKonfirmasi(
       context,
@@ -357,6 +554,7 @@ class BottomAddChecklist {
       String dikerjakan_oleh,
       String diperiksa_oleh,
       String tanggal_checklist,
+      String revisi,
       String idmesin,
       String nomesin,
       String ketmesin,
@@ -406,8 +604,12 @@ class BottomAddChecklist {
                             ? Text(
                                 'Apakah anda yakin akan menghapus checklist ' +
                                     deskripsi)
-                            : Text(
-                                'Apakah data yang ada masukkan sudah sesuai? note: Harap refresh kembali halaman untuk melihat data terbaru.'),
+                            : tipe == 'hapuskomponen'
+                                ? Text(
+                                    'Apakah anda yakin akan menghapus komponen checklist ' +
+                                        deskripsi)
+                                : Text(
+                                    'Apakah data yang ada masukkan sudah sesuai? note: Harap refresh kembali halaman untuk melihat data terbaru.'),
                         SizedBox(
                           height: 25,
                         ),
@@ -458,11 +660,12 @@ class BottomAddChecklist {
                                       dikerjakan_oleh,
                                       diperiksa_oleh,
                                       tanggal_checklist,
+                                      revisi,
                                       idmesin,
                                       nomesin,
                                       ketmesin,
                                       idchecklist);
-                                  Navigator.pop(context);
+                                  // Navigator.pop(context);
                                   buttonSimpanHandler = false;
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -506,6 +709,7 @@ class BottomAddChecklist {
       String dikerjakan_oleh,
       String diperiksa_oleh,
       String tanggal_checklist,
+      String revisi,
       String idmesin,
       String nomesin,
       String ketmesin,
@@ -516,23 +720,22 @@ class BottomAddChecklist {
         no_dokumen: nodokumen,
         dikerjakan_oleh: dikerjakan_oleh,
         diperiksa_oleh: diperiksa_oleh,
-        tanggal_checklist: tanggalchecklist,
+        tanggal_checklist: tanggal_checklist,
+        revisi: revisi,
         idmesin: idmesin);
-    print(addData.toString());
+    print(addData.toString() + tipe);
     if (tipe == 'tambah') {
-      _apiService.addChecklist(token, addData).then((isSuccess) {
-        print('HASIL??' + isSuccess.toString());
-        if (isSuccess <= 0) {
-          Fluttertoast.showToast(
-              msg: '${_apiService.responseCode.messageApi}',
-              backgroundColor: Colors.green);
-          buttonSimpanHandler = true;
-        } else {
-          Navigator.pushAndRemoveUntil(
+      _apiService.addChecklist(token, addData).then((idcheckout) async {
+        print('HASIL??' + idcheckout.toString());
+        if (idcheckout > 0) {
+          print("idcheckout?" + idcheckout.toString() + idmesin.toString());
+          await Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
                 builder: (context) => KomponenChecklistPage(
-                    idcheckout: isSuccess.toString(), idmesin: idmesin)),
+                    idchecklist: idcheckout.toString(),
+                    idmesin: idmesin,
+                    token: token)),
             (Route<dynamic> route) => false,
           );
           _tecDeskripsi.clear();
@@ -545,15 +748,93 @@ class BottomAddChecklist {
               msg: '${_apiService.responseCode.messageApi}',
               backgroundColor: Colors.green);
           buttonSimpanHandler = true;
+        } else {
+          Fluttertoast.showToast(
+              msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
+          buttonSimpanHandler = true;
         }
       }).onError((error, stackTrace) {
-        print('Error Masalah' + error.toString());
+        print('Error Checklist' + error.toString() + stackTrace.toString());
         Fluttertoast.showToast(
             msg: '${_apiService.responseCode.messageApi}',
             backgroundColor: Colors.green);
         buttonSimpanHandler = true;
         // ReusableClasses().modalbottomWarning(context, 'Gagal!',
         //     error.toString(), 'f4xx', 'assets/images/sorry.png');
+      });
+    } else if (tipe == 'ubah') {
+      _apiService
+          .editChecklist(token, addData, idchecklist)
+          .then((isSuccess) async {
+        if (isSuccess) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(
+                      numberOfPage: 2,
+                    )),
+            (Route<dynamic> route) => false,
+          );
+          Fluttertoast.showToast(
+              msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
+          buttonSimpanHandler = true;
+        }
+      }).onError((error, stackTrace) {
+        print(
+            'Error UBAH Checklist' + error.toString() + stackTrace.toString());
+        Fluttertoast.showToast(
+            msg: '${_apiService.responseCode.messageApi}',
+            backgroundColor: Colors.green);
+        buttonSimpanHandler = true;
+      });
+    } else if (tipe == 'hapus') {
+      _apiService.deleteChecklist(token, idchecklist).then((isSuccess) async {
+        if (isSuccess) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(
+                      numberOfPage: 2,
+                    )),
+            (Route<dynamic> route) => false,
+          );
+          Fluttertoast.showToast(
+              msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
+          buttonSimpanHandler = true;
+        }
+      }).onError((error, stackTrace) {
+        print(
+            'Error HAPUS Checklist' + error.toString() + stackTrace.toString());
+        Fluttertoast.showToast(
+            msg: '${_apiService.responseCode.messageApi}',
+            backgroundColor: Colors.green);
+        buttonSimpanHandler = true;
+      });
+    } else if (tipe == 'hapuskomponen') {
+      _apiService
+          .deleteDetChecklist(token, idchecklist)
+          .then((isSuccess) async {
+        if (isSuccess) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => KomponenChecklistPage(
+                    idchecklist: idchecklist, idmesin: idmesin, token: token)),
+            (Route<dynamic> route) => false,
+          );
+          Fluttertoast.showToast(
+              msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
+          buttonSimpanHandler = true;
+        }
+      }).onError((error, stackTrace) {
+        Fluttertoast.showToast(
+            msg: '${_apiService.responseCode.messageApi}',
+            backgroundColor: Colors.green);
+        buttonSimpanHandler = true;
       });
     }
   }

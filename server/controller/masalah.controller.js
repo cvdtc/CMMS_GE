@@ -15,7 +15,7 @@ var nows = {
 
 /**
  * @swagger
- * /masalah/:flag_activity:
+ * /masalah/:flag_activity/:idsite:
  *  get:
  *      summary: api untuk load data masalah berdasarkan flag_activity jika 0 maka akan meload data pre-activity jika 1 maka load data activity
  *      tags: [Masalah]

@@ -41,7 +41,7 @@ class KomponenModel {
 
   @override
   String toString() {
-    return 'idkomponen: $idkomponen, nama: $nama, kategori: $kategori, keterangan: $keterangan, flag_reminder: $flag_reminder, jumlah_reminder: $jumlah_reminder, idmesin: $idmesin';
+    return 'nama: $nama, kategori: $kategori, keterangan: $keterangan, flag_reminder: $flag_reminder, jumlah_reminder: $jumlah_reminder, idmesin: $idmesin';
   }
 }
 
