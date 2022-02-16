@@ -28,16 +28,23 @@ class _LoginPageState extends State<LoginPage> {
   ApiService _apiService = ApiService();
   String? uuid;
 
-  Future cekuuid() async {
-    setState(() async {
-      uuid = await GetDeviceID().getDeviceID(context);
-    });
+  cekuuid() async {
+    // setState(() async {
+    uuid = await GetDeviceID().getDeviceID(context);
+    // });
   }
 
   @override
   initState() {
     super.initState();
     cekuuid();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    _apiService.client.close();
+    super.dispose();
   }
 
   // * method for show or hide password
@@ -220,12 +227,12 @@ class _LoginPageState extends State<LoginPage> {
           device: 'mobile',
           uuid: uuid,
           appversion: appVersion.versionnumber);
-      _apiService.LoginApp(dataparams).then((isSuccess) {
-        setState(() {
-          _isLoading = false;
-        });
+      _apiService.LoginApp(dataparams).then((isSuccess) async {
         if (isSuccess) {
-          Navigator.pushReplacement(
+          setState(() {
+            _isLoading = false;
+          });
+          return Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                   builder: (context) => BottomNavigation(
@@ -234,28 +241,22 @@ class _LoginPageState extends State<LoginPage> {
         } else {
           ReusableClasses().modalbottomWarning(
               context,
-              'Login Gagal!',
-              '${_apiService.responseCode.messageApi}',
+              'GAGAL!',
+              _apiService.responseCode.messageApi,
               'f400',
               'assets/images/sorry.png');
         }
-        return;
+      }).onError((error, stackTrace) {
+        return ReusableClasses().modalbottomWarning(
+            context,
+            'Koneksi Bermasalah!',
+            'Pastikan Koneksi anda stabil terlebih dahulu, apabila masih terkendala hubungi IT.' +
+                error.toString() +
+                stackTrace.toString(),
+            'f500',
+            'assets/images/sorry.png');
       });
-      // .onError((error, stackTrace) {
-      //   ReusableClasses().modalbottomWarning(
-      //       context,
-      //       'Koneksi Bermasalah!',
-      //       'Pastikan Koneksi anda stabil terlebih dahulu, apabila masih terkendala hubungi IT. ${error}',
-      //       'f500',
-      //       'assets/images/sorry.png');
-      // });
     }
     return;
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
   }
 }

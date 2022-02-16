@@ -1,7 +1,14 @@
 import 'dart:convert';
 
 class SchedulepartModel {
-  var kode, nama, umur_barang, satuan, lewathari, tgl_reminder, idcheckout;
+  var kode,
+      nama,
+      umur_barang,
+      satuan,
+      lewathari,
+      tgl_reminder,
+      idcheckout,
+      masalah;
 
   SchedulepartModel(
       {this.kode,
@@ -10,7 +17,8 @@ class SchedulepartModel {
       this.satuan,
       this.lewathari,
       this.tgl_reminder,
-      this.idcheckout});
+      this.idcheckout,
+      this.masalah});
 
   factory SchedulepartModel.fromJson(Map<String, dynamic> map) {
     return SchedulepartModel(
@@ -20,12 +28,13 @@ class SchedulepartModel {
         satuan: map['satuan'],
         lewathari: map['lewathari'],
         tgl_reminder: map['tgl_reminder'],
-        idcheckout: map['idcheckout']);
+        idcheckout: map['idcheckout'],
+        masalah: map['masalah']);
   }
 
   @override
   String toString() {
-    return 'SchedulepartModel{kode: $kode, nama: $nama, umur_barang: $umur_barang, satuan: $satuan, lewathari: $lewathari, tgl_reminder: $tgl_reminder, idcheckout: $idcheckout}';
+    return 'SchedulepartModel{kode: $kode, nama: $nama, umur_barang: $umur_barang, satuan: $satuan, lewathari: $lewathari, tgl_reminder: $tgl_reminder, idcheckout: $idcheckout, masalah: $masalah}';
   }
 }
 

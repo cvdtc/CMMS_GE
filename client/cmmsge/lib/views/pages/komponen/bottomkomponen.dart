@@ -2,16 +2,58 @@ import 'package:cmmsge/services/models/komponen/KomponenModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/utils/bottomnavigation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class BottomKomponen {
+  // *
   ApiService _apiService = new ApiService();
-  TextEditingController _tecNama = TextEditingController(text: "");
-  TextEditingController _tecJumlah = TextEditingController(text: "");
 
-  // ++ BOTTOM MODAL INPUT FORM
-  void modalAddKomponen(
-      context, String tipe, String token, String idkomponen, String idmesin) {
+  // * TEXT FORM VARIABLE
+  TextEditingController _tecNamaKomponen = TextEditingController(text: "");
+  TextEditingController _tecKeteranganKomponen =
+      TextEditingController(text: "");
+  TextEditingController _tecJumlahReminder = TextEditingController(text: "");
+
+  bool buttonSimpanHandler = true;
+
+  // * INITIAL DROPDOWNBUTTON
+  String _kategoriValue = 'Electrical';
+  // * INITIAL CHECKBOX
+  bool isChecked = false;
+  int valueflag_reminder = 0;
+
+  // ++ BOTTOM MODAL UNTUK INPUT DATA
+  void modalFormKomponen(
+      context,
+      String tipe,
+      String token,
+      String nama,
+      String kategori,
+      String keterangan,
+      String flag_reminder,
+      String jumlah_reminder,
+      String idmesin,
+      String idkomponen) {
+    // * setting value text form field if action is edit
+    if (tipe == 'ubah') {
+      _tecNamaKomponen.value = TextEditingValue(
+          text: nama,
+          selection: TextSelection.fromPosition(
+              TextPosition(offset: _tecNamaKomponen.text.length)));
+      _tecKeteranganKomponen.value = TextEditingValue(
+          text: keterangan,
+          selection: TextSelection.fromPosition(
+              TextPosition(offset: _tecKeteranganKomponen.text.length)));
+      _tecJumlahReminder.value = TextEditingValue(
+          text: jumlah_reminder,
+          selection: TextSelection.fromPosition(
+              TextPosition(offset: _tecJumlahReminder.text.length)));
+      _kategoriValue = kategori;
+      isChecked = flag_reminder == '1' ? true : false;
+    }
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -31,47 +73,119 @@ class BottomKomponen {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    tipe.toUpperCase(),
+                    tipe.toUpperCase() + ' KOMPONEN',
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10.0),
                   TextFormField(
-                      controller: _tecNama,
-                      textCapitalization: TextCapitalization.characters,
+                      controller: _tecNamaKomponen,
                       decoration: InputDecoration(
-                          icon: Icon(Icons.cabin_rounded),
+                          icon: Icon(Icons.warning_amber_rounded),
                           labelText: 'Nama Komponen',
-                          hintText: 'Masukkan Nama Komponen',
-                          suffixIcon:
-                              Icon(Icons.check_circle_outline_outlined))),
-                  SizedBox(
-                    height: 10.0,
+                          hintText: 'Nama Komponen')),
+                  TextFormField(
+                      controller: _tecKeteranganKomponen,
+                      decoration: InputDecoration(
+                          icon: Icon(Icons.note),
+                          labelText: 'Keterangan Komponen',
+                          hintText: 'Keterangan Komponen')),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            child: StatefulBuilder(
+                              builder: (BuildContext context,
+                                  void Function(void Function()) setState) {
+                                return Checkbox(
+                                  activeColor: thirdcolor,
+                                  value: isChecked,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      isChecked = value!;
+                                      isChecked
+                                          ? valueflag_reminder = 1
+                                          : valueflag_reminder = 0;
+                                      print(value);
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                          ),
+                          Text('Reminder', style: TextStyle(fontSize: 16.0)),
+                        ],
+                      ),
+                      Container(
+                        child: Row(
+                          children: [
+                            Text(
+                              'Kategori :',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
+                            SizedBox(
+                              width: 15.0,
+                            ),
+                            StatefulBuilder(builder: (BuildContext context,
+                                void Function(void Function()) setState) {
+                              return DropdownButton(
+                                dropdownColor: Colors.white,
+                                value: _kategoriValue,
+                                onChanged: (String? value) {
+                                  setState(() {
+                                    _kategoriValue = value!;
+                                  });
+                                },
+                                items: <String>[
+                                  'Electrical',
+                                  'Mechanical'
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                      value: value, child: Text(value));
+                                }).toList(),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   TextFormField(
-                      controller: _tecJumlah,
-                      textCapitalization: TextCapitalization.words,
+                      controller: _tecJumlahReminder,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly
+                      ],
                       decoration: InputDecoration(
-                          icon: Icon(Icons.note_outlined),
-                          labelText: 'Jumlah Komponen',
-                          hintText: 'Masukkan Jumlah Komponen',
-                          suffixIcon:
-                              Icon(Icons.check_circle_outline_outlined))),
+                          icon: Icon(Icons.wb_sunny_rounded),
+                          labelText: 'Jumlah Reminder dalam hari')),
                   SizedBox(
-                    height: 15.0,
+                    height: 25.0,
                   ),
                   ElevatedButton(
-                      onPressed: () {
-                        _modalKonfirmasi(
-                            context,
-                            token,
-                            'tambah',
-                            '0',
-                            _tecNama.text.toString(),
-                            _tecJumlah.text.toString(),
-                            idmesin);
-                      },
+                      onPressed: buttonSimpanHandler
+                          ? () {
+                              // Navigator.pop(context);
+                              modalKonfirmasi(
+                                  context,
+                                  tipe,
+                                  token,
+                                  _tecNamaKomponen.text.toString(),
+                                  _kategoriValue.toString(),
+                                  _tecKeteranganKomponen.text.toString(),
+                                  valueflag_reminder.toString(),
+                                  _tecJumlahReminder.text.toString(),
+                                  idmesin,
+                                  idkomponen);
+                            }
+                          : null,
                       style: ElevatedButton.styleFrom(
-                          elevation: 0.0, primary: Colors.white),
+                          elevation: 0.0,
+                          onSurface: thirdcolor,
+                          primary: thirdcolor,
+                          shadowColor: thirdcolor),
                       child: Ink(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(18.0)),
@@ -81,7 +195,7 @@ class BottomKomponen {
                             alignment: Alignment.center,
                             child: Text('S I M P A N',
                                 style: TextStyle(
-                                  color: primarycolor,
+                                  color: Colors.white,
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
                                 )),
@@ -93,203 +207,18 @@ class BottomKomponen {
         });
   }
 
-  // ++ BOTTOM MODAL CONFIRMATION
-  void _modalKonfirmasi(context, String token, String tipe, String idkomponen,
-      String nama, String jumlah, String idmesin) {
-    if (nama == "" || jumlah == "") {
-      ReusableClasses().modalbottomWarning(
-          context,
-          "Tidak Valid!",
-          "Pastikan semua kolom terisi dengan benar",
-          'f405',
-          'assets/images/sorry.png');
-    } else {
-      showModalBottomSheet(
-          isScrollControlled: true,
-          context: context,
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(15.0),
-                  topRight: Radius.circular(15.0))),
-          builder: (BuildContext context) {
-            return Padding(
-              padding: MediaQuery.of(context).viewInsets,
-              child: Container(
-                padding: EdgeInsets.all(15.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      'Konfirmasi ' + tipe,
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    tipe == 'hapus'
-                        ? Text('Apakah anda yakin akan menghapus komponen ' +
-                            nama +
-                            '?')
-                        : Text('Apakah data yang anda masukkan sudah sesuai.?',
-                            style: TextStyle(fontSize: 16)),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0.0,
-                              primary: Colors.red,
-                            ),
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(18)),
-                              child: Container(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Batal",
-                                ),
-                              ),
-                            )),
-                        SizedBox(
-                          width: 55,
-                        ),
-                        ElevatedButton(
-                            onPressed: () {
-                              _actiontoapi(context, token, tipe, idkomponen,
-                                  nama, jumlah, idmesin);
-                              Navigator.of(context).pop();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0.0,
-                              primary: Colors.white,
-                            ),
-                            child: Ink(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(18)),
-                              child: Container(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "Submit",
-                                  style: TextStyle(color: primarycolor),
-                                ),
-                              ),
-                            )),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          });
-    }
-  }
-
-  // ++ UNTUK MELAKUKAN TRANSAKSI KE API SESUAI DENGAN PARAMETER TIPE YANG DIKIRIM
-  void _actiontoapi(context, String token, String tipe, String idkomponen,
-      String nama, String jumlah, String idmesin) {
-    if (nama == "" || jumlah == "") {
-      ReusableClasses().modalbottomWarning(
-          context,
-          "Tidak Valid!",
-          "Pastikan semua kolom terisi dengan benar",
-          'f405',
-          'assets/images/sorry.png');
-    } else {
-      KomponenModel data =
-          KomponenModel(nama: nama, jumlah: jumlah, idmesin: idmesin);
-      if (tipe == 'tambah') {
-        _apiService.addKomponen(token, data).then((isSuccess) {
-          if (isSuccess) {
-            _tecNama.clear();
-            _tecJumlah.clear();
-            ReusableClasses().modalbottomWarning(
-                context,
-                "Berhasil!",
-                "${_apiService.responseCode.messageApi}",
-                "f200",
-                "assets/images/congratulations.png");
-          } else {
-            ReusableClasses().modalbottomWarning(
-                context,
-                "Gagal!",
-                "${_apiService.responseCode.messageApi}",
-                "f400",
-                "assets/images/sorry.png");
-          }
-          return;
-        });
-      } else if (tipe == 'ubah') {
-        // _apiService.ubahKomponen(token, idkomponen, data).then((isSuccess) {
-        //   if (isSuccess) {
-        //     _tecNama.clear();
-        //     _tecJumlah.clear();
-        //     ReusableClasses().modalbottomWarning(
-        //         context,
-        //         "Berhasil!",
-        //         "${_apiService.responseCode.messageApi}",
-        //         "f200",
-        //         "assets/images/congratulations.png");
-        //   } else {
-        //     ReusableClasses().modalbottomWarning(
-        //         context,
-        //         "Gagal!",
-        //         "${_apiService.responseCode.messageApi}",
-        //         "f400",
-        //         "assets/images/sorry.png");
-        //   }
-        //   return;
-        // });
-      } else if (tipe == 'hapus') {
-        _apiService.hapusSite(token, idkomponen).then((isSuccess) {
-          if (isSuccess) {
-            ReusableClasses().modalbottomWarning(
-                context,
-                "Berhasil!",
-                "${_apiService.responseCode.messageApi}",
-                "f200",
-                "assets/images/congratulations.png");
-          } else {
-            ReusableClasses().modalbottomWarning(
-                context,
-                "Gagal!",
-                "${_apiService.responseCode.messageApi}",
-                "f400",
-                "assets/images/sorry.png");
-          }
-          return;
-        });
-      } else {
-        ReusableClasses().modalbottomWarning(context, "Tidak Valid!",
-            "Action anda tidak sesuai", 'f404', 'assets/images/sorry.png');
-      }
-    }
-  }
-
-  // ++ BOTTOM MODAL ACTION ITEM
+  // ++ BOTTOM MODAL UNTUK ACTION PER ITEM
   void modalActionItem(
       context,
+      String tipe,
       String token,
       String nama,
-      String nomesin,
-      String mesin,
-      String site,
-      String jumlah,
-      String idkomponen,
-      String idmesin) {
+      String kategori,
+      String keterangan,
+      String flag_reminder,
+      String jumlah_reminder,
+      String idmesin,
+      String idkomponen) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -308,19 +237,23 @@ class BottomKomponen {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('DETAIL KOMPONEN',
+                  Text('DETAIL',
                       style:
                           TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                   SizedBox(
                     height: 10,
                   ),
-                  Text(
-                    'Nama : ' + nama + ' (' + jumlah + ')',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Text('Mesin: ' + mesin + ' (' + nomesin + ')',
+                  Text('Nama: ' + nama.toString(),
                       style: TextStyle(fontSize: 16)),
-                  Text('Site: ' + site, style: TextStyle(fontSize: 16)),
+                  Text('Kategori : ' + kategori,
+                      style: TextStyle(fontSize: 16)),
+                  Text('Keterangan : ' + keterangan.toString(),
+                      style: TextStyle(fontSize: 16)),
+                  Text(
+                      'Reminder : ' + flag_reminder == '0'
+                          ? 'Tidak'
+                          : jumlah_reminder.toString(),
+                      style: TextStyle(fontSize: 16)),
                   SizedBox(
                     height: 5,
                   ),
@@ -330,13 +263,26 @@ class BottomKomponen {
                   SizedBox(
                     height: 20,
                   ),
+                  // ++ filter jika status sudah selesai maka tombol edit masalah di hilangkan
+                  SizedBox(
+                    height: 10,
+                  ),
                   ElevatedButton(
                       onPressed: () {
-                        modalAddKomponen(
-                            context, 'ubah', token, idkomponen, idmesin);
+                        modalFormKomponen(
+                            context,
+                            tipe,
+                            token,
+                            nama,
+                            kategori,
+                            keterangan,
+                            flag_reminder,
+                            jumlah_reminder,
+                            idmesin,
+                            idkomponen);
                       },
                       style: ElevatedButton.styleFrom(
-                          side: BorderSide(width: 2, color: Colors.green),
+                          side: BorderSide(width: 2, color: Colors.blue),
                           elevation: 0.0,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8)),
@@ -350,7 +296,7 @@ class BottomKomponen {
                             alignment: Alignment.center,
                             child: Text('EDIT KOMPONEN',
                                 style: TextStyle(
-                                  color: Colors.green,
+                                  color: Colors.blue,
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
                                 )),
@@ -360,8 +306,17 @@ class BottomKomponen {
                   ),
                   ElevatedButton(
                       onPressed: () {
-                        _modalKonfirmasi(context, token, 'hapus', idkomponen,
-                            nama, jumlah, idmesin);
+                        modalKonfirmasi(
+                            context,
+                            'hapus',
+                            token,
+                            nama,
+                            kategori,
+                            keterangan,
+                            flag_reminder,
+                            jumlah_reminder,
+                            idmesin,
+                            idkomponen);
                       },
                       style: ElevatedButton.styleFrom(
                           side: BorderSide(width: 2, color: Colors.red),
@@ -388,5 +343,269 @@ class BottomKomponen {
             ),
           );
         });
+  }
+
+  // ++ MODAL UNTUK KONFIRMASI SEBELUM MELAKUKAN KONEKSI KE API
+  void modalKonfirmasi(
+      context,
+      String tipe,
+      String token,
+      String nama,
+      String kategori,
+      String keterangan,
+      String flag_reminder,
+      String jumlah_reminder,
+      String idmesin,
+      String idkomponen) {
+    print(token +
+        ' | ' +
+        nama +
+        ' | ' +
+        kategori +
+        ' | ' +
+        keterangan +
+        ' | ' +
+        flag_reminder +
+        ' | ' +
+        jumlah_reminder +
+        ' | ' +
+        idmesin +
+        ' | ' +
+        idkomponen);
+    // * KONDISI UNTUK PENGECEKAN APAKAH NILAI/VALUE masalah, shift, tanggal, DAN jam SUDAH ADA VALUENYA APA BELUM
+    if (nama == "" ||
+        keterangan == "" ||
+        kategori == "" ||
+        flag_reminder == "" ||
+        jumlah_reminder == "" ||
+        idmesin == "") {
+      ReusableClasses().modalbottomWarning(
+          context,
+          'Data tidak valid!',
+          'Pastikan semua kolom terisi dengan sesuai!',
+          'f204',
+          'assets/images/sorry.png');
+    } else {
+      showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0))),
+        builder: (BuildContext context) {
+          return Padding(
+              padding: MediaQuery.of(context).viewInsets,
+              child: Container(
+                  padding: EdgeInsets.all(15.0),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Text('KONFIRMASI ' + tipe.toUpperCase() + ' CHECKLIST',
+                            style: TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.bold)),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        tipe == 'hapus'
+                            ? Text(
+                                'Apakah anda yakin akan menghapus Komponen ' +
+                                    nama)
+                            : Text(
+                                'Apakah data yang ada masukkan sudah sesuai? note: Harap refresh kembali halaman untuk melihat data terbaru.'),
+                        SizedBox(
+                          height: 25,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            ElevatedButton(
+                                onPressed: () {
+                                  buttonSimpanHandler = true;
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    side:
+                                        BorderSide(width: 2, color: Colors.red),
+                                    elevation: 0.0,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    primary: Colors.white),
+                                child: Ink(
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(18.0)),
+                                    child: Container(
+                                      width: 125,
+                                      height: 45,
+                                      alignment: Alignment.center,
+                                      child: Text('B A T A L',
+                                          style: TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                          )),
+                                    ))),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  // Navigator.pop(context);
+                                  _actionToApi(
+                                      context,
+                                      tipe,
+                                      token,
+                                      nama,
+                                      kategori,
+                                      keterangan,
+                                      flag_reminder,
+                                      jumlah_reminder,
+                                      idmesin,
+                                      idkomponen);
+                                  // Navigator.pop(context);
+                                  buttonSimpanHandler = false;
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    side: BorderSide(
+                                        width: 2, color: Colors.green),
+                                    elevation: 0.0,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    primary: Colors.white),
+                                child: Ink(
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(18.0)),
+                                    child: Container(
+                                      width: 125,
+                                      height: 45,
+                                      alignment: Alignment.center,
+                                      child: Text('SUDAH SESUAI',
+                                          style: TextStyle(
+                                            color: Colors.green,
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                          )),
+                                    ))),
+                          ],
+                        )
+                      ])));
+        },
+      );
+    }
+  }
+
+  // ! KONEKSI KE API
+  void _actionToApi(
+      context,
+      String tipe,
+      String token,
+      String nama,
+      String kategori,
+      String keterangan,
+      String flag_reminder,
+      String jumlah_reminder,
+      String idmesin,
+      String idkomponen) {
+    KomponenModel addData = KomponenModel(
+        nama: nama,
+        keterangan: keterangan,
+        kategori: kategori,
+        flag_reminder: flag_reminder,
+        jumlah_reminder: jumlah_reminder,
+        idmesin: idmesin);
+    print(addData.toString() + tipe);
+    if (tipe == 'tambah') {
+      _apiService.addKomponen(token, addData).then((isSuccess) async {
+        if (isSuccess) {
+          await Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(
+                      numberOfPage: 2,
+                    )),
+            (Route<dynamic> route) => false,
+          );
+          _tecNamaKomponen.clear();
+          _tecKeteranganKomponen.clear();
+          _tecJumlahReminder.clear();
+          Fluttertoast.showToast(
+              msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
+          buttonSimpanHandler = true;
+        } else {
+          Fluttertoast.showToast(
+              msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
+          buttonSimpanHandler = true;
+        }
+      }).onError((error, stackTrace) {
+        print('Error Checklist' + error.toString() + stackTrace.toString());
+        Fluttertoast.showToast(
+            msg: '${_apiService.responseCode.messageApi}',
+            backgroundColor: Colors.green);
+        buttonSimpanHandler = true;
+        // ReusableClasses().modalbottomWarning(context, 'Gagal!',
+        //     error.toString(), 'f4xx', 'assets/images/sorry.png');
+      });
+    } else if (tipe == 'ubah') {
+      _apiService
+          .editKomoponen(token, addData, idkomponen)
+          .then((isSuccess) async {
+        if (isSuccess) {
+          await Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(
+                      numberOfPage: 2,
+                    )),
+            (Route<dynamic> route) => false,
+          );
+          Fluttertoast.showToast(
+              msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
+          buttonSimpanHandler = true;
+        }
+      }).onError((error, stackTrace) {
+        print(
+            'Error UBAH Checklist' + error.toString() + stackTrace.toString());
+        Fluttertoast.showToast(
+            msg: '${_apiService.responseCode.messageApi}',
+            backgroundColor: Colors.green);
+        buttonSimpanHandler = true;
+      });
+    } else if (tipe == 'hapus') {
+      _apiService.deleteKomponen(token, idkomponen).then((isSuccess) async {
+        if (isSuccess) {
+          await Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(
+                      numberOfPage: 2,
+                    )),
+            (Route<dynamic> route) => false,
+          );
+          Fluttertoast.showToast(
+              msg: '${_apiService.responseCode.messageApi}',
+              backgroundColor: Colors.green);
+          buttonSimpanHandler = true;
+        }
+      }).onError((error, stackTrace) {
+        print(
+            'Error HAPUS Checklist' + error.toString() + stackTrace.toString());
+        Fluttertoast.showToast(
+            msg: '${_apiService.responseCode.messageApi}',
+            backgroundColor: Colors.green);
+        buttonSimpanHandler = true;
+      });
+    }
   }
 }

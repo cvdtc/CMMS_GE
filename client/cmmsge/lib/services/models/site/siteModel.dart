@@ -19,7 +19,7 @@ class SiteModel {
 
   @override
   String toString() {
-    return 'SiteModel{idsite: $idsite, nama: $nama, keterangan: $keterangan}';
+    return 'idsite: $idsite, nama: $nama, keterangan: $keterangan';
   }
 }
 

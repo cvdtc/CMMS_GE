@@ -13,8 +13,12 @@ List<MasalahModel> parseSite(String responseBody) {
 }
 
 Future<List<MasalahModel>> fetchMasalah(
-    String token, String flag_activity) async {
-  var url = Uri.parse(_apiService + 'masalah/' + flag_activity);
+    String token, String flag_activity, String filter_site) async {
+  var url =
+      Uri.parse(_apiService + 'masalah/' + flag_activity + '/' + filter_site);
+
+  /// for filter
+  // Uri.parse(_apiService + 'masalah/' + flag_activity ); /// without filter temporary
   print(url);
   var response = await http.get(url, headers: {
     'content-type': 'application/json',

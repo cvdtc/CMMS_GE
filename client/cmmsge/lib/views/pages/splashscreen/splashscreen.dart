@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:cmmsge/utils/warna.dart';
-import 'package:cmmsge/views/pages/login/loginpage.dart';
+import 'package:cmmsge/views/utils/bottomnavigation.dart';
+import 'package:cmmsge/views/utils/ceksharepreference.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
@@ -53,8 +54,16 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
       messaging.unsubscribeFromTopic('CMMSSELESAI');
     }
     Timer(Duration(seconds: 4), () {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => LoginPage()));
+      CekSharedPred().cektoken(context).then((value) {
+        return Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BottomNavigation(
+                      numberOfPage: 0,
+                    )));
+      });
+      // Navigator.pushReplacement(
+      //     context, MaterialPageRoute(builder: (context) => LoginPage()));
     });
   }
 

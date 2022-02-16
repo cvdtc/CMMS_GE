@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ActivityDashboard extends StatefulWidget {
-  String flag_activity;
-  ActivityDashboard({required this.flag_activity});
+  String flag_activity, token;
+  ActivityDashboard({required this.flag_activity, required this.token});
 
   @override
   _ActivityDashboardState createState() => _ActivityDashboardState();
@@ -18,18 +18,20 @@ class _ActivityDashboardState extends State<ActivityDashboard> {
   String? token, flag_activity;
 
   // * ceking token and getting dashboard value from Shared Preferences
-  cekToken() async {
-    sp = await SharedPreferences.getInstance();
-    setState(() {
-      token = sp.getString("access_token");
-    });
-  }
+  // cekToken() async {
+  //   sp = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     token = sp.getString("access_token");
+  //   });
+  // }
 
   @override
   initState() {
     super.initState();
     flag_activity = widget.flag_activity;
-    cekToken();
+    token = widget.token;
+    print('Token?' + token!);
+    // cekToken();
   }
 
   @override
@@ -43,7 +45,8 @@ class _ActivityDashboardState extends State<ActivityDashboard> {
   Widget build(BuildContext context) {
     return FutureBuilder(
         // ++ 0 in getlistmesin for getting all data mesin without filter
-        future: _apiService.getListMasalah(token!, flag_activity.toString()),
+        future: _apiService.getListMasalah(
+            token!, flag_activity.toString(), 0.toString()),
         builder: (context, AsyncSnapshot<List<MasalahModel>?> snapshot) {
           print(snapshot);
           if (snapshot.hasError) {

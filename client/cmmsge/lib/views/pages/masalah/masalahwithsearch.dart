@@ -1,9 +1,11 @@
 import 'package:cmmsge/services/models/masalah/masalahModel.dart';
+import 'package:cmmsge/services/models/site/siteModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/loadingview.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/mesin/mesinwithsearch.dart';
+import 'package:cmmsge/views/pages/site/networksite.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,20 +29,28 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
   List<MasalahModel> _masalah = <MasalahModel>[];
   List<MasalahModel> _masalahDisplay = <MasalahModel>[];
 
+  /// for set value listview to this variable
+  var valuelistview;
+
+  List<SiteModel> _filtersite = <SiteModel>[];
   TextEditingController _textSearch = TextEditingController(text: "");
 
   bool _isLoading = true;
+  String? idsite;
+  List? siteList;
+  List<SiteModel> _siteModel = <SiteModel>[];
 
   // * ceking token and getting dashboard value from Shared Preferences
-  cekToken(flag_activity) async {
+  cekToken(flag_activity, filter_site) async {
     sp = await SharedPreferences.getInstance();
     setState(() {
       token = sp.getString("access_token");
     });
-    fetchMasalah(token!, flag_activity).then((value) {
+    fetchMasalah(token!, flag_activity, filter_site).then((value) {
       setState(() {
         _isLoading = false;
-        _masalah.addAll(value);
+        valuelistview = value;
+        _masalah.addAll(valuelistview);
         _masalahDisplay = _masalah;
       });
     }).onError((error, stackTrace) {
@@ -61,14 +71,35 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
     flag_activity = widget.jenisActivity.toString();
     Fluttertoast.showToast(msg: 'Data sedang diperbarui, tunggu sebentar...');
     setState(() {
-      cekToken(flag_activity);
+      cekToken(flag_activity, 0.toString());
+    });
+  }
+
+  loadFilterSite(String token) async {
+    fetchSite(token).then((value) {
+      setState(() {
+        print('xxx' + value.toString());
+        siteList = value;
+        print('SiteModel?' + _siteModel.toString());
+        print(siteList.toString());
+        print('test get array ' + siteList!.toList().toString());
+        filterBottom(context);
+      });
+    }).onError((error, stackTrace) {
+      if (error == 204) {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            "Data masih kosong", error.toString(), 'assets/images/sorry.png');
+      } else {
+        ReusableClasses().modalbottomWarning(context, 'Warning!',
+            error.toString(), stackTrace.toString(), 'assets/images/sorry.png');
+      }
     });
   }
 
   @override
   initState() {
     flag_activity = widget.jenisActivity.toString();
-    cekToken(flag_activity);
+    cekToken(flag_activity, 0.toString());
     super.initState();
   }
 
@@ -80,37 +111,51 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
             flag_activity == '0' ? 'Daftar Pre Activity' : 'Daftar Activity'),
         centerTitle: true,
         backgroundColor: thirdcolor,
-        actions: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(right: 20.0),
-            child: GestureDetector(
-              onTap: () {
-                refreshData();
+        actions: this._masalah.length < 1
+            ? null
+            : <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(right: 20.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      refreshData();
+                    },
+                    child: Icon(
+                      Icons.refresh_rounded,
+                      size: 26.0,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(right: 20.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      filterBottom(context);
+                    },
+                    child: Icon(Icons.filter_alt_rounded),
+                  ),
+                )
+              ],
+      ),
+      floatingActionButton: this._masalah.length > 0
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MesinSearchPage(
+                            transaksi: 'masalah',
+                            flag_activity: flag_activity!)));
+                // BottomMasalah().modalAddMasalah(
+                //     context, 'tambah', token!, "", "", "", "", "", "", "");
               },
+              backgroundColor: secondcolor,
               child: Icon(
-                Icons.refresh_rounded,
-                size: 26.0,
+                Icons.add,
+                color: Colors.white,
               ),
-            ),
-          )
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => MesinSearchPage(
-                      transaksi: 'masalah', flag_activity: flag_activity!)));
-          // BottomMasalah().modalAddMasalah(
-          //     context, 'tambah', token!, "", "", "", "", "", "", "");
-        },
-        backgroundColor: secondcolor,
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-      ),
+            )
+          : null,
       body: RefreshIndicator(
         onRefresh: refreshData,
         child: SafeArea(
@@ -156,12 +201,218 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
         },
         // controller: _textController,
         decoration: InputDecoration(
-          fillColor: thirdcolor,
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.search),
-          hintText: 'Cari Activity',
-        ),
+            fillColor: thirdcolor,
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.search),
+            hintText: 'Cari Activity',
+            suffixIcon: IconButton(
+              onPressed: () {
+                setState(() async {
+                  _masalah.clear();
+                  _masalah.addAll(valuelistview);
+                  _masalah = _masalahDisplay;
+                  _textSearch.clear();
+                });
+              },
+              icon: Icon(Icons.clear_rounded),
+              iconSize: 18.0,
+            )),
       ),
     );
+  }
+
+  void filterBottom(context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(15.0), topRight: Radius.circular(15.0))),
+      builder: (BuildContext context) {
+        return Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: Container(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'FILTER ',
+                        style: TextStyle(
+                            fontSize: 22.0, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 20.0,
+                      ),
+                      Container(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Status : ',
+                                  style: TextStyle(fontSize: 18.0),
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      _masalah.clear();
+                                      _masalah.addAll(valuelistview);
+                                      setState(() {
+                                        _masalah = _masalahDisplay;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        side: BorderSide(
+                                            width: 2, color: Colors.orange),
+                                        elevation: 3.0,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
+                                        primary: Colors.white),
+                                    child: Ink(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(18.0)),
+                                        child: Container(
+                                          width: 75,
+                                          height: 15,
+                                          alignment: Alignment.center,
+                                          child: Text('Semua',
+                                              style: TextStyle(
+                                                color: Colors.orange,
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold,
+                                              )),
+                                        ))),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      _masalah.clear();
+                                      _masalah.addAll(valuelistview);
+                                      _masalahDisplay = _masalah
+                                          .where((element) => element
+                                              .statusselesai
+                                              .toString()
+                                              .contains('0'))
+                                          .toList();
+                                      setState(() {
+                                        _masalah = _masalahDisplay;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        side: BorderSide(
+                                            width: 2, color: Colors.blue),
+                                        elevation: 3.0,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
+                                        primary: Colors.white),
+                                    child: Ink(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(18.0)),
+                                        child: Container(
+                                          width: 75,
+                                          height: 15,
+                                          alignment: Alignment.center,
+                                          child: Text('Belum Selesai',
+                                              style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold,
+                                              )),
+                                        ))),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      _masalah.clear();
+                                      _masalah.addAll(valuelistview);
+                                      _masalahDisplay = _masalah
+                                          .where((element) => element
+                                              .statusselesai
+                                              .toString()
+                                              .contains('1'))
+                                          .toList();
+                                      setState(() {
+                                        _masalah = _masalahDisplay;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        side: BorderSide(
+                                            width: 2, color: Colors.green),
+                                        elevation: 3.0,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
+                                        primary: Colors.white),
+                                    child: Ink(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(18.0)),
+                                        child: Container(
+                                          width: 75,
+                                          height: 15,
+                                          alignment: Alignment.center,
+                                          child: Text('Selesai',
+                                              style: TextStyle(
+                                                color: Colors.green,
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold,
+                                              )),
+                                        ))),
+                              ]),
+                        ),
+                      )
+                    ])));
+      },
+    );
+  }
+
+  Widget _comboSite() {
+    return StatefulBuilder(builder:
+        (BuildContext context, void Function(void Function()) setState) {
+      return DropdownButtonHideUnderline(
+        child: ButtonTheme(
+            minWidth: 30,
+            alignedDropdown: true,
+            child: DropdownButton<String>(
+              value: idsite,
+              iconSize: 30,
+              icon: Icon(Icons.arrow_drop_down),
+              style: TextStyle(
+                color: Colors.black54,
+                fontSize: 16,
+              ),
+              hint: Text('Pilih Site'),
+              onChanged: (String? value) {
+                setState(() {
+                  idsite = value;
+                  print('Clicked?' + idsite.toString());
+                });
+              },
+              items: siteList?.map((item) {
+                return new DropdownMenuItem(
+                  child: Text(
+                    item.toString(),
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  value: item.toString(),
+                );
+              }).toList(),
+            )),
+      );
+    });
   }
 }

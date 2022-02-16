@@ -1,34 +1,47 @@
 import 'dart:convert';
 
 class KomponenModel {
-  var idkomponen, idmesin, nama, jumlah, nomesin, mesin, site;
+  var idkomponen,
+      nama,
+      kategori,
+      keterangan,
+      flag_reminder,
+      jumlah_reminder,
+      idmesin;
 
   KomponenModel(
       {this.idkomponen,
-      this.idmesin,
       this.nama,
-      this.jumlah,
-      this.nomesin,
-      this.mesin,
-      this.site});
+      this.kategori,
+      this.keterangan,
+      this.flag_reminder,
+      this.jumlah_reminder,
+      this.idmesin});
   factory KomponenModel.fromJson(Map<dynamic, dynamic> map) {
     return KomponenModel(
         idkomponen: map["idkomponen"],
-        idmesin: map["idmesin"],
         nama: map["nama"],
-        jumlah: map["jumlah"],
-        nomesin: map["nomesin"],
-        mesin: map["mesin"],
-        site: map["site"]);
+        kategori: map["kategori"],
+        keterangan: map["keterangan"],
+        flag_reminder: map["flag_reminder"],
+        jumlah_reminder: map["jumlah_reminder"],
+        idmesin: map["idmesin"]);
   }
 
   Map<String, dynamic> toJson() {
-    return {"nama": nama, "jumlah": jumlah, "idmesin": idmesin};
+    return {
+      "nama": nama,
+      "kategori": kategori,
+      "keterangan": keterangan,
+      "flag_reminder": flag_reminder,
+      "jumlah_reminder": jumlah_reminder,
+      "idmesin": idmesin
+    };
   }
 
   @override
   String toString() {
-    return 'idkomponen: $idkomponen, idmesin: $idmesin, nama: $nama, jumlah: $jumlah, nomesin: $nomesin, mesin: $mesin, site: $site';
+    return 'nama: $nama, kategori: $kategori, keterangan: $keterangan, flag_reminder: $flag_reminder, jumlah_reminder: $jumlah_reminder, idmesin: $idmesin';
   }
 }
 

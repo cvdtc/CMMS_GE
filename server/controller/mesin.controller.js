@@ -10,10 +10,17 @@ var pool = require('../utils/pool.configuration')
 
 /**
  * @swagger
- * /mesin:
+ * /mesin/:idsite:
  *  get:
- *      summary: api untuk load data mesin
+ *      summary: api untuk load data mesin berdasarkan idsite, tapi jika idsite 0 maka akan keluar semua data mesin
  *      tags: [Mesin]
+ *      parameters:
+ *          - in: path
+ *            name: parameter yang dikirim
+ *            schema:
+ *              properties:
+ *                  idsite: 
+ *                      type: integer
  *      responses:
  *          200:
  *              description: jika data berhasil di fetch
@@ -27,10 +34,16 @@ var pool = require('../utils/pool.configuration')
  *              description: kesalahan pada query sql
  */
 
-async function getMesin(req, res) {
+function getMesin(req, res) {
     var idsite = req.params.idsite
     var filterquery = ""
-    pool.getConnection(function (error, database) {
+    if (idsite == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Pool refushed, sorry :(, try again or contact developer",
@@ -39,8 +52,8 @@ async function getMesin(req, res) {
         } else {
             // * if idsite == 0 run all query without where idsite
             if (idsite != 0) filterquery = ' AND idsite = ?'
-            ///////////////////////////////////////////////
-            var sqlquery = "SELECT m.*, s.nama as site FROM mesin m, site s WHERE m.idsite=s.idsite " + filterquery + " ORDER BY m.idsite, m.nomesin ASC"
+                ///////////////////////////////////////////////
+                var sqlquery = "SELECT m.*, s.nama as site, if(k.idkomponen IS NULL, '0', '1') as adakomponen FROM mesin m join site s left join komponen k on m.idmesin=k.idmesin WHERE m.idsite=s.idsite  " + filterquery + " GROUP BY m.idmesin ORDER BY m.idsite, m.nomesin ASC ;"
             database.query(sqlquery, [idsite], (error, rows) => {
                 database.release()
                 if (error) {
@@ -106,14 +119,14 @@ async function addMesin(req, res) {
     var nomesin = req.body.nomesin
     var keterangan = req.body.keterangan
     var idsite = req.body.idsite
-    pool.getConnection(function (error, database) {
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Soory, Pool Refushed",
                 data: error
             })
         } else {
-            database.beginTransaction(function (error) {
+            database.beginTransaction(function(error) {
                 let datamesin = {
                     nomesin: nomesin,
                     keterangan: keterangan,
@@ -123,7 +136,7 @@ async function addMesin(req, res) {
                 database.query(sqlquery, datamesin, (error, result) => {
                     database.release()
                     if (error) {
-                        database.rollback(function () {
+                        database.rollback(function() {
 
                             return res.status(407).send({
                                 message: 'Sorry :(, we have problems sql query!',
@@ -131,9 +144,9 @@ async function addMesin(req, res) {
                             })
                         })
                     } else {
-                        database.commit(function (errcommit) {
+                        database.commit(function(errcommit) {
                             if (errcommit) {
-                                database.rollback(function () {
+                                database.rollback(function() {
                                     return res.status(407).send({
                                         message: 'data gagal disimpan!'
                                     })
@@ -160,6 +173,16 @@ async function addMesin(req, res) {
  *      consumes:
  *          - application/json
  *      parameters:
+ *          - in: path
+ *            name: parameter yang dikirim
+ *            schema:
+ *              properties:
+ *                  nomesin: 
+ *                      type: string
+ *                  keterangan:
+ *                      type: string
+ *                  idsite:
+ *                      type: int
  *          - in: body
  *            name: parameter yang dikirim
  *            schema:
@@ -192,14 +215,20 @@ async function editMesin(req, res) {
     var nomesin = req.body.nomesin
     var keterangan = req.body.keterangan
     var idsite = req.body.idsite
-    pool.getConnection(function (error, database) {
+    if (idmesin == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Soory, Pool Refushed",
                 data: error
             })
         } else {
-            database.beginTransaction(function (error) {
+            database.beginTransaction(function(error) {
                 let datamesin = {
                     nomesin: nomesin,
                     keterangan: keterangan,
@@ -209,16 +238,16 @@ async function editMesin(req, res) {
                 database.query(sqlquery, [datamesin, idmesin], (error, result) => {
                     database.release()
                     if (error) {
-                        database.rollback(function () {
+                        database.rollback(function() {
                             return res.status(407).send({
                                 message: 'Sorry :(, we have problems sql query!',
                                 error: error
                             })
                         })
                     } else {
-                        database.commit(function (errcommit) {
+                        database.commit(function(errcommit) {
                             if (errcommit) {
-                                database.rollback(function () {
+                                database.rollback(function() {
                                     return res.status(407).send({
                                         message: 'data gagal diperbarui!'
                                     })

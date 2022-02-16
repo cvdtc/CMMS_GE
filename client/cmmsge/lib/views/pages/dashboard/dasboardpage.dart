@@ -6,7 +6,7 @@ import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/dashboard/child/activityDashboard.dart';
 import 'package:cmmsge/views/pages/dashboard/child/scheduleDashboard.dart';
-import 'package:cmmsge/views/utils/auth.dart';
+import 'package:cmmsge/views/utils/ceksharepreference.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,23 +19,24 @@ class _DashboardPageState extends State<DashboardPage> {
   // ! INITIALIZE VARIABLE
   ApiService _apiService = ApiService();
   late SharedPreferences sp;
-  String? token = "", username = "", jabatan = "";
+  String? token = "", username = "";
   var jml_masalah = "", jml_selesai = 0, belum_selesai = 0;
   List<DashboardModel> _dashboard = <DashboardModel>[];
 
+// ! ditutup karene coba pakai cek token global
   // * ceking token and getting dashboard value from api
   cekToken() async {
     sp = await SharedPreferences.getInstance();
     setState(() {
       token = sp.getString("access_token");
       username = sp.getString("username");
-      jabatan = sp.getString("jabatan");
     });
     _apiService.getDashboard(token!).then((value) {
       // DashboardModel dashboardModel = DashboardModel();
       setState(() {
         _dashboard.addAll(value!);
       });
+
       // jml_masalah = value as String.toList();
       // jml_selesai = dashboardModel.jml_selesai;
       // belum_selesai = jml_masalah - jml_selesai;
@@ -48,16 +49,32 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   initState() {
     // TODO: implement initState
-    super.initState();
     cekToken();
-    print(token);
+    super.initState();
+
+    // CekSharedPred().cektoken(context).then((value) async {
+    //   setState(() {
+    //     token = value![0];
+    //     username = value[1];
+    //   });
+    //   print('inside initstate' + token.toString());
+
+    // print(value!); /// all value of global checktoken class
+    // print(value[0]); /// token
+    // print(value[1]); /// username
+    // print(value[2]); /// jabatan
+
+    // }).catchError((error, stackTrace) {
+    //   ReusableClasses().modalbottomWarning(context, 'Warning!',
+    //       error.toString(), stackTrace.toString(), 'assets/images/sorry.png');
+    // });
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    super.dispose();
     _apiService.client.close();
+    super.dispose();
   }
 
   @override
@@ -72,7 +89,7 @@ class _DashboardPageState extends State<DashboardPage> {
           // _buildBanner(screenHeight),
           _buildContent(screenHeight),
           _buildSchedule(screenHeight),
-          _buildActivity(screenHeight)
+          // _buildActivity(screenHeight)
         ],
       ),
     );
@@ -273,6 +290,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 ActivityDashboard(
                   flag_activity: 0.toString(),
+                  token: token.toString(),
                 )
               ],
             ),

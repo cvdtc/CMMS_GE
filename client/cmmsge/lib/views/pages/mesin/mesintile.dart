@@ -1,4 +1,8 @@
 import 'package:cmmsge/services/models/mesin/mesinModel.dart';
+import 'package:cmmsge/views/pages/checklist/addchecklist.dart';
+import 'package:cmmsge/views/pages/checklist/bottomAddChecklist.dart';
+import 'package:cmmsge/views/pages/komponen/komponenpage.dart';
+import 'package:cmmsge/views/pages/komponen/komponenwithsearch.dart';
 import 'package:cmmsge/views/pages/masalah/bottommasalah.dart';
 import 'package:cmmsge/views/pages/mesin/bottommesin.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +24,7 @@ class MesinTile extends StatelessWidget {
           child: InkWell(
             onTap: () {
               if (transaksi == 'masalah') {
+                /// untuk menu transaksi masalah
                 BottomMasalah().modalAddMasalah(
                     context,
                     'tambah',
@@ -36,6 +41,30 @@ class MesinTile extends StatelessWidget {
                     '',
                     0,
                     flag_activity);
+              } else if (transaksi == 'komponen') {
+                /// untuk menu master komponen
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => KomponenPageSearch(
+                            idmesin: mesin.idmesin.toString())));
+              } else if (transaksi == 'checklist') {
+                /// untuk menu add transaksi checklist
+                BottomAddChecklist().modalAddChecklist(
+                    context,
+                    token,
+                    'tambah',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '1',
+                    mesin.idmesin.toString(),
+                    mesin.nomesin.toString(),
+                    mesin.keterangan,
+                    '');
               } else {
                 BottomMesin().modalAddMesin(
                     context,

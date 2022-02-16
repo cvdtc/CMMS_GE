@@ -1,7 +1,7 @@
 require('dotenv').config()
 var pool = require('../utils/pool.configuration')
 var nows = {
-    toSqlString: function () { return "NOW()" }
+    toSqlString: function() { return "NOW()" }
 }
 
 /**
@@ -57,14 +57,14 @@ async function addProgress(req, res, datatoken) {
     var tanggal = req.body.tanggal
     var idmasalah = req.body.idmasalah
     var shift = req.body.shift
-    pool.getConnection(function (error, database) {
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Sorry, Pool Refushed",
                 data: error
             })
         } else {
-            database.beginTransaction(function (error) {
+            database.beginTransaction(function(error) {
                 let dataprogress = {
                     perbaikan: perbaikan,
                     engginer: engineer,
@@ -79,16 +79,16 @@ async function addProgress(req, res, datatoken) {
                     database.release()
                     console.log(result)
                     if (error) {
-                        database.rollback(function () {
+                        database.rollback(function() {
                             return res.status(407).send({
                                 message: 'Sorry :(, we have problems sql query!',
                                 error: error
                             })
                         })
                     } else {
-                        database.commit(function (errcommit) {
+                        database.commit(function(errcommit) {
                             if (errcommit) {
-                                database.rollback(function () {
+                                database.rollback(function() {
 
                                     return res.status(407).send({
                                         message: 'data gagal disimpan!'
@@ -109,7 +109,7 @@ async function addProgress(req, res, datatoken) {
 
 /**
  * @swagger
- * /progress/:progress:
+ * /progress/:idprogress:
  *  put:
  *      summary: mengubah data progress
  *      tags: [Progress]
@@ -154,15 +154,21 @@ async function editProgress(req, res, datatoken) {
     var tanggal = req.body.tanggal
     var idmasalah = req.body.idmasalah
     var shift = req.body.shift
-    console.log('Mencoba edit...')
-    pool.getConnection(function (error, database) {
+    console.log(' edit Progress...')
+    if (idprogress == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
+    pool.getConnection(function(error, database) {
         if (error) {
             return res.status(400).send({
                 message: "Soory, Pool Refushed",
                 data: error
             })
         } else {
-            database.beginTransaction(function (error) {
+            database.beginTransaction(function(error) {
                 let dataprogress = {
                     perbaikan: perbaikan,
                     engginer: engineer,
@@ -177,16 +183,16 @@ async function editProgress(req, res, datatoken) {
                     database.release()
                     console.log(result);
                     if (error) {
-                        database.rollback(function () {
+                        database.rollback(function() {
                             return res.status(407).send({
                                 message: 'Sorry :(, we have problems sql query!',
                                 error: error
                             })
                         })
                     } else {
-                        database.commit(function (errcommit) {
+                        database.commit(function(errcommit) {
                             if (errcommit) {
-                                database.rollback(function () {
+                                database.rollback(function() {
                                     return res.status(407).send({
                                         message: 'data gagal disimpan!'
                                     })
@@ -205,5 +211,6 @@ async function editProgress(req, res, datatoken) {
 }
 
 module.exports = {
-    addProgress, editProgress
+    addProgress,
+    editProgress
 }
