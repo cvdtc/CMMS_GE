@@ -28,6 +28,10 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
   String? token = "", flag_activity = "";
   List<MasalahModel> _masalah = <MasalahModel>[];
   List<MasalahModel> _masalahDisplay = <MasalahModel>[];
+
+  /// for set value listview to this variable
+  var valuelistview;
+
   List<SiteModel> _filtersite = <SiteModel>[];
   TextEditingController _textSearch = TextEditingController(text: "");
 
@@ -45,7 +49,8 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
     fetchMasalah(token!, flag_activity, filter_site).then((value) {
       setState(() {
         _isLoading = false;
-        _masalah.addAll(value);
+        valuelistview = value;
+        _masalah.addAll(valuelistview);
         _masalahDisplay = _masalah;
       });
     }).onError((error, stackTrace) {
@@ -106,30 +111,31 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
             flag_activity == '0' ? 'Daftar Pre Activity' : 'Daftar Activity'),
         centerTitle: true,
         backgroundColor: thirdcolor,
-        actions: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(right: 20.0),
-            child: GestureDetector(
-              onTap: () {
-                refreshData();
-              },
-              child: Icon(
-                Icons.refresh_rounded,
-                size: 26.0,
-              ),
-            ),
-          ),
-          // Padding(
-          //   padding: EdgeInsets.only(right: 20.0),
-          //   child: GestureDetector(
-          //     onTap: () {
-          //       loadFilterSite(token!);
-          //       // filterBottom(context);
-          //     },
-          //     child: Icon(Icons.filter_alt_rounded),
-          //   ),
-          // )
-        ],
+        actions: this._masalah.length < 1
+            ? null
+            : <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(right: 20.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      refreshData();
+                    },
+                    child: Icon(
+                      Icons.refresh_rounded,
+                      size: 26.0,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(right: 20.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      filterBottom(context);
+                    },
+                    child: Icon(Icons.filter_alt_rounded),
+                  ),
+                )
+              ],
       ),
       floatingActionButton: this._masalah.length > 0
           ? FloatingActionButton(
@@ -195,11 +201,22 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
         },
         // controller: _textController,
         decoration: InputDecoration(
-          fillColor: thirdcolor,
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.search),
-          hintText: 'Cari Activity',
-        ),
+            fillColor: thirdcolor,
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.search),
+            hintText: 'Cari Activity',
+            suffixIcon: IconButton(
+              onPressed: () {
+                setState(() async {
+                  _masalah.clear();
+                  _masalah.addAll(valuelistview);
+                  _masalah = _masalahDisplay;
+                  _textSearch.clear();
+                });
+              },
+              icon: Icon(Icons.clear_rounded),
+              iconSize: 18.0,
+            )),
       ),
     );
   }
@@ -231,10 +248,131 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
                         height: 20.0,
                       ),
                       Container(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [Text('Pilih Site : '), _comboSite()],
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Status : ',
+                                  style: TextStyle(fontSize: 18.0),
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      _masalah.clear();
+                                      _masalah.addAll(valuelistview);
+                                      setState(() {
+                                        _masalah = _masalahDisplay;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        side: BorderSide(
+                                            width: 2, color: Colors.orange),
+                                        elevation: 3.0,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
+                                        primary: Colors.white),
+                                    child: Ink(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(18.0)),
+                                        child: Container(
+                                          width: 75,
+                                          height: 15,
+                                          alignment: Alignment.center,
+                                          child: Text('Semua',
+                                              style: TextStyle(
+                                                color: Colors.orange,
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold,
+                                              )),
+                                        ))),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      _masalah.clear();
+                                      _masalah.addAll(valuelistview);
+                                      _masalahDisplay = _masalah
+                                          .where((element) => element
+                                              .statusselesai
+                                              .toString()
+                                              .contains('0'))
+                                          .toList();
+                                      setState(() {
+                                        _masalah = _masalahDisplay;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        side: BorderSide(
+                                            width: 2, color: Colors.blue),
+                                        elevation: 3.0,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
+                                        primary: Colors.white),
+                                    child: Ink(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(18.0)),
+                                        child: Container(
+                                          width: 75,
+                                          height: 15,
+                                          alignment: Alignment.center,
+                                          child: Text('Belum Selesai',
+                                              style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold,
+                                              )),
+                                        ))),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      _masalah.clear();
+                                      _masalah.addAll(valuelistview);
+                                      _masalahDisplay = _masalah
+                                          .where((element) => element
+                                              .statusselesai
+                                              .toString()
+                                              .contains('1'))
+                                          .toList();
+                                      setState(() {
+                                        _masalah = _masalahDisplay;
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                        side: BorderSide(
+                                            width: 2, color: Colors.green),
+                                        elevation: 3.0,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15)),
+                                        primary: Colors.white),
+                                    child: Ink(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(18.0)),
+                                        child: Container(
+                                          width: 75,
+                                          height: 15,
+                                          alignment: Alignment.center,
+                                          child: Text('Selesai',
+                                              style: TextStyle(
+                                                color: Colors.green,
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold,
+                                              )),
+                                        ))),
+                              ]),
                         ),
                       )
                     ])));

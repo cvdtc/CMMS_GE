@@ -53,7 +53,7 @@ function getMesin(req, res) {
             // * if idsite == 0 run all query without where idsite
             if (idsite != 0) filterquery = ' AND idsite = ?'
                 ///////////////////////////////////////////////
-            var sqlquery = "SELECT m.*, s.nama as site FROM mesin m, site s WHERE m.idsite=s.idsite " + filterquery + " ORDER BY m.idsite, m.nomesin ASC"
+                var sqlquery = "SELECT m.*, s.nama as site, if(k.idkomponen IS NULL, '0', '1') as adakomponen FROM mesin m join site s left join komponen k on m.idmesin=k.idmesin WHERE m.idsite=s.idsite  " + filterquery + " GROUP BY m.idmesin ORDER BY m.idsite, m.nomesin ASC ;"
             database.query(sqlquery, [idsite], (error, rows) => {
                 database.release()
                 if (error) {

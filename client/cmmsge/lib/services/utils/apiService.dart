@@ -320,10 +320,11 @@ class ApiService {
   // ! DELETE Data KOMPONEN
   Future<bool> deleteKomponen(String token, String idkomponen) async {
     var url = Uri.parse(BaseUrl + 'komponen/' + idkomponen);
-    var response = await client.post(url, headers: {
+    var response = await client.delete(url, headers: {
       'content-type': 'application/json',
       'Authorization': 'Bearer ${token}'
     });
+    print(response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {

@@ -308,7 +308,7 @@ class BottomKomponen {
                       onPressed: () {
                         modalKonfirmasi(
                             context,
-                            tipe,
+                            'hapus',
                             token,
                             nama,
                             kategori,

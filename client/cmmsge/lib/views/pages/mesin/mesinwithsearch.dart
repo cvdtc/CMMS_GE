@@ -22,22 +22,34 @@ class MesinSearchPageState extends State<MesinSearchPage> {
   String? token = "", transaksi = "", flag_activity = "";
   List<MesinModel> _mesin = <MesinModel>[];
   List<MesinModel> _mesinDisplay = <MesinModel>[];
+  var valuelistview;
 
   TextEditingController _textSearch = TextEditingController(text: "");
 
   bool _isLoading = true;
 
   // * ceking token and getting dashboard value from Shared Preferences
-  cekToken() async {
+  cekToken(String transaksi) async {
     sp = await SharedPreferences.getInstance();
     setState(() {
       token = sp.getString("access_token");
     });
     fetchMesin(token!, '0').then((value) {
+      _isLoading = false;
+      valuelistview = value;
+      _mesin.addAll(valuelistview);
+      _mesinDisplay = _mesin;
+
+      /// filter jika menu mesin ini untuk transaksi checklist maka data mesin yang di load hanya mesin yang sudah ada komponennya
       setState(() {
-        _isLoading = false;
-        _mesin.addAll(value);
-        _mesinDisplay = _mesin;
+        if (transaksi == 'checklist') {
+          _mesinDisplay = _mesin
+              .where((element) => element.adakomponen.toString().contains('1'))
+              .toList();
+          setState(() {
+            _mesin = _mesinDisplay;
+          });
+        }
       });
     }).catchError((error, stackTrace) {
       if (error == 204) {
@@ -54,10 +66,13 @@ class MesinSearchPageState extends State<MesinSearchPage> {
     _mesinDisplay.clear();
     _mesin.clear();
     _textSearch.clear();
+
     Fluttertoast.showToast(msg: 'Data sedang diperbarui, tunggu sebentar...');
-    setState(() {
-      cekToken();
-    });
+    if (transaksi == 'checklist') {
+      cekToken('checklist');
+    } else {
+      cekToken('menu');
+    }
   }
 
   @override
@@ -65,7 +80,7 @@ class MesinSearchPageState extends State<MesinSearchPage> {
     transaksi = widget.transaksi;
     flag_activity = widget.flag_activity;
     print(transaksi);
-    cekToken();
+    cekToken(transaksi!);
     super.initState();
   }
 

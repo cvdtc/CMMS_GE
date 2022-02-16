@@ -1,10 +1,15 @@
 import 'dart:convert';
 
 class MesinModel {
-  var idmesin, nomesin, keterangan, idsite, site;
+  var idmesin, nomesin, keterangan, idsite, site, adakomponen;
 
   MesinModel(
-      {this.idmesin, this.nomesin, this.keterangan, this.idsite, this.site});
+      {this.idmesin,
+      this.nomesin,
+      this.keterangan,
+      this.idsite,
+      this.site,
+      this.adakomponen});
 
   factory MesinModel.fromJson(Map<dynamic, dynamic> map) {
     return MesinModel(
@@ -12,7 +17,8 @@ class MesinModel {
         nomesin: map["nomesin"],
         keterangan: map["keterangan"],
         idsite: map["idsite"],
-        site: map["site"]);
+        site: map["site"],
+        adakomponen: map["adakomponen"]);
   }
 
   Map<String, dynamic> toJson() {
