@@ -81,7 +81,7 @@ router.get('/cekvalidasi/:token', function(req, res) {
 
 //MASALAH
 var RouteToMasalah = require('../controller/masalah.controller')
-router.get('/masalah/:flag_activity/:filter_site', jwtVerify, function(req, res) {
+router.get('/masalah/:flag_activity/:filter_site/:tanggal_awal/:tanggal_akhir', jwtVerify, function(req, res) {
     RouteToMasalah.getMasalah(req, res)
 })
 router.get('/masalah/:idmesin', jwtVerify, function(req, res) {

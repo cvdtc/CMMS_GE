@@ -4,6 +4,7 @@ import 'package:cmmsge/views/pages/mesin/mesinwithsearch.dart';
 import 'package:cmmsge/views/pages/report/stokbarang/stokbarang.dart';
 import 'package:cmmsge/views/pages/schedule/schedulewithsearch.dart';
 import 'package:cmmsge/views/pages/site/sitewithinsearch.dart';
+import 'package:cmmsge/views/utils/bottomfilter.dart';
 import 'package:cmmsge/views/utils/ceksharepreference.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -228,12 +229,13 @@ class _MenuPageState extends State<MenuPage> {
             width: double.infinity,
             child: ListTile(
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => MasalahPageSearch(
-                              jenisActivity: 1,
-                            )));
+                BottomFilter().bottomfilterModal(context, 'activity');
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => MasalahPageSearch(
+                //               jenisActivity: 1,
+                //             )));
               },
               title: (Text('Activity',
                   style: TextStyle(

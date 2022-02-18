@@ -244,7 +244,7 @@ class BottomSite {
     } else {
       SiteModel data = SiteModel(nama: nama, keterangan: keterangan);
       if (tipe == 'tambah') {
-        _apiService.addRumah(token, data).then((isSuccess) {
+        _apiService.addSite(token, data).then((isSuccess) {
           if (isSuccess) {
             // Navigator.of(context, rootNavigator: true).pop(context);
             _tecNama.clear();
