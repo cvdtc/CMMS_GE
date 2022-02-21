@@ -3,6 +3,7 @@ import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
 import 'package:cmmsge/views/pages/checklist/komponenChecklist.dart';
+import 'package:cmmsge/views/pages/detail_checklist/detailchecklisttile.dart';
 import 'package:cmmsge/views/utils/bottomnavigation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -410,10 +411,6 @@ class BottomAddChecklist {
                     thickness: 1.0,
                   ),
                   SizedBox(
-                    height: 20,
-                  ),
-                  // ++ filter jika status sudah selesai maka tombol edit masalah di hilangkan
-                  SizedBox(
                     height: 10,
                   ),
                   ElevatedButton(
@@ -422,88 +419,6 @@ class BottomAddChecklist {
                             context,
                             token,
                             tipe,
-                            deskripsi,
-                            keterangan,
-                            nodokumen,
-                            dikerjakan_oleh,
-                            diperiksa_oleh,
-                            tanggal_checklist,
-                            revisi,
-                            idmesin,
-                            nomesin,
-                            ketmesin,
-                            idchecklist);
-                      },
-                      style: ElevatedButton.styleFrom(
-                          side: BorderSide(width: 2, color: Colors.blue),
-                          elevation: 0.0,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          primary: Colors.white),
-                      child: Ink(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(18.0)),
-                          child: Container(
-                            width: 325,
-                            height: 45,
-                            alignment: Alignment.center,
-                            child: Text('EDIT CHECKLIST',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                          ))),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        modalKonfirmasi(
-                            context,
-                            token,
-                            tipe,
-                            deskripsi,
-                            keterangan,
-                            nodokumen,
-                            dikerjakan_oleh,
-                            diperiksa_oleh,
-                            tanggal_checklist,
-                            revisi,
-                            idmesin,
-                            nomesin,
-                            ketmesin,
-                            idchecklist);
-                      },
-                      style: ElevatedButton.styleFrom(
-                          side: BorderSide(width: 2, color: Colors.red),
-                          elevation: 0.0,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
-                          primary: Colors.white),
-                      child: Ink(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(18.0)),
-                          child: Container(
-                            width: 325,
-                            height: 45,
-                            alignment: Alignment.center,
-                            child: Text('HAPUS CHECKLIST',
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                          ))),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        modalKonfirmasi(
-                            context,
-                            token,
-                            'hapuskomponen',
                             deskripsi,
                             keterangan,
                             nodokumen,
@@ -529,13 +444,133 @@ class BottomAddChecklist {
                             width: 325,
                             height: 45,
                             alignment: Alignment.center,
-                            child: Text('TAMBAH/UBAH KOMPONEN CHECKLIST',
+                            child: Text('EDIT CHECKLIST',
                                 style: TextStyle(
                                   color: Colors.green,
                                   fontSize: 18.0,
                                   fontWeight: FontWeight.bold,
                                 )),
                           ))),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Divider(
+                    thickness: 1,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChecklistDetailSearchPage(
+                                    idchecklist: idchecklist,
+                                    idmesin: idmesin)));
+                      },
+                      style: ElevatedButton.styleFrom(
+                          side:
+                              BorderSide(width: 2, color: Colors.indigoAccent),
+                          elevation: 0.0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                          primary: Colors.white),
+                      child: Ink(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(18.0)),
+                          child: Container(
+                            width: 325,
+                            height: 45,
+                            alignment: Alignment.center,
+                            child: Text('PERIKSA DETAIL CHECKLIST',
+                                style: TextStyle(
+                                  color: Colors.indigoAccent,
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                          ))),
+
+                  /// ditutup soalnya action bawah ini ditaruh di detail checklist
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       modalKonfirmasi(
+                  //           context,
+                  //           token,
+                  //           tipe,
+                  //           deskripsi,
+                  //           keterangan,
+                  //           nodokumen,
+                  //           dikerjakan_oleh,
+                  //           diperiksa_oleh,
+                  //           tanggal_checklist,
+                  //           revisi,
+                  //           idmesin,
+                  //           nomesin,
+                  //           ketmesin,
+                  //           idchecklist);
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //         side: BorderSide(width: 2, color: Colors.red),
+                  //         elevation: 0.0,
+                  //         shape: RoundedRectangleBorder(
+                  //             borderRadius: BorderRadius.circular(8)),
+                  //         primary: Colors.white),
+                  //     child: Ink(
+                  //         decoration: BoxDecoration(
+                  //             borderRadius: BorderRadius.circular(18.0)),
+                  //         child: Container(
+                  //           width: 325,
+                  //           height: 45,
+                  //           alignment: Alignment.center,
+                  //           child: Text('HAPUS CHECKLIST',
+                  //               style: TextStyle(
+                  //                 color: Colors.red,
+                  //                 fontSize: 18.0,
+                  //                 fontWeight: FontWeight.bold,
+                  //               )),
+                  //         ))),
+                  // SizedBox(
+                  //   height: 10,
+                  // ),
+                  // ElevatedButton(
+                  //     onPressed: () {
+                  //       modalKonfirmasi(
+                  //           context,
+                  //           token,
+                  //           'hapuskomponen',
+                  //           deskripsi,
+                  //           keterangan,
+                  //           nodokumen,
+                  //           dikerjakan_oleh,
+                  //           diperiksa_oleh,
+                  //           tanggal_checklist,
+                  //           revisi,
+                  //           idmesin,
+                  //           nomesin,
+                  //           ketmesin,
+                  //           idchecklist);
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //         side: BorderSide(width: 2, color: Colors.green),
+                  //         elevation: 0.0,
+                  //         shape: RoundedRectangleBorder(
+                  //             borderRadius: BorderRadius.circular(8)),
+                  //         primary: Colors.white),
+                  //     child: Ink(
+                  //         decoration: BoxDecoration(
+                  //             borderRadius: BorderRadius.circular(18.0)),
+                  //         child: Container(
+                  //           width: 325,
+                  //           height: 45,
+                  //           alignment: Alignment.center,
+                  //           child: Text('TAMBAH/UBAH KOMPONEN CHECKLIST',
+                  //               style: TextStyle(
+                  //                 color: Colors.green,
+                  //                 fontSize: 18.0,
+                  //                 fontWeight: FontWeight.bold,
+                  //               )),
+                  //         ))),
                 ],
               ),
             ),

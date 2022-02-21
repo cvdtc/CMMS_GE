@@ -26,7 +26,7 @@ class CheckoutModel {
       this.satuan,
       this.kilometer,
       this.tgl_reminder,
-      umur_barang});
+      this.umur_barang});
 
   factory CheckoutModel.fromJson(Map<String, dynamic> map) {
     return CheckoutModel(
@@ -40,7 +40,8 @@ class CheckoutModel {
         barang: map['barang'],
         satuan: map['satuan'],
         kilometer: map['kilometer'],
-        tgl_reminder: map['tgl_reminder']);
+        tgl_reminder: map['tgl_reminder'],
+        umur_barang: map['umur_barang']);
   }
 
   Map<String, dynamic> toJson() {

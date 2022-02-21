@@ -43,6 +43,12 @@ class ChecklistTile extends StatelessWidget {
                 children: [
                   Text('No. Dokumen : ' + checklist.no_dokumen.toString(),
                       style: TextStyle(fontSize: 18.0)),
+                  Text(
+                      'Mesin : (' +
+                          checklist.nomesin.toString() +
+                          ') ' +
+                          checklist.ketmesin.toString(),
+                      style: TextStyle(fontSize: 18.0)),
                   Text('Deskripsi : ' + checklist.deskripsi.toString(),
                       style: TextStyle(fontSize: 18.0)),
                   Text(

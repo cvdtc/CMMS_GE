@@ -2,7 +2,9 @@ import 'dart:ui';
 
 import 'package:cmmsge/services/models/site/siteModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
+import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/masalah/masalahwithsearch.dart';
 import 'package:cmmsge/views/pages/mesin/mesinwithsearch.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -18,21 +20,13 @@ class BottomFilter {
 
   /// convertinf datetime format to customized format using string
   String _conversionDateStart = '', _conversionDateEnd = '';
-  var datamodelsite;
-  bool isLoading = true;
-  late SharedPreferences sp;
-  String token = "";
 
-  cekToken() async {
-    sp = await SharedPreferences.getInstance();
-    token = sp.getString("access_token")!;
-  }
+  /// dropdown value for site
+  int dropdownSiteValue = 0;
+  String textSiteValue = "";
 
-  Future<List<SiteModel>?> siteModel = ApiService().getSite(
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZHBlbmdndW5hIjoxMCwiZGV2aWNlIjoibW9iaWxlIiwiYXBwdmVyc2lvbiI6My4xLCJ1dWlkIjoiUktRMS4yMDA4MjYuMDAyIiwiaWF0IjoxNjQ1MTAxNTcwLCJleHAiOjE2NDUxODc5NzB9.Dg_8SdALueXEQBxvWLp1oaim18H0hcPSteuOr1L9nfo');
-  bottomfilterModal(context, String transaksi) async {
-    print('?' + datamodelsite.toString());
-    print('?c' + siteModel.toString());
+  bottomfilterModal(
+      context, String transaksi, List<SiteModel> siteModel) async {
     transaksi == 'activity' ? jenisactivity = 1 : jenisactivity = 0;
     showModalBottomSheet(
         context: context,
@@ -45,34 +39,6 @@ class BottomFilter {
         builder: (BuildContext context) {
           return StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
-              ///checking token from sharedpreferences
-              // cekToken() async {
-              //   sp = await SharedPreferences.getInstance();
-              //   setState(() {
-              //     token = sp.getString("access_token");
-              //   });
-              // }
-
-              ///load data from json
-              // ApiService()
-              //     .getSite(
-              //         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZHBlbmdndW5hIjoxMCwiZGV2aWNlIjoibW9iaWxlIiwiYXBwdmVyc2lvbiI6My4xLCJ1dWlkIjoiUktRMS4yMDA4MjYuMDAyIiwiaWF0IjoxNjQ1MTAxNTcwLCJleHAiOjE2NDUxODc5NzB9.Dg_8SdALueXEQBxvWLp1oaim18H0hcPSteuOr1L9nfo')
-              //     .then((value) async {
-              //   setState(() {
-              //     datamodelsite = value;
-              //     isLoading = false;
-              //     ApiService().client.close();
-              //   });
-              // });
-              // datamodelsite != null
-              //     ? setState(() {
-              //         print('xxxx' + datamodelsite.toString());
-              //         isLoading = false;
-              //       })
-              //     : setState(() {
-              //         print('xxxx2' + datamodelsite.toString());
-              //         isLoading == true;
-              //       });
               return Padding(
                 padding: MediaQuery.of(context).viewInsets,
                 child: Container(
@@ -90,163 +56,62 @@ class BottomFilter {
                         SizedBox(
                           height: 20,
                         ),
-                        isLoading ? CircularProgressIndicator() : Container(),
-                        // : DropdownButton(
-                        //     hint: Text("Pilih Site"),
-                        //     value: _valProvince,
-                        //     items: _dataProvince.map((item) {
-                        //       return DropdownMenuItem(
-                        //         child: Text(item['province']),
-                        //         value: item['province'],
-                        //       );
-                        //     }).toList(),
-                        //     onChanged: (value) {
-                        //       setState(() {
-                        //         _valProvince = value;
-                        //       });
-                        //     },
-                        //   ),
+                        Row(
+                          children: [
+                            Text(
+                              'Pilih Site : ',
+                              style: TextStyle(fontSize: 18.0),
+                            ),
+                            SizedBox(
+                              width: 12.0,
+                            ),
+                            Container(
+                              child: DropdownButton(
+                                dropdownColor: Colors.white,
+                                hint: Text("Semua Site"),
+                                items: siteModel.map((item) {
+                                  return DropdownMenuItem(
+                                    child: Text(item.nama),
+                                    value: item.idsite,
+                                    onTap: () {
+                                      setState(() {
+                                        textSiteValue = item.nama;
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    print(value);
+                                    dropdownSiteValue =
+                                        int.parse(value.toString());
+                                  });
+                                },
+                                // value: 0,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 15.0,
+                            ),
 
-                        /// kendalanya load api terus
-                        // Container(
-                        //     child: SingleChildScrollView(
-                        //       scrollDirection: Axis.horizontal,
-                        //       child: Row(
-                        //         children: [
-                        //           Text(
-                        //             'Site :',
-                        //             style: TextStyle(fontSize: 18.0),
-                        //           ),
-                        //           SizedBox(
-                        //             width: 12.0,
-                        //           ),
-                        //           ElevatedButton(
-                        //               onPressed: () {
-                        //                 print(datamodelsite);
-                        //               },
-                        //               style: ElevatedButton.styleFrom(
-                        //                   side: BorderSide(
-                        //                       width: 2,
-                        //                       color: Colors.orange),
-                        //                   elevation: 3.0,
-                        //                   shape: RoundedRectangleBorder(
-                        //                       borderRadius:
-                        //                           BorderRadius.circular(
-                        //                               15)),
-                        //                   primary: Colors.white),
-                        //               child: Ink(
-                        //                   decoration: BoxDecoration(
-                        //                       borderRadius:
-                        //                           BorderRadius.circular(
-                        //                               18.0)),
-                        //                   child: Container(
-                        //                     width: 75,
-                        //                     height: 15,
-                        //                     alignment: Alignment.center,
-                        //                     child: Text('Semua',
-                        //                         style: TextStyle(
-                        //                           color: Colors.orange,
-                        //                           fontSize: 12.0,
-                        //                           fontWeight:
-                        //                               FontWeight.bold,
-                        //                         )),
-                        //                   ))),
-                        //           SizedBox(
-                        //             width: 5,
-                        //           ),
-                        //           ElevatedButton(
-                        //               onPressed: () {},
-                        //               style: ElevatedButton.styleFrom(
-                        //                   side: BorderSide(
-                        //                       width: 2, color: Colors.blue),
-                        //                   elevation: 3.0,
-                        //                   shape: RoundedRectangleBorder(
-                        //                       borderRadius:
-                        //                           BorderRadius.circular(
-                        //                               15)),
-                        //                   primary: Colors.white),
-                        //               child: Ink(
-                        //                   decoration: BoxDecoration(
-                        //                       borderRadius:
-                        //                           BorderRadius.circular(
-                        //                               18.0)),
-                        //                   child: Container(
-                        //                     width: 75,
-                        //                     height: 15,
-                        //                     alignment: Alignment.center,
-                        //                     child: Text('Site 1',
-                        //                         style: TextStyle(
-                        //                           color: Colors.blue,
-                        //                           fontSize: 12.0,
-                        //                           fontWeight:
-                        //                               FontWeight.bold,
-                        //                         )),
-                        //                   ))),
-                        //           SizedBox(
-                        //             width: 5,
-                        //           ),
-                        //           ElevatedButton(
-                        //               onPressed: () {},
-                        //               style: ElevatedButton.styleFrom(
-                        //                   side: BorderSide(
-                        //                       width: 2,
-                        //                       color: Colors.green),
-                        //                   elevation: 3.0,
-                        //                   shape: RoundedRectangleBorder(
-                        //                       borderRadius:
-                        //                           BorderRadius.circular(
-                        //                               15)),
-                        //                   primary: Colors.white),
-                        //               child: Ink(
-                        //                   decoration: BoxDecoration(
-                        //                       borderRadius:
-                        //                           BorderRadius.circular(
-                        //                               18.0)),
-                        //                   child: Container(
-                        //                     width: 75,
-                        //                     height: 15,
-                        //                     alignment: Alignment.center,
-                        //                     child: Text('Site 2',
-                        //                         style: TextStyle(
-                        //                           color: Colors.green,
-                        //                           fontSize: 12.0,
-                        //                           fontWeight:
-                        //                               FontWeight.bold,
-                        //                         )),
-                        //                   ))),
-                        //           ElevatedButton(
-                        //               onPressed: () {},
-                        //               style: ElevatedButton.styleFrom(
-                        //                   side: BorderSide(
-                        //                       width: 2,
-                        //                       color: Colors.orange),
-                        //                   elevation: 3.0,
-                        //                   shape: RoundedRectangleBorder(
-                        //                       borderRadius:
-                        //                           BorderRadius.circular(
-                        //                               15)),
-                        //                   primary: Colors.white),
-                        //               child: Ink(
-                        //                   decoration: BoxDecoration(
-                        //                       borderRadius:
-                        //                           BorderRadius.circular(
-                        //                               18.0)),
-                        //                   child: Container(
-                        //                     width: 75,
-                        //                     height: 15,
-                        //                     alignment: Alignment.center,
-                        //                     child: Text('Site 3',
-                        //                         style: TextStyle(
-                        //                           color: Colors.orange,
-                        //                           fontSize: 12.0,
-                        //                           fontWeight:
-                        //                               FontWeight.bold,
-                        //                         )),
-                        //                   ))),
-                        //         ],
-                        //       ),
-                        //     ),
-                        //   ),
+                            /// handler when dropdown site null value
+                            dropdownSiteValue != ""
+
+                                /// filter dropdown site when id is 0 it's mean all site
+                                ? dropdownSiteValue == 0
+                                    ? Text(
+                                        'Site : SEMUA SITE',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                    : Text(
+                                        'Site : ' + textSiteValue.toUpperCase(),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                : Container(),
+                          ],
+                        ),
                         Container(
                           child: Row(
                             children: [
@@ -301,9 +166,13 @@ class BottomFilter {
                                   ? Container()
                                   : Column(
                                       children: [
-                                        Text(_conversionDateStart),
+                                        Text(_conversionDateStart,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
                                         Text(' s/d '),
-                                        Text(_conversionDateEnd),
+                                        Text(_conversionDateEnd,
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold)),
                                       ],
                                     )
                             ],
@@ -313,13 +182,32 @@ class BottomFilter {
                           height: 20,
                         ),
                         ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (dropdownSiteValue == "" ||
+                                  _conversionDateStart == "" ||
+                                  _conversionDateEnd == "") {
+                                ReusableClasses().modalbottomWarning(
+                                    context,
+                                    'Pilih Filter',
+                                    'harap pilih filter data terlebih dahulu!',
+                                    'f400',
+                                    'assets/images/sorry.png');
+                              } else {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => MasalahPageSearch(
+                                              jenisActivity: 1,
+                                              idsite: dropdownSiteValue,
+                                              start_date: _conversionDateStart,
+                                              end_date: _conversionDateEnd,
+                                            )));
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
-                                side: BorderSide(width: 2, color: Colors.red),
-                                elevation: 0.0,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8)),
-                                primary: Colors.white),
+                              primary: thirdcolor,
+                              elevation: 3.0,
+                            ),
                             child: Ink(
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(18.0)),
@@ -329,11 +217,16 @@ class BottomFilter {
                                   alignment: Alignment.center,
                                   child: Text('T E R A P K A N',
                                       style: TextStyle(
-                                        color: Colors.red,
                                         fontSize: 18.0,
                                         fontWeight: FontWeight.bold,
                                       )),
                                 ))),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Divider(
+                          thickness: 1.0,
+                        ),
                         SizedBox(
                           height: 10.0,
                         ),
@@ -361,7 +254,7 @@ class BottomFilter {
                                   width: 325,
                                   height: 45,
                                   alignment: Alignment.center,
-                                  child: Text('TAMBAH ACTIVITY',
+                                  child: Text('BUAT ACTIVITY',
                                       style: TextStyle(
                                         color: Colors.green,
                                         fontSize: 18.0,

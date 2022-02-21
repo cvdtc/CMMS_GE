@@ -23,6 +23,9 @@ router.put('/checklist/:idchecklist', jwtVerify, function(req, res) {
 router.delete('/checklist/:idchecklist', jwtVerify, function(req, res) {
     RouteToChecklist.deleteChecklist(req, res)
 })
+router.get('/detchecklist/:idchecklist', jwtVerify, function(req, res) {
+    RouteToChecklist.getDetChecklist(req, res)
+})
 router.post('/detchecklist', jwtVerify, function(req, res) {
     RouteToChecklist.addDetChecklist(req, res)
 })

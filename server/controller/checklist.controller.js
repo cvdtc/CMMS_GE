@@ -43,7 +43,7 @@ function getChecklist(req, res) {
         data: error,
       });
     } else {
-      var sqlquery = `SELECT idchecklist, deskripsi, keterangan, dikerjakan_oleh, diperiksa_oleh, DATE_FORMAT( tanggal_checklist, "%Y-%m-%d") as tanggal_checklist, no_dokumen, idmesin FROM checklist`;
+      var sqlquery = `SELECT m.nomesin, m.keterangan as ketmesin, c.idchecklist, c.deskripsi, c.keterangan, c.dikerjakan_oleh, c.diperiksa_oleh, DATE_FORMAT( c.tanggal_checklist, "%Y-%m-%d") as tanggal_checklist, c.no_dokumen, c.idmesin FROM checklist c, mesin m WHERE c.idmesin=m.idmesin;`;
       database.query(sqlquery, (error, rows) => {
         database.release();
         if (error) {
@@ -424,7 +424,7 @@ function getDetChecklist(req, res) {
         data: error,
       });
     } else {
-      var sqlquery = `SELECT * FROM checklist_detail WHERE idchecklist=?`;
+      var sqlquery = `SELECT k.nama as komponen, k.kategori, m.keterangan as ketmesin, m.nomesin, cd.keterangan as keterangan_detchecklist, cd.action_checklist, cd.idcheklist FROM checklist_detail cd, komponen k, mesin m WHERE cd.idkomponen=k.idkomponen AND cd.idchecklist = ? AND k.idmesin=m.idmesin;`;
       database.query(sqlquery, idchecklist, (error, rows) => {
         database.release();
         if (error) {
@@ -619,6 +619,7 @@ module.exports = {
   addChecklist,
   editChecklist,
   deleteChecklist,
+  getDetChecklist,
   addDetChecklist,
   deleteDetChecklist
 };
