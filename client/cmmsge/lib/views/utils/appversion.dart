@@ -1,8 +1,11 @@
 class appVersion {
-  static double versionnumber = 3.2;
+  static double versionnumber = 3.3;
 }
 
 /**
+ * Update version 3.3
+ * - update filter activity di buatkan default
+ * 
  * Update version 3.2
  * - update advanced filter activity
  * - update listview detail checklist menu checklist

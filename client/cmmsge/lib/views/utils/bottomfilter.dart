@@ -19,7 +19,8 @@ class BottomFilter {
   DateTime _startDate = DateTime.now(), _endDate = DateTime.now();
 
   /// convertinf datetime format to customized format using string
-  String _conversionDateStart = '', _conversionDateEnd = '';
+  String _conversionDateStart = '0';
+  String _conversionDateEnd = '0';
 
   /// dropdown value for site
   int dropdownSiteValue = 0;
@@ -166,11 +167,17 @@ class BottomFilter {
                                   ? Container()
                                   : Column(
                                       children: [
-                                        Text(_conversionDateStart,
+                                        Text(
+                                            _conversionDateStart == '0'
+                                                ? 'Semua'
+                                                : _conversionDateStart,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold)),
                                         Text(' s/d '),
-                                        Text(_conversionDateEnd,
+                                        Text(
+                                            _conversionDateEnd == '0'
+                                                ? 'Semua'
+                                                : _conversionDateEnd,
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold)),
                                       ],

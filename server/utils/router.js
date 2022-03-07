@@ -57,6 +57,9 @@ var RouteToDashbord = require('../controller/dashboard.controller')
 router.get('/dashboard', jwtVerify, function(req, res) {
     RouteToDashbord.getDashboard(req, res)
 })
+router.get('/dashboardinputsummary', jwtVerify, function(req, res) {
+    RouteToDashbord.getSummaryInput(req, res)
+})
 
 //KOMPONEN
 var RouteToKomponen = require('../controller/komponen.controller')

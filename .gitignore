@@ -7,3 +7,4 @@ server/.env.example
 server/cmmsflow.drawio
 server/utils/firebase.configuration.js
 server/notificationlog.txt
+client/webge

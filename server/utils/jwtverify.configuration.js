@@ -16,7 +16,7 @@ async function jwtVerify(req, res, next) {
     try {
         const decode = jwt.verify(token.split(' ')[1], process.env.ACCESS_SECRET)
         req.decode = decode
-            /// checking api version and app version
+        /// checking api version and app version
         if (decode.appversion < process.env.API_VERSION) {
             return res.status(401).send({
                 message: 'Sorry 😞, your apps too old, please update your apps or report to administrator.',
@@ -24,20 +24,21 @@ async function jwtVerify(req, res, next) {
                 data: null
             })
         } else {
-            /// checkin uuid in token and database active or deactive
-            pool.getConnection(function(error, database) {
-                if (error) {
-                    console.log("Pool Refused jwt..", error)
-                    return res.status(501).send({
-                        message: "Connection timeout.",
-                        data: error
-                    })
-                } else {
-                    if (decode.device == 'WEBAPI' && decode.uuid == process.env.UUIDWEB) {
-                        next()
+            if (decode.device == 'WEBAPI' && decode.uuid == process.env.UUIDWEB) {
+                next()
+            } else {
+                /// checkin uuid in token and database active or deactive
+                pool.getConnection(function (error, database) {
+                    if (error) {
+                        console.log("Pool Refused jwt..", error)
+                        return res.status(501).send({
+                            message: "Connection timeout.",
+                            data: error
+                        })
                     } else {
+
                         var sqlquery = "SELECT idpengguna FROM pengguna WHERE newuuid=? AND idpengguna=?"
-                        database.query(sqlquery, [decode.uuid, decode.idpengguna], function(error, rows) {
+                        database.query(sqlquery, [decode.uuid, decode.idpengguna], function (error, rows) {
                             database.release()
                             if (error) {
                                 console.log("error query")
@@ -54,19 +55,19 @@ async function jwtVerify(req, res, next) {
                                         error: null,
                                         data: null
                                     })
-
                                 } else {
                                     /// if uuid successed will be return code belows
                                     next()
                                 }
                             }
                         })
+
                     }
-                }
-            })
+                })
+            }
         }
     } catch (error) {
-        console.log('Error JWT',error)
+        console.log('Error JWT', error)
         return res.status(401).send({
             message: 'Sorry 😞, your session has been expired, please logout and login again.',
             error: error,
