@@ -175,4 +175,11 @@ router.delete('/site/:idsite', jwtVerify, function(req, res) {
     RouteToSite.deleteSite(req, res)
 })
 
+
+/// WEB GET PLANT 3
+var RouteToReportPlant3 = require('../controller/reportplant3.controller')
+router.get('/dataproduksi3', function(req, res) {
+    RouteToReportPlant3.getDataProduksiPlant3(req, res)
+})
+
 module.exports = router;
