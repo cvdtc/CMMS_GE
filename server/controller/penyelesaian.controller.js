@@ -209,6 +209,7 @@ async function addPenyelesaian(req, res, datatoken) {
                             } else {
                                 var sqlquery = 'UPDATE masalah SET flag_activity = 1 WHERE idmasalah = ?'
                                 database.query(sqlquery, idmasalah, (error, resultupdatemasalah) => {
+                                    database.release()
                                     return res.status(201).send({
                                         message: "Done!,  Data has been stored!",
                                     })

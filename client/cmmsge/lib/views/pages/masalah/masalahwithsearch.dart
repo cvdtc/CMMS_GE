@@ -14,10 +14,14 @@ import 'masalahtile.dart';
 import 'networkmasalah.dart';
 
 class MasalahPageSearch extends StatefulWidget {
-  int jenisActivity;
+  var jenisActivity, idsite, start_date, end_date;
 
   /// for filtering if jenisActivity 0 = preactivity else if jenisActivity 1 = activity
-  MasalahPageSearch({required this.jenisActivity});
+  MasalahPageSearch(
+      {required this.jenisActivity,
+      required this.idsite,
+      required this.start_date,
+      required this.end_date});
   @override
   _MasalahPageSearchState createState() => _MasalahPageSearchState();
 }
@@ -36,17 +40,18 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
   TextEditingController _textSearch = TextEditingController(text: "");
 
   bool _isLoading = true;
-  String? idsite;
+  String? idsite, start_date, end_date;
   List? siteList;
   List<SiteModel> _siteModel = <SiteModel>[];
 
   // * ceking token and getting dashboard value from Shared Preferences
-  cekToken(flag_activity, filter_site) async {
+  cekToken(flag_activity, filter_site, start_date, end_date) async {
     sp = await SharedPreferences.getInstance();
     setState(() {
       token = sp.getString("access_token");
     });
-    fetchMasalah(token!, flag_activity, filter_site).then((value) {
+    fetchMasalah(token!, flag_activity, filter_site, start_date, end_date)
+        .then((value) {
       setState(() {
         _isLoading = false;
         valuelistview = value;
@@ -71,35 +76,17 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
     flag_activity = widget.jenisActivity.toString();
     Fluttertoast.showToast(msg: 'Data sedang diperbarui, tunggu sebentar...');
     setState(() {
-      cekToken(flag_activity, 0.toString());
-    });
-  }
-
-  loadFilterSite(String token) async {
-    fetchSite(token).then((value) {
-      setState(() {
-        print('xxx' + value.toString());
-        siteList = value;
-        print('SiteModel?' + _siteModel.toString());
-        print(siteList.toString());
-        print('test get array ' + siteList!.toList().toString());
-        filterBottom(context);
-      });
-    }).onError((error, stackTrace) {
-      if (error == 204) {
-        ReusableClasses().modalbottomWarning(context, 'Warning!',
-            "Data masih kosong", error.toString(), 'assets/images/sorry.png');
-      } else {
-        ReusableClasses().modalbottomWarning(context, 'Warning!',
-            error.toString(), stackTrace.toString(), 'assets/images/sorry.png');
-      }
+      cekToken(flag_activity, idsite, start_date, end_date);
     });
   }
 
   @override
   initState() {
     flag_activity = widget.jenisActivity.toString();
-    cekToken(flag_activity, 0.toString());
+    idsite = widget.idsite.toString();
+    start_date = widget.start_date.toString();
+    end_date = widget.end_date.toString();
+    cekToken(flag_activity, idsite, start_date, end_date);
     super.initState();
   }
 

@@ -30,6 +30,7 @@ class _DashboardPageState extends State<DashboardPage> {
     setState(() {
       token = sp.getString("access_token");
       username = sp.getString("username");
+      print(token);
     });
     _apiService.getDashboard(token!).then((value) {
       // DashboardModel dashboardModel = DashboardModel();

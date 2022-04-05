@@ -23,7 +23,7 @@ class MesinTile extends StatelessWidget {
           elevation: 3.0,
           child: InkWell(
             onTap: () {
-              if (transaksi == 'masalah') {
+              if (transaksi == 'activity') {
                 /// untuk menu transaksi masalah
                 BottomMasalah().modalAddMasalah(
                     context,

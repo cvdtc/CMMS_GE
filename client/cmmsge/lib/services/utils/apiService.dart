@@ -208,11 +208,35 @@ class ApiService {
   }
 
   /**
+   * ++ LIST SITE
+   * * note : getting data site
+   */
+  Future<List<SiteModel>?> getSite(String token) async {
+    var url = Uri.parse(BaseUrl + 'site');
+    var response = await client.get(url, headers: {
+      'content-type': 'application/json',
+      // ++ fyi : sending token with BEARER
+      'Authorization': 'Bearer ' + token
+    });
+    // ++ fyi : for getting response message from api
+    Map responsemessage = jsonDecode(response.body);
+    responseCode = ResponseCode.fromJson(responsemessage);
+    print(response.body + token);
+    if (response.statusCode == 200) {
+      return siteFromJson(response.body);
+    } else {
+      // return null;
+      return Future.error(
+          responseCode, StackTrace.fromString(response.statusCode.toString()));
+    }
+  }
+
+  /**
    * ! SITE
   * ++ TAMBAH SITE 
   * * note : add site
   */
-  Future<bool> addRumah(String token, SiteModel data) async {
+  Future<bool> addSite(String token, SiteModel data) async {
     var url = Uri.parse(BaseUrl + 'site');
     var response = await client.post(url,
         headers: {

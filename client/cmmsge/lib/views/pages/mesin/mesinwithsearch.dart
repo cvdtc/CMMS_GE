@@ -88,7 +88,7 @@ class MesinSearchPageState extends State<MesinSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: transaksi == 'masalah' || transaksi == 'komponen'
+          title: transaksi == 'activity' || transaksi == 'komponen'
               ? Text('Pilih Mesin')
               : Text('Daftar Mesin'),
           centerTitle: true,

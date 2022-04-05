@@ -1,5 +1,5 @@
 const express = require('express')
-const app =  express()
+const app = express()
 const cors = require('cors')
 const router = require('./utils/router')
 const docAuth = require('express-basic-auth')
@@ -9,26 +9,24 @@ const path = require('path')
 const morgan = require('morgan')
 const fs = require('fs')
 
-// var serviceaccount = require('../utils/cmmsgeprivatekey.json')
-// fcm.initializeApp({
-//     credential: fcm.credential.cert(serviceaccount)
-// })
-
 /// CREATE MORGAN CONFIGURATION
-var writeLogConnection = fs.createWriteStream(path.join(__dirname, 'connectionaccess.log'), {flags: 'a'})
-app.use(morgan('combined', {stream: writeLogConnection}))
+var writeLogConnection = fs.createWriteStream(path.join(__dirname, 'connectionaccess.log'), { flags: 'a' })
+app.use(morgan('combined', { stream: writeLogConnection }))
 
-//setting up express or api to json type
+/// setting up express or api to json type
 app.use(express.json())
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 app.use(cors())
-//allow image access for public
+
+/// allow image access for public
 app.use('/images', express.static(path.join(__dirname, '/images')))
-//url base for api
+
+/// url base for api
 app.use('/api/v1', router)
-//swagger documentation
+
+/// swagger documentation
 const swaggerDOC = {
-    definition:{
+    definition: {
         openapi: "3.0.3",
         info: {
             title: "Documentation page of api CMMS Grand Elephant",
@@ -49,11 +47,18 @@ const swaggerDOC = {
     apis: ["./controller/*.js"]
 }
 const specs = swaggerJS(swaggerDOC)
+
+/// end point swagger documentation
 app.use('/secret-docs-api', docAuth({
-    users:{
+    users: {
         'admindoc': 'hanyaadmindocyangtau'
-    }, 
+    },
     challenge: true
 }), swaggerUI.serve, swaggerUI.setup(specs))
-//starting node with port 
-app.listen(process.env.API_PORT, () => console.log('Success running api CMMS on ', process.env.TYPE_OF_DEPLOYMENT, 'in PORT ', process.env.API_PORT, 'Version', process.env.API_VERSION))
+
+/// starting node with port 
+app.listen(process.env.API_PORT, () => {
+    console.log('Success running api CMMS on ',
+        process.env.TYPE_OF_DEPLOYMENT, 'in PORT ',
+        process.env.API_PORT, 'Version', process.env.API_VERSION)
+})

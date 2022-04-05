@@ -1,8 +1,15 @@
 class appVersion {
-  static double versionnumber = 3.1;
+  static double versionnumber = 3.3;
 }
 
 /**
+ * Update version 3.3
+ * - update filter activity di buatkan default
+ * 
+ * Update version 3.2
+ * - update advanced filter activity
+ * - update listview detail checklist menu checklist
+ * 
  * Update version 3.1
  * - update filter selesai belum selesai di menu activity dan pre activity
  * - update listview mesin jika transaksi checklist maka data mesin yang keluar adalah data mesin yang sudah ada komponennya

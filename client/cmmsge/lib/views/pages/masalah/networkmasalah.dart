@@ -12,10 +12,17 @@ List<MasalahModel> parseSite(String responseBody) {
   return listSite.map((e) => MasalahModel.fromJson(e)).toList();
 }
 
-Future<List<MasalahModel>> fetchMasalah(
-    String token, String flag_activity, String filter_site) async {
-  var url =
-      Uri.parse(_apiService + 'masalah/' + flag_activity + '/' + filter_site);
+Future<List<MasalahModel>> fetchMasalah(String token, String flag_activity,
+    String filter_site, String start_date, String end_date) async {
+  var url = Uri.parse(_apiService +
+      'fmasalah/' +
+      flag_activity +
+      '/' +
+      filter_site +
+      '/' +
+      start_date +
+      '/' +
+      end_date);
 
   /// for filter
   // Uri.parse(_apiService + 'masalah/' + flag_activity ); /// without filter temporary

@@ -23,6 +23,9 @@ router.put('/checklist/:idchecklist', jwtVerify, function(req, res) {
 router.delete('/checklist/:idchecklist', jwtVerify, function(req, res) {
     RouteToChecklist.deleteChecklist(req, res)
 })
+router.get('/detchecklist/:idchecklist', jwtVerify, function(req, res) {
+    RouteToChecklist.getDetChecklist(req, res)
+})
 router.post('/detchecklist', jwtVerify, function(req, res) {
     RouteToChecklist.addDetChecklist(req, res)
 })
@@ -54,6 +57,9 @@ var RouteToDashbord = require('../controller/dashboard.controller')
 router.get('/dashboard', jwtVerify, function(req, res) {
     RouteToDashbord.getDashboard(req, res)
 })
+router.get('/dashboardinputsummary', jwtVerify, function(req, res) {
+    RouteToDashbord.getSummaryInput(req, res)
+})
 
 //KOMPONEN
 var RouteToKomponen = require('../controller/komponen.controller')
@@ -81,7 +87,7 @@ router.get('/cekvalidasi/:token', function(req, res) {
 
 //MASALAH
 var RouteToMasalah = require('../controller/masalah.controller')
-router.get('/masalah/:flag_activity/:filter_site', jwtVerify, function(req, res) {
+router.get('/masalah/:flag_activity/:filter_site/:tanggal_awal/:tanggal_akhir', jwtVerify, function(req, res) {
     RouteToMasalah.getMasalah(req, res)
 })
 router.get('/masalah/:idmesin', jwtVerify, function(req, res) {
@@ -167,6 +173,19 @@ router.put('/site/:idsite', jwtVerify, function(req, res) {
 })
 router.delete('/site/:idsite', jwtVerify, function(req, res) {
     RouteToSite.deleteSite(req, res)
+})
+
+
+/// WEB GET PLANT 3
+var RouteToReportPlant3 = require('../controller/reportplant3.controller')
+router.get('/dataproduksi3', function(req, res) {
+    RouteToReportPlant3.getDataProduksiPlant3(req, res)
+})
+router.get('/dataanalisaproduksi3/:periode', function(req, res) {
+    RouteToReportPlant3.getDataAnalisaProduksiPlant3(req, res)
+})
+router.get('/dataautoclave3', function(req, res) {
+    RouteToReportPlant3.getDataAutoclavePlant3(req, res)
 })
 
 module.exports = router;

@@ -64,19 +64,6 @@ async function Login(req, res) {
   var appversion = req.body.appversion;
   var uuid = req.body.uuid;
   var ipclient = req.socket.remoteAddress;
-  console.log(
-    username,
-    password,
-    device,
-    appversion,
-    uuid,
-    ipclient.split("f:")[1]
-  );
-  console.log(
-    appversion < process.env.API_VERSION,
-    appversion,
-    process.env.API_VERSION
-  );
   /// checkin app version and api version
   if (appversion < process.env.API_VERSION) {
     return res.status(401).send({

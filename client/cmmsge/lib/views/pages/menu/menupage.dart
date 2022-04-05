@@ -1,9 +1,12 @@
+import 'package:cmmsge/services/models/site/siteModel.dart';
+import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/views/pages/checklist/checklistwithsearch.dart';
 import 'package:cmmsge/views/pages/masalah/masalahwithsearch.dart';
 import 'package:cmmsge/views/pages/mesin/mesinwithsearch.dart';
 import 'package:cmmsge/views/pages/report/stokbarang/stokbarang.dart';
 import 'package:cmmsge/views/pages/schedule/schedulewithsearch.dart';
 import 'package:cmmsge/views/pages/site/sitewithinsearch.dart';
+import 'package:cmmsge/views/utils/bottomfilter.dart';
 import 'package:cmmsge/views/utils/ceksharepreference.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,18 +19,31 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage> {
   late SharedPreferences sp;
   String? token = "";
+  List<SiteModel> _site = <SiteModel>[];
+  cekToken() async {
+    sp = await SharedPreferences.getInstance();
+    setState(() {
+      token = sp.getString("access_token")!;
+    });
+    ApiService().getSite(token!).then((value) {
+      _site.addAll(value!);
+    }).whenComplete(() => print('xx' + _site.toString()));
+    print(token);
+    print(_site);
+  }
 
   @override
   initState() {
     // TODO: implement initState
+    cekToken();
     super.initState();
-    CekSharedPred().cektoken(context).then((value) => token = value![0]);
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+    ApiService().client.close();
   }
 
   @override
@@ -200,6 +216,9 @@ class _MenuPageState extends State<MenuPage> {
                     MaterialPageRoute(
                         builder: (context) => MasalahPageSearch(
                               jenisActivity: 0,
+                              idsite: 0,
+                              start_date: 0,
+                              end_date: 0,
                             )));
               },
               title: (Text('Pre Activity',
@@ -228,12 +247,14 @@ class _MenuPageState extends State<MenuPage> {
             width: double.infinity,
             child: ListTile(
               onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => MasalahPageSearch(
-                              jenisActivity: 1,
-                            )));
+                BottomFilter()
+                    .bottomfilterModal(context, 'activity', this._site);
+                // Navigator.push(
+                //     context,
+                //     MaterialPageRoute(
+                //         builder: (context) => MasalahPageSearch(
+                //               jenisActivity: 1,
+                //             )));
               },
               title: (Text('Activity',
                   style: TextStyle(
