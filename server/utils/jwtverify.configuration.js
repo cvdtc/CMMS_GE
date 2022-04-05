@@ -1,7 +1,6 @@
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
 var pool = require('../utils/pool.configuration')
-console.log(pool)
 
 async function jwtVerify(req, res, next) {
     const token = req.headers.authorization

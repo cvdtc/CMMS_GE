@@ -1,19 +1,20 @@
-const sqlserver = require('mssql')
+const sql = require('mssql')
 
-const sqlConfig= {
-    user : process.env.DB_USER_SQL_SERVER,
-    password : process.env.DB_PASSWORD_SQL_SERVER,
-    server : process.env.DB_HOST_SQL_SERVER,
-    database : process.env.DB_NAME_SQL_SERVER,
-    pool:{
-        max: 25,
-        min: 0,
+const config = {
+    server: process.env.DB_HOST_SQL_SERVER,
+    authentication: {
+        type: 'default',
+        options: {
+            userName: process.env.DB_USER_SQL_SERVER,
+            password: process.env.DB_PASSWORD_SQL_SERVER,
+        },
     },
-    options:{
-        trustServerCertificate: true
-    }
+    options: {
+        database: process.env.DB_NAME_SQL_SERVER,
+        encrypt: false,
+    },
 }
 
-const poolserver = new sqlserver.ConnectionPool(sqlConfig)
+var pool = new sql.ConnectionPool(config)
 
-module.exports = {poolserver, sqlConfig};
+module.exports = { pool };

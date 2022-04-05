@@ -1,0 +1,39 @@
+
+.container {
+  display: flex;
+  margin-top: 20px;
+}
+
+.dashboard {
+  flex: 4;
+}
+
+.dashboardWidgets{
+  display: flex;
+  margin: 20px;
+}
+.feature {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.featureItem {
+  flex: 1;
+  margin: 0px 20px;
+  padding: 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 2px 1px 11px -3px rgba(0,0,0,0.75);
+  -webkit-box-shadow: 2px 1px 11px -3px rgba(0,0,0,0.75);
+  -moz-box-shadow: 2px 1px 11px -3px rgba(0,0,0,0.75);
+  align-items: center;
+}
+
+.featureTitle{
+  font-size: 22px;
+}
+
+.featureSubTitle{
+  font-size: 16px;
+}
+

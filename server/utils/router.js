@@ -181,5 +181,11 @@ var RouteToReportPlant3 = require('../controller/reportplant3.controller')
 router.get('/dataproduksi3', function(req, res) {
     RouteToReportPlant3.getDataProduksiPlant3(req, res)
 })
+router.get('/dataanalisaproduksi3/:periode', function(req, res) {
+    RouteToReportPlant3.getDataAnalisaProduksiPlant3(req, res)
+})
+router.get('/dataautoclave3', function(req, res) {
+    RouteToReportPlant3.getDataAutoclavePlant3(req, res)
+})
 
 module.exports = router;
