@@ -53,8 +53,75 @@ function getMesin(req, res) {
             // * if idsite == 0 run all query without where idsite
             if (idsite != 0) filterquery = ' AND idsite = ?'
                 ///////////////////////////////////////////////
-                var sqlquery = "SELECT m.*, s.nama as site, if(k.idkomponen IS NULL, '0', '1') as adakomponen FROM mesin m join site s left join komponen k on m.idmesin=k.idmesin WHERE m.idsite=s.idsite  " + filterquery + " GROUP BY m.idmesin ORDER BY m.idsite, m.nomesin ASC ;"
+                var sqlquery = "SELECT m.*, s.nama as site, if(k.idkomponen IS NULL, '0', '1') as adakomponen, '' as gambar FROM mesin m join site s left join komponen k on m.idmesin=k.idmesin WHERE m.idsite=s.idsite  " + filterquery + " GROUP BY m.idmesin ORDER BY m.idsite, m.nomesin ASC ;"
             database.query(sqlquery, [idsite], (error, rows) => {
+                database.release()
+                if (error) {
+                    return res.status(500).send({
+                        message: "Sorry :(, my query has been error",
+                        data: error
+                    })
+                } else {
+                    if (rows.length <= 0) {
+                        return res.status(204).send({
+                            message: "Data masih kosong",
+                            data: rows
+                        })
+                    } else {
+                        return res.status(200).send({
+                            message: "Data berhasil fetch.",
+                            data: rows
+                        })
+                    }
+                }
+            })
+        }
+    })
+}
+
+/**
+ * @swagger
+ * /mesin/:idmesin:
+ *  get:
+ *      summary: api untuk load data mesin berdasarkan idmesin
+ *      tags: [Mesin]
+ *      parameters:
+ *          - in: path
+ *            name: parameter yang dikirim
+ *            schema:
+ *              properties:
+ *                  idmesin: 
+ *                      type: integer
+ *      responses:
+ *          200:
+ *              description: jika data berhasil di fetch
+ *          204:
+ *              description: jika data yang dicari tidak ada
+ *          400:
+ *              description: kendala koneksi pool database
+ *          401:
+ *              description: token tidak valid
+ *          500:
+ *              description: kesalahan pada query sql
+ */
+
+ function getDetailMesin(req, res) {
+    var idmesin = req.params.idmesin
+    if (idmesin == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
+    pool.getConnection(function(error, database) {
+        if (error) {
+            return res.status(400).send({
+                message: "Pool refushed, sorry :(, try again or contact developer",
+                data: error
+            })
+        } else {
+                var sqlquery = "SELECT * FROM mesin where idmesin = ?"
+            database.query(sqlquery, [idmesin], (error, rows) => {
                 database.release()
                 if (error) {
                     return res.status(500).send({
@@ -265,9 +332,104 @@ async function editMesin(req, res) {
     })
 }
 
+/**
+ * @swagger
+ * /mesin/:idmesin:
+ *  delete:
+ *      summary: menghapus data Mesin
+ *      tags: [Mesin]
+ *      consumes:
+ *          - application/json
+ *      parameters:
+ *          - in: path
+ *            name: parameter yang dikirim
+ *            schema:
+ *              properties:
+ *                  nomesin: 
+ *                      type: string
+ *                  keterangan:
+ *                      type: string
+ *                  idsite:
+ *                      type: int
+ *          - in: body
+ *            name: parameter yang dikirim
+ *            schema:
+ *              properties:
+ *                  nomesin: 
+ *                      type: string
+ *                  keterangan:
+ *                      type: string
+ *                  idsite:
+ *                      type: int
+ *      responses:
+ *          200:
+ *              description: jika data berhasil di fetch
+ *          204:
+ *              description: jika data yang dicari tidak ada
+ *          400:
+ *              description: kendala koneksi pool database
+ *          401:
+ *              description: token tidak valid
+ *          405:
+ *              description: parameter yang dikirim tidak sesuai
+ *          407:
+ *              description: gagal generate encrypt password 
+ *          500:
+ *              description: kesalahan pada query sql
+ */
+
+ async function deleteMesin(req, res) {
+    var idmesin = req.params.idmesin
+    if (idmesin == "") {
+        return res.status(400).send({
+            message: "Parameter doesn't match!",
+            data: null
+        })
+    }
+    pool.getConnection(function(error, database) {
+        if (error) {
+            return res.status(400).send({
+                message: "Soory, Pool Refushed",
+                data: error
+            })
+        } else {
+            database.beginTransaction(function(error) {
+                var sqlquery = "DELETE FROM mesin WHERE idmesin = ?"
+                database.query(sqlquery, [idmesin], (error, result) => {
+                    database.release()
+                    if (error) {
+                        database.rollback(function() {
+                            return res.status(407).send({
+                                message: 'Sorry :(, we have problems sql query!',
+                                error: error
+                            })
+                        })
+                    } else {
+                        database.commit(function(errcommit) {
+                            if (errcommit) {
+                                database.rollback(function() {
+                                    return res.status(407).send({
+                                        message: 'data tidak dapat dihapus!'
+                                    })
+                                })
+                            } else {
+                                return res.status(200).send({
+                                    message: 'Data berhasil dihapus!'
+                                })
+                            }
+                        })
+                    }
+                })
+            })
+        }
+    })
+}
+
 
 module.exports = {
     getMesin,
+    getDetailMesin,
     addMesin,
-    editMesin
+    editMesin,
+    deleteMesin
 }

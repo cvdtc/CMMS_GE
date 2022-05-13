@@ -3,6 +3,7 @@ import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/views/pages/checklist/checklistwithsearch.dart';
 import 'package:cmmsge/views/pages/masalah/masalahwithsearch.dart';
 import 'package:cmmsge/views/pages/mesin/mesinwithsearch.dart';
+import 'package:cmmsge/views/pages/report/datamesin/listmesin.dart';
 import 'package:cmmsge/views/pages/report/stokbarang/stokbarang.dart';
 import 'package:cmmsge/views/pages/schedule/schedulewithsearch.dart';
 import 'package:cmmsge/views/pages/site/sitewithinsearch.dart';
@@ -386,6 +387,35 @@ class _MenuPageState extends State<MenuPage> {
               trailing: Icon(
                 Icons.arrow_forward_ios_rounded,
                 color: Colors.cyan,
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.only(
+                left: 1 - .0, right: 1 - .0, top: 5.0, bottom: 5.0),
+            alignment: Alignment.center,
+            width: double.infinity,
+            child: ListTile(
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Listmesin()));
+              },
+              title: (Text('Data Mesin',
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.amber,
+                      fontWeight: FontWeight.bold))),
+              subtitle: Text('Laporan Log Mesin'),
+              leading: CircleAvatar(
+                  backgroundColor: Colors.amber,
+                  child: Icon(
+                    Icons.analytics_outlined,
+                    color: Colors.white,
+                    size: 22,
+                  )),
+              trailing: Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: Colors.amber,
               ),
             ),
           ),

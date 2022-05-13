@@ -51,7 +51,6 @@ router.delete('/checkout/:idcheckout', jwtVerify, function(req, res) {
     RouteToCheckout.deleteCheckout(req, res)
 })
 
-
 //DASHBOARD
 var RouteToDashbord = require('../controller/dashboard.controller')
 router.get('/dashboard', jwtVerify, function(req, res) {
@@ -105,11 +104,17 @@ var RouteToMesin = require('../controller/mesin.controller')
 router.get('/mesin/:idsite', jwtVerify, function(req, res) {
     RouteToMesin.getMesin(req, res)
 })
+router.get('/mesin/:idmesin', jwtVerify, function(req, res) {
+    RouteToMesin.getDetailMesin(req, res)
+})
 router.post('/mesin', jwtVerify, function(req, res) {
     RouteToMesin.addMesin(req, res)
 })
 router.put('/mesin/:idmesin', jwtVerify, function(req, res) {
     RouteToMesin.editMesin(req, res)
+})
+router.delete('/mesin/:idmesin', jwtVerify, function(req, res) {
+    RouteToMesin.deleteMesin(req, res)
 })
 
 //PENGGUNA
@@ -186,6 +191,18 @@ router.get('/dataanalisaproduksi3/:periode', function(req, res) {
 })
 router.get('/dataautoclave3', function(req, res) {
     RouteToReportPlant3.getDataAutoclavePlant3(req, res)
+})
+
+/// API WEB PRODUKSI
+var RouteToWebProduksi = require('../controller/webproduksi')
+router.get('/ringkasanmesin/:idmesin', jwtVerify, function(req, res) {
+    RouteToWebProduksi.RingkasanMesin(req, res)
+})
+router.get('/chartmesin/:idmesin', jwtVerify, function(req, res) {
+    RouteToWebProduksi.ChartMesin(req, res)
+})
+router.get('/datagantipart/:idmesin', jwtVerify, function(req, res) {
+    RouteToWebProduksi.DataGantiPart(req, res)
 })
 
 module.exports = router;

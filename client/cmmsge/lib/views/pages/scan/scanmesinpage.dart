@@ -2,8 +2,12 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cmmsge/services/models/mesin/mesinModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
+import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
+import 'package:cmmsge/views/pages/report/datamesin/ringkasanmesin.dart';
+import 'package:cmmsge/views/pages/scan/networkceknomesin.dart';
 import 'package:cmmsge/views/pages/scan/webviewscanresult.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -19,6 +23,7 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
   Barcode? result;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  List<MesinModel> _datamesin = <MesinModel>[];
 
 // AUDIO VARIABLE
   AudioPlayer audioPlayer = AudioPlayer();
@@ -144,14 +149,52 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
                       // ? Text('QR Tidak Valid!')
                       : ElevatedButton(
                           onPressed: () {
-                            // _PaymentDetail();                Navigator.push(context,
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => WebviewScanResult(
-                                          urlwebview: result!.code.toString(),
-                                          token: token!,
-                                        )));
+                            fetchMesinByNoMesin(token!, result!.code.toString())
+                                .then((value) {
+                              print('ppp' + value.toString());
+                              setState(() {
+                                _isLoading = false;
+                                _datamesin.addAll(value!);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            RingkasanMesinPage(
+                                              idmesin: _datamesin[0]
+                                                  .idmesin
+                                                  .toString(),
+                                              namamesin: _datamesin[0]
+                                                  .keterangan
+                                                  .toString(),
+                                            )));
+                              });
+                            }).catchError((error, stackTrace) {
+                              print(error);
+                              if (error == 204) {
+                                ReusableClasses().modalbottomWarning(
+                                    context,
+                                    'Warning!',
+                                    "Data masih kosong",
+                                    error.toString(),
+                                    'assets/images/sorry.png');
+                              } else {
+                                ReusableClasses().modalbottomWarning(
+                                    context,
+                                    'Warning!',
+                                    error.toString(),
+                                    stackTrace.toString(),
+                                    'assets/images/sorry.png');
+                              }
+                            });
+
+                            /// not used bcz has changed bypass to laporan data mesin
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //         builder: (context) => WebviewScanResult(
+                            //               urlwebview: result!.code.toString(),
+                            //               token: token!,
+                            //             )));
                           },
                           style: ElevatedButton.styleFrom(
                             elevation: 0.0,
@@ -163,7 +206,7 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
                             child: Container(
                               alignment: Alignment.center,
                               child: Text(
-                                "Lihat Detail",
+                                "Lihat Detail" + result!.code.toString(),
                               ),
                             ),
                           )),

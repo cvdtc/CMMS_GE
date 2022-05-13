@@ -47,7 +47,7 @@ function getKomponen(req, res) {
         data: error,
       });
     } else {
-      var sqlquery = "SELECT * FROM komponen WHERE idmesin = ?";
+      var sqlquery = "SELECT k.*, k.keterangan as ketkomponen, m.nomesin, m.keterangan FROM komponen k, mesin m WHERE k.idmesin=m.idmesin and m.idmesin = ?";
       database.query(sqlquery, idmesin, (error, rows) => {
         database.release();
         if (error) {

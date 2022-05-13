@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { Button, Col, Container, Row, Label, ButtonGroup } from 'reactstrap'
+import React from 'react';
 
 /// import navigation bar
 import NavbarComponent from "../../../components/Navbar";
 
-import { useNavigate } from "react-router-dom";
+/// import react router dom
+import { Link } from 'react-router-dom'
 
 /// import data table
 import { AgGridReact } from 'ag-grid-react'
@@ -13,10 +13,7 @@ import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 
 /// import axios 
 import axios from '../../../utils/server';
-
-/// action button per item
-const actionButton = (params) => { console.log(params) }
-
+import swal from 'sweetalert';
 class ListSite extends React.Component {
     constructor(props) {
         super(props)
@@ -37,15 +34,8 @@ class ListSite extends React.Component {
                 },
                 {
                     headerName: 'Action',
-                    editable: false,
-                    sortable: false,
-                    filter: false,
-                    floatingFilter: false,
                     field: 'idsite',
-                    cellRenderer: (params) => <div><ButtonGroup>
-                        <Button color='success' onClick={actionButton(params)}>Edit</Button>
-                        <Button type="submit" color='danger'>Hapus</Button>
-                    </ButtonGroup></div>
+                    cellRendererFramework: (params) => <div className='inline-flex rounded-md' role='group'><Link to='/editsite/' state={{ data: params.data }} type='button' className="py-2 px-3 text-sm font-medium rounded-l-lg border border-gray-300 bg-green-500 text-white">Edit</Link><button onClick={() => this.KonfirmHapusData(params)} className="py-2 px-2 text-sm font-small rounded-r-lg border border-gray-300 bg-red-500 text-white">Delete</button></div>
                 }
             ],
             /// AG Data Grid default column options
@@ -67,10 +57,28 @@ class ListSite extends React.Component {
         }
     }
 
+    /// modal konfirmasi
+    async KonfirmHapusData(params) {
+        swal({
+            title: `Yakin Akan Menghapus Data ${params.data.nama}?`,
+            text: "Pastikan data yang anda hapus sudah sesuai!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+            closeOnClickOutside: false,
+            closeOnEsc: false,
+        }).then((willDelete) => {
+            if (willDelete) {
+                this.HapusData(params.data.idsite)
+            }
+        });
+    }
+
     /// init state
     async componentDidMount() {
         await this.getDataSite()
     }
+
 
     /// getting data site from api
     async getDataSite() {
@@ -78,50 +86,72 @@ class ListSite extends React.Component {
         axios.get("site", {
             headers: { Authorization: `Bearer ` + localStorage.getItem("token") },
         }).then((response) => {
-            // console.log(response.data.data);
             this.setState({ dataSite: response.data.data })
         }).catch((error) => {
-            console.log(error)
+            swal(`Sorry! ${error.response.message}`, {
+                icon: "error",
+            });
         }).finally(() => {
             this.setState({ loading: false })
         })
     }
 
-    // AddSite(e){
-    //     e.preventDefault();
-    // const history = useNavigate()
-    //     history("/addsite");
-    // }
+    /// action delete
+    async HapusData(idsite) {
+        await axios.delete("site/" + idsite, {
+            headers: { Authorization: `Bearer ` + localStorage.getItem("token") },
+        }).then((response) => {
+            swal(`${response.data.message}`, {
+                icon: "success",
+            });
+            this.getDataSite()
+        }).catch((error) => {
+            swal(`Sorry! ${error.response.message}`, {
+                icon: "error",
+            });
+        }).finally(() => {
+        })
+    }
 
     render() {
         return (
             <>
                 {/* /// navigation bar */}
                 <NavbarComponent />
-                <Container fluid>
-                    <Row>
-                        <Label className='text-center text-md-right'><h1>Data Site</h1></Label>
-                        <Col className='float-right'>
-                            <Button className='float-right' color='primary'>Tambah Data</Button>
-                        </Col>
-                        <div className='ag-theme-alpine' style={{ height: '100vh', width: '100vw' }}>
-                            <AgGridReact
-                                suppressExcelExport={true}
-                                rowData={this.state.dataSite}
-                                columnDefs={this.state.columnDefs}
-                                animateRows={true}
-                                gridOptions={this.state.gridOptions}
-                                defaultColDef={this.state.defaultColDef}
-                                loadingCellRendererParams={this.state.loadingCellRendererParams}
-                            />
+                <div className="md:container md:mx-auto mt-3">
+                    <div className='grid grid-cols-6 gap-4 '>
+                        <div className='col-start-1 col-end-3'>
+                            {/* /// name page */}
+                            <h1 className="text2xl font-medium text-gray-500 mt-4 mb-12 text-left">
+                                Data Site
+                            </h1>
                         </div>
-                    </Row>
-                </Container>
+                        {/* /// button tambah */}
+                        <div className='col-end-7 col-span-1'>
+                            <div className="flex-auto justify-center items-center mt-6">
+                                <Link to='/addsite'>
+                                    <button className="w-full h-12 px-6 text-red-50 transition-colors duration-150 bg-blue-600 rounded-lg focus:shadow-outline hover:bg-blue-700">Tambah Site</button>
+                                </Link>
+
+                            </div>
+                        </div>
+                    </div>
+                    {/* /// condition to load data grid komponent */}
+                    <div className='ag-theme-alpine' style={{ height: '100vh' }}>
+                        <AgGridReact
+                            suppressExcelExport={true}
+                            rowData={this.state.dataSite}
+                            columnDefs={this.state.columnDefs}
+                            animateRows={true}
+                            gridOptions={this.state.gridOptions}
+                            defaultColDef={this.state.defaultColDef}
+                            loadingCellRendererParams={this.state.loadingCellRendererParams}
+                        />
+                    </div>
+                </div>
             </>
         );
     }
-
-    // }
 }
 
 export default ListSite;

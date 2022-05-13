@@ -49,12 +49,17 @@ class NavbarComponent extends Component {
                   <NavDropdown title="Transaksi" id="offcanvasNavbarDropdown">
                     <NavDropdown.Item as={Link} to="/datapreactivity">Pre-Activity</NavDropdown.Item>
                     <NavDropdown.Item as={Link} to="/dataactivity">Activity</NavDropdown.Item>
-                    <NavDropdown.Item href="#action4">Schedule</NavDropdown.Item>
-                    <NavDropdown.Item as={Link} to="/datachecklist">Checklist</NavDropdown.Item>
+                    {/* <NavDropdown.Item href="#action4">Schedule</NavDropdown.Item>
+                    <NavDropdown.Item as={Link} to="/datachecklist">Checklist</NavDropdown.Item> */}
                   </NavDropdown>
-                  <NavDropdown title="Laporan" id="offcanvasNavbarDropdown">
+                  <NavDropdown title="Report" id="offcanvasNavbarDropdown">
+                    <NavDropdown.Item as={Link} to="/dataproduksi3">Data Produksi Plant 3</NavDropdown.Item>
+                  </NavDropdown>
+                  {/* <NavDropdown title="Laporan" id="offcanvasNavbarDropdown">
                     <NavDropdown.Item href="#action3">Stok Barang</NavDropdown.Item>
-                  </NavDropdown>
+                  </NavDropdown> */}
+                  {/* <br/>
+                  <Nav.Link as={Link} to="/dashboard">Keluar</Nav.Link> */}
                 </Nav>
               </Offcanvas.Body>
             </Navbar.Offcanvas>

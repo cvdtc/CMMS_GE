@@ -50,7 +50,7 @@ class List extends Component {
                 {
                     headerName: "Dikerjakan",
                     field: 'dikerjakan_oleh',
-                }, 
+                },
                 {
                     headerName: "Diperiksa",
                     field: 'diperiksa_oleh',
@@ -101,14 +101,26 @@ class List extends Component {
     }
     render() {
         return (
-            <div>
+            <>
                 {/* /// navigation bar */}
                 <NavbarComponent />
-                {/* /// header form */}
-                <h1>Data Checklist</h1>
-                {/* /// condition to load data grid komponent */}
-                
-                    <div className='ag-theme-alpine' style={{ height: '100vh', width: '100vw' }}>
+                <div className="md:container md:mx-auto mt-3">
+                    <div className='grid grid-cols-6 gap-4 '>
+                        <div className='col-start-1 col-end-3'>
+                            {/* /// name page */}
+                            <h1 className="text2xl font-medium text-gray-500 mt-4 mb-12 text-left">
+                                Data Checklist
+                            </h1>
+                        </div>
+                        {/* /// button tambah */}
+                        <div className='col-end-7 col-span-1'>
+                            <div className="flex-auto justify-center items-center mt-6">
+                                <button className="w-full h-12 px-6 text-red-50 transition-colors duration-150 bg-blue-600 rounded-lg focus:shadow-outline hover:bg-blue-700">Tambah Checklist</button>
+                            </div>
+                        </div>
+                    </div>
+                    {/* /// condition to load data grid komponent */}
+                    <div className='ag-theme-alpine' style={{ height: '100vh' }}>
                         <AgGridReact
                             suppressExcelExport={true}
                             rowData={this.state.dataChecklist}
@@ -119,7 +131,8 @@ class List extends Component {
                             loadingCellRendererParams={this.state.loadingCellRendererParams}
                         />
                     </div>
-            </div>
+                </div>
+            </>
         );
     }
 }

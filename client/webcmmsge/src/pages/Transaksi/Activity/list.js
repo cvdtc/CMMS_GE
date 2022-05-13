@@ -5,16 +5,16 @@ import axios from '../../../utils/server';
 
 /// import navigation bar
 import NavbarComponent from "../../../components/Navbar";
-/// react strap design form
-import { ButtonDropdown, DropdownToggle, DropdownItem, DropdownMenu } from 'reactstrap'
+
+/// react router dom
+import { Link } from 'react-router-dom'
+
 /// import data table
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
-
-/// action button per item
-const actionButton = (params) => { console.log(params) }
-
+import swal from 'sweetalert';
+import { Warning } from 'postcss';
 class List extends Component {
 
     constructor(props) {
@@ -73,31 +73,15 @@ class List extends Component {
                 },
                 {
                     headerName: 'Action',
+                    field: 'idmasalah',
                     editable: false,
-                    sortable: false,
-                    filter: false,
-                    floatingFilter: false,
-                    field: 'idmesin',
-                    cellRenderer: (params) => {
-                        <div>
-                            <ButtonDropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-                                <DropdownToggle caret color="danger">...</DropdownToggle>
-                                <DropdownMenu>
-                                    <DropdownItem header>Header</DropdownItem>
-                                    <DropdownItem disabled>Action</DropdownItem>
-                                    <DropdownItem>Another Action</DropdownItem>
-                                    <DropdownItem divider />
-                                    <DropdownItem>Another Action</DropdownItem>
-                                    </DropdownMenu>
-                                </ButtonDropdown>
-                    </div>
-                    }
-                    
+                    // cellRendererFramework: (params) => <div className='inline-flex rounded-md' role='group'><Link to='/editmasalah/' state={{ data: params.data }} type='button' className="py-2 px-3 text-sm font-medium rounded-l-lg border border-gray-300 bg-green-500 text-white">Edit</Link><button onClick={(params) => this.MoreAction(params)} className="py-2 px-2 text-sm font-small rounded-r-lg border border-gray-300 bg-red-500 text-white">Action</button></div>
+                    cellRendererFramework: (params) => <div><button onClick={() => this.MoreAction(params.data)} className="text-sm font-small rounded-lg bg-red-300 text-black">. . .</button></div>
                 }
             ],
             /// AG Data Grid default column options
             defaultColDef: {
-                editable: true,
+                editable: false,
                 sortable: true,
                 flex: 1,
                 minWidth: 100,
@@ -114,11 +98,68 @@ class List extends Component {
         }
     }
 
+    /// modal konfirmasi
+    async MoreAction(params) {
+
+        swal({
+            text: "Apa yang akan anda lakukan?", 
+            buttons: {
+                cancel: true
+            },
+            content: (
+                <div>
+                    <Link to='/editmasalah/' state={{ data: params.data }} type='button' className="py-2 px-3 text-sm font-medium rounded-l-lg border border-gray-300 bg-green-500 text-white">Edit</Link>
+                    <Link to='/editmasalah/' state={{ data: params.data }} type='button' className="py-2 px-3 text-sm font-medium rounded-l-lg border border-gray-300 bg-green-500 text-white">Edit</Link>
+                    <Link to='/editmasalah/' state={{ data: params.data }} type='button' className="py-2 px-3 text-sm font-medium rounded-l-lg border border-gray-300 bg-green-500 text-white">Edit</Link>
+                </div>
+            )
+        })
+
+        /// old modal
+        // swal("Apa yang akan anda lakukan?", {
+        //     icon: "warning",
+        //     dangerMode: true,
+        //     buttons: {
+        //         cancel: "Batal",
+        //         edit: {
+        //             text: "Edit",
+        //             value: "edit"
+        //         },
+        //         timeline: {
+        //             text: "Timeline",
+        //             value: "timeline"
+        //         },
+        //         progress: {
+        //             text: "progress",
+        //             value: "progress"
+        //         },
+        //         penyelesaian: {
+        //             text: "Penyelesaian",
+        //             value: "penyelesaian"
+        //         },
+        //         detail: {
+        //             text: "Detail",
+        //             value: "detail"
+        //         },
+        //     }
+        // }).then((value) => {
+        //     console.log(value)
+        //     switch (value) {
+        //         case "edit":
+        //             <Link to='/editmasalah/' state={{ data: params.data }} type='button' className="py-2 px-3 text-sm font-medium rounded-l-lg border border-gray-300 bg-green-500 text-white">Edit</Link>
+        //             break;
+
+        //         default:
+        //             break;
+        //     }
+        // })
+    }
+
     toggle() {
         this.setState({
-          dropdownOpen: !this.state.dropdownOpen
+            dropdownOpen: !this.state.dropdownOpen
         });
-      }
+    }
 
     /// status handler
     statusselesai(params) {
@@ -150,27 +191,42 @@ class List extends Component {
 
     render() {
         return (
-            <div>
+            <>
                 {/* /// navigation bar */}
                 <NavbarComponent />
-                {/* /// header form */}
-                <h1>Data Activity</h1>
-                {/* /// condition to load data grid komponent */}
+                <div className="md:container md:mx-auto mt-3">
+                    <div className='grid grid-cols-6 gap-4 '>
+                        <div className='col-start-1 col-end-3'>
+                            {/* /// name page */}
+                            <h1 className="text2xl font-medium text-gray-500 mt-4 mb-12 text-left">
+                                Data Activity
+                            </h1>
+                        </div>
+                        {/* /// button tambah */}
+                        <div className='col-end-7 col-span-1'>
+                            <div className="flex-auto justify-center items-center mt-6">
+                                <Link to='/addactivity'>
+                                    <button className="w-full h-12 px-6 text-red-50 transition-colors duration-150 bg-blue-600 rounded-lg focus:shadow-outline hover:bg-blue-700">Tambah Activity</button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
 
-                <div className='ag-theme-alpine' style={{ height: '100vh', width: '100vw' }}>
-                    <AgGridReact
-                        suppressExcelExport={true}
-                        rowData={this.state.dataActivity}
-                        columnDefs={this.state.columnDefs}
-                        // onGridReady={onGridReady}
-                        gridOptions={this.state.gridOptions}
-                        animateRows={true}
-                        defaultColDef={this.state.defaultColDef}
-                        loadingCellRendererParams={this.state.loadingCellRendererParams}
-                    />
+                    {/* /// condition to load data grid komponent */}
+                    <div className='ag-theme-alpine' style={{ height: '100vh' }}>
+                        <AgGridReact
+                            suppressExcelExport={true}
+                            rowData={this.state.dataActivity}
+                            columnDefs={this.state.columnDefs}
+                            // onGridReady={onGridReady}
+                            gridOptions={this.state.gridOptions}
+                            animateRows={true}
+                            defaultColDef={this.state.defaultColDef}
+                            loadingCellRendererParams={this.state.loadingCellRendererParams}
+                        />
+                    </div>
                 </div>
-
-            </div>
+            </>
         );
     }
 }

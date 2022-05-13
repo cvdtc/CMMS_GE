@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 
 /// import navigation bar
 import NavbarComponent from "../../components/Navbar";
@@ -6,7 +6,6 @@ import NavbarComponent from "../../components/Navbar";
 
 // | import required component
 import axios from "../../utils/server";
-import PieChart from "./PieChart";
 import ChartActivity from "./ChartActivity";
 import "./dashbord.css";
 
@@ -45,52 +44,44 @@ class Dashboard extends React.Component {
   }
   render() {
     const { dashboarddata, summaryinput } = this.state;
-    // console.log('xxx', summaryinput.jumlah_activity, summaryinput.tanggal);
     return (
-      <div>
+      <>
+        {/* /// navigation bar */}
         <NavbarComponent />
-        <div className="container">
-          <div className="dashboard">
-            <div className="feature">
-              <div className="featureItem">
-                <div className="featureTitle">Jumlah Activity</div>
-                {dashboarddata !== "" && (
-                  <PieChart
-                    masalah={dashboarddata.jml_masalah}
-                    selesai={dashboarddata.jml_selesai}
-                  />
-                )}{" "}
-                <p>Jumlah Activity {dashboarddata.jml_masalah}</p>
-                <p>Jumlah Activity Selesai {dashboarddata.jml_selesai}</p>
+        <div className="md:container md:mx-auto mt-6">
+          {/* /// page name */}
+          <h1 className="text2xl font-medium text-gray-400 mt-4 mb-12 text-left">
+            Dashboard
+          </h1>
+          {/* /// card jml masalah */}
+          <div className="grid grid-rows-2 grid-flow-col gap-4">
+            <div className="row-span-3">
+              <div className="card p-5">
+                <h6 className="text-grey-400">Total Masalah</h6>
+                <h2 className="mt-2 text-red-600">{dashboarddata.jml_masalah}</h2>
               </div>
+            </div>
+            {/* /// card jml selesai masalah */}
+            <div className="row-span-3">
+              <div className="card p-5">
+                <h6 className="text-grey-400">Total Selesai</h6>
+                <h2 className="mt-2 text-red-600">{dashboarddata.jml_selesai}</h2>
+              </div>
+            </div>
+            {/* /// chart monitoring activity */}
+            <div className="row-span-2 col-span-2">
+              {summaryinput !== "" && (
+                <div className="card p-5">
+                  <h3>Monitoring Activity</h3>
+                  <ChartActivity dataLine={summaryinput} />
+                </div>
+              )}
             </div>
           </div>
-          <div className="feature">
-              <div className="featureItem">
-                <div className="featureTitle">Monitoring Activity</div>
-                {summaryinput !== "" && (
-                  <ChartActivity dataLine={summaryinput} />
-                )}
-              </div>
-            </div>
         </div>
-      </div>
+      </>
     );
   }
 }
 
 export default Dashboard;
-
-
-{/* <div className="col-lg-9 mb-2 d-flex align-items-stretch align-content-center">
-<div className="card" style={{ width: '38rem' }}>
-
-  <div className="card-title "><p class="text-uppercase small mb-2"><strong>Traffic activity 14 hari</strong></p></div>
-  <hr className="my-0"/>
-  <div className="card-body">
-  {summaryinput !== "" && (
-    <ChartActivity dataLine={summaryinput} />
-  )}
-  </div>
-</div>
-</div> */}

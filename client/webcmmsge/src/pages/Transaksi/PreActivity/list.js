@@ -6,6 +6,9 @@ import axios from '../../../utils/server';
 /// import navigation bar
 import NavbarComponent from "../../../components/Navbar";
 
+/// import react0router dom
+import { Link } from 'react-router-dom'
+
 /// import data table
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -46,19 +49,19 @@ class List extends Component {
                 {
                     headerName: "Jenis Activity",
                     field: 'jenis_masalah',
-                }, 
+                },
                 {
                     headerName: "Site",
                     field: 'site',
-                }, 
+                },
                 {
                     headerName: "Shift",
                     field: 'shift',
-                }, 
+                },
                 {
                     headerName: "Status",
                     field: 'statusselesai',
-                }, 
+                },
                 {
                     headerName: "Pengguna",
                     field: 'pengguna',
@@ -99,7 +102,7 @@ class List extends Component {
     /// getting data komponen from api with parameter idmesin
     async loadDataActivity(flag_activity) {
         console.log('asda', flag_activity)
-        await axios.get("masalah/" + flag_activity+"/0", {
+        await axios.get("masalah/" + flag_activity + "/0", {
             headers: { Authorization: `Bearer ` + localStorage.getItem("token") },
         }).then((response) => {
             this.setState({ dataActivity: response.data.data })
@@ -111,14 +114,28 @@ class List extends Component {
 
     render() {
         return (
-            <div>
+            <>
                 {/* /// navigation bar */}
                 <NavbarComponent />
-                {/* /// header form */}
-                <h1>Data Pre-Activity</h1>
-                {/* /// condition to load data grid komponent */}
-                
-                    <div className='ag-theme-alpine' style={{ height: '100vh', width: '100vw' }}>
+                <div className="md:container md:mx-auto mt-3">
+                    <div className='grid grid-cols-6 gap-4 '>
+                        <div className='col-start-1 col-end-3'>
+                            {/* /// name page */}
+                            <h1 className="text2xl font-medium text-gray-500 mt-4 mb-12 text-left">
+                                Data Pre-Activity
+                            </h1>
+                        </div>
+                        {/* /// button tambah */}
+                        <div className='col-end-7 col-span-2'>
+                            <div className="flex-auto justify-center items-center mt-6">
+                                <Link to='/addpreactivity'>
+                                    <button className="w-full h-12 px-6 text-red-50 transition-colors duration-150 bg-blue-600 rounded-lg focus:shadow-outline hover:bg-blue-700">Tambah Pre-Activity</button>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                    {/* /// condition to load data grid komponent */}
+                    <div className='ag-theme-alpine' style={{ height: '100vh' }}>
                         <AgGridReact
                             suppressExcelExport={true}
                             rowData={this.state.dataActivity}
@@ -129,8 +146,8 @@ class List extends Component {
                             loadingCellRendererParams={this.state.loadingCellRendererParams}
                         />
                     </div>
-                
-            </div>
+                </div>
+            </>
         );
     }
 }

@@ -24,7 +24,7 @@ class ApiService {
   final String BaseUrl = "http://factory.grand-elephant.co.id:9994/api/v1/";
 
   /// for development
-  // final String BaseUrl = "http://192.168.1.211:9994/api/v1/";
+  // final String BaseUrl = "http://192.168.1.206:9994/api/v1/";
 
   Client client = Client();
   ResponseCode responseCode = ResponseCode();
