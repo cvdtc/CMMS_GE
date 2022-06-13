@@ -1,10 +1,11 @@
 import 'dart:convert';
 
 class RingkasanMesinModel {
-  String namamesin, lokasi, jml, lastdate, lastcheck, stat;
+  String namamesin, nomesin, lokasi, jml, lastdate, lastcheck, stat;
 
   RingkasanMesinModel(
       {required this.namamesin,
+      required this.nomesin,
       required this.lokasi,
       required this.jml,
       required this.lastdate,
@@ -14,6 +15,7 @@ class RingkasanMesinModel {
   factory RingkasanMesinModel.fromJson(Map<String, dynamic> map) {
     return RingkasanMesinModel(
         namamesin: map['namamesin'].toString(),
+        nomesin: map['nomesin'].toString(),
         lokasi: map['lokasi'].toString(),
         jml: map['jml'].toString(),
         lastdate: map['lastdate'].toString(),
@@ -22,7 +24,7 @@ class RingkasanMesinModel {
   }
   @override
   String toString() {
-    return 'namamesin: $namamesin, lokasi: $lokasi, jml: $jml, lastdate: $lastdate, lastcheck: $lastcheck, stat: $stat';
+    return 'namamesin: $namamesin, nomesin: $nomesin, lokasi: $lokasi, jml: $jml, lastdate: $lastdate, lastcheck: $lastcheck, stat: $stat';
   }
 }
 

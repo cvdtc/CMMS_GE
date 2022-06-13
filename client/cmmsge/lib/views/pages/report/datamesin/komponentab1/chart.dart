@@ -95,7 +95,9 @@ class _ChartDetailMesinState extends State<ChartDetailMesinPage> {
           data: _chartMesin,
           id: "Chart Mesin",
           domainFn: (ChartMesinModel chart, _) => chart.periode,
-          measureFn: (ChartMesinModel chart, _) => chart.total)
+          measureFn: (ChartMesinModel chart, _) => chart.total,
+          labelAccessorFn: (ChartMesinModel chartmodel, _) =>
+              '${chartmodel.total.toString()}'),
     ];
     return SliverToBoxAdapter(
       child: Container(
@@ -117,6 +119,9 @@ class _ChartDetailMesinState extends State<ChartDetailMesinPage> {
                   height: 250,
                   child: charts.BarChart(
                     chart,
+                    domainAxis: new charts.OrdinalAxisSpec(),
+                    barRendererDecorator:
+                        new charts.BarLabelDecorator<String>(),
                     animate: true,
                   ),
                 ),
@@ -130,18 +135,12 @@ class _ChartDetailMesinState extends State<ChartDetailMesinPage> {
 
   // * code for design Ringkasan Mesin
   SliverToBoxAdapter _buildRingkasan(double screenHeight) {
-    List<charts.Series<ChartMesinModel, String>> chart = [
-      charts.Series(
-          data: _chartMesin,
-          id: "Chart Mesin",
-          domainFn: (ChartMesinModel chart, _) => chart.periode,
-          measureFn: (ChartMesinModel chart, _) => chart.total)
-    ];
     return SliverToBoxAdapter(
+        child: Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Container(
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          width: MediaQuery.of(context).size.width / 2,
           child: Column(
             children: [
               Text(
@@ -159,6 +158,7 @@ class _ChartDetailMesinState extends State<ChartDetailMesinPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
+                      width: MediaQuery.of(context).size.width / 2,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,9 +169,14 @@ class _ChartDetailMesinState extends State<ChartDetailMesinPage> {
                             children: [
                               Text('Nama Mesin : ',
                                   style: TextStyle(fontSize: 16.0)),
-                              Text(
-                                _ringkasanMesin[0].namamesin.toString(),
-                                style: TextStyle(fontSize: 16.0),
+                              Expanded(
+                                child: Text(
+                                  _ringkasanMesin[0].namamesin.toString() +
+                                      ' (' +
+                                      _ringkasanMesin[0].nomesin.toString() +
+                                      ')',
+                                  style: TextStyle(fontSize: 16.0),
+                                ),
                               ),
                             ],
                           ),
@@ -205,28 +210,21 @@ class _ChartDetailMesinState extends State<ChartDetailMesinPage> {
                       thickness: 2.0,
                     ),
                     Container(
+                      width: MediaQuery.of(context).size.width / 3,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Text('Last Check : ',
-                                  style: TextStyle(fontSize: 16.0)),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              FittedBox(
-                                child: Text(
-                                  _ringkasanMesin[0].lastdate.toString() +
-                                      ' (' +
-                                      _ringkasanMesin[0].lastcheck.toString() +
-                                      ' hari)',
-                                  style: TextStyle(fontSize: 16.0),
-                                ),
-                              ),
-                            ],
+                          Text('Last Check : ',
+                              style: TextStyle(fontSize: 16.0)),
+                          FittedBox(
+                            child: Text(
+                              _ringkasanMesin[0].lastdate.toString() +
+                                  ' (' +
+                                  _ringkasanMesin[0].lastcheck.toString() +
+                                  ' hari)',
+                              style: TextStyle(fontSize: 16.0),
+                            ),
                           ),
                           SizedBox(
                             height: 8.0,
@@ -235,7 +233,7 @@ class _ChartDetailMesinState extends State<ChartDetailMesinPage> {
                             children: [
                               Text('Status : ',
                                   style: TextStyle(fontSize: 16.0)),
-                              _ringkasanMesin[0].stat.toString == '0'
+                              _ringkasanMesin[0].stat.toString() == '0'
                                   ? Text('Running',
                                       style: TextStyle(
                                           fontSize: 16.0,

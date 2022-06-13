@@ -4,8 +4,10 @@ import 'package:cmmsge/services/models/dashboard/dashboardModel.dart';
 import 'package:cmmsge/services/utils/apiService.dart';
 import 'package:cmmsge/utils/ReusableClasses.dart';
 import 'package:cmmsge/utils/warna.dart';
-import 'package:cmmsge/views/pages/dashboard/child/activityDashboard.dart';
-import 'package:cmmsge/views/pages/dashboard/child/scheduleDashboard.dart';
+import 'package:cmmsge/views/pages/dashboard/old/activityDashboard.dart';
+import 'package:cmmsge/views/pages/dashboard/child/chartDashboard.dart';
+import 'package:cmmsge/views/pages/dashboard/child/listactivity.dart';
+import 'package:cmmsge/views/pages/dashboard/old/scheduleDashboard.dart';
 import 'package:cmmsge/views/utils/ceksharepreference.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -89,6 +91,7 @@ class _DashboardPageState extends State<DashboardPage> {
           _buildTextHeader(screenHeight),
           // _buildBanner(screenHeight),
           _buildContent(screenHeight),
+          _buildChart(screenHeight),
           _buildSchedule(screenHeight),
           // _buildActivity(screenHeight)
         ],
@@ -244,28 +247,12 @@ class _DashboardPageState extends State<DashboardPage> {
   SliverToBoxAdapter _buildSchedule(double screenHeight) {
     return SliverToBoxAdapter(
       child: Container(
-        padding: const EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 20,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text('Schedule terbaru',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                ScheduleDashboard()
-              ],
-            ),
-          ],
-        ),
-      ),
+          padding: const EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 20,
+          ),
+          child: ListActivity()),
     );
   }
 
@@ -295,6 +282,33 @@ class _DashboardPageState extends State<DashboardPage> {
                 )
               ],
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // * code for load json api chart Dashboard
+  SliverToBoxAdapter _buildChart(double screenHeight) {
+    return SliverToBoxAdapter(
+      child: Container(
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              'Statistik Activity',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            ChardDashboard()
           ],
         ),
       ),

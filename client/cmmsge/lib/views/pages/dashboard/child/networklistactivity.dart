@@ -12,14 +12,17 @@ List<ScheduleModel> parseSchedule(String responseBody) {
   return listSite.map((e) => ScheduleModel.fromJson(e)).toList();
 }
 
-Future<List<ScheduleModel>> fetchSchedule(String token) async {
+Future<List<ScheduleModel>> fetchSchedule(String token, String flag_activity,
+    String filter_site, String start_date, String end_date) async {
   var url = Uri.parse(_apiService + 'schedule');
+
   var response = await http.get(url, headers: {
     'content-type': 'application/json',
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print('schedule : ' + response.body);
+  print(response.statusCode);
+  print(response.body);
   if (response.statusCode == 200) {
     return compute(parseSchedule, response.body);
   } else if (response.statusCode == 204) {
