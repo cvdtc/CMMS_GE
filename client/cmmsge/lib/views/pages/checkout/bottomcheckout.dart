@@ -400,7 +400,6 @@ class BottomCheckout {
       String masalah,
       String idpenyelesaian,
       String idcheckout) {
-    print(tipe + idcheckout + tanggal);
     PenyelesaianModel data = PenyelesaianModel(
         keterangan: keterangan, tanggal: tanggal, idmasalah: idmasalah);
     if (tipe == 'tambah') {

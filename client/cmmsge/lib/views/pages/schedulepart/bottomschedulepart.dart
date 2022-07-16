@@ -114,7 +114,6 @@ class BottomSchedulePart {
                   ElevatedButton(
                       onPressed: buttonSimpanHandler
                           ? () {
-                              print('clicked!');
                               Navigator.pop(context);
                               modalKonfirmasi(
                                   context,
@@ -155,7 +154,6 @@ class BottomSchedulePart {
 // ++ MODAL UNTUK KONFIRMASI SEBELUM MELAKUKAN KONEKSI KE API
   void modalKonfirmasi(context, String tipe, String token, String idcheckout,
       String kode, String namabarang, String tgl_reminder) {
-    print(tgl_reminder);
     // * KONDISI UNTUK PENGECEKAN APAKAH NILAI/VALUE masalah, shift, tanggal, DAN jam SUDAH ADA VALUENYA APA BELUM
     if (tgl_reminder == "") {
       ReusableClasses().modalbottomWarning(
@@ -271,9 +269,7 @@ class BottomSchedulePart {
   // ! KONEKSI KE API
   void _actionToApi(context, String tipe, String token, String idcheckout,
       String kode, String namabarang, String tgl_reminder) {
-    print(tipe + idcheckout + tgl_reminder);
     CheckoutModel data = CheckoutModel(tgl_reminder: tgl_reminder);
-    print(data.toString());
     if (tipe == 'ubah') {
       Navigator.pushAndRemoveUntil(
         context,

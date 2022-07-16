@@ -21,8 +21,6 @@ Future<List<ScheduleModel>> fetchSchedule(String token, String flag_activity,
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print(response.statusCode);
-  print(response.body);
   if (response.statusCode == 200) {
     return compute(parseSchedule, response.body);
   } else if (response.statusCode == 204) {

@@ -14,7 +14,6 @@ Future<List<ChartMesinModel>?> fetchchartmesin(
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print(response.body + response.statusCode.toString());
   if (response.statusCode == 200) {
     return chartMesinFromJson(response.body);
   } else {

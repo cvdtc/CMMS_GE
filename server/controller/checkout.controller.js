@@ -50,7 +50,7 @@ function getCheckout(req, res) {
         data: error,
       });
     } else {
-      var sqlquery = `SELECT c.idcheckout, c.idmasalah, c.idbarang, c.idsatuan, DATE_FORMAT( c.tanggal, "%Y-%m-%d") as tanggal, c.keterangan, c.qty, b.BB_NAMA as barang, b.BB_SATUAN as satuan, m.masalah, c.tgl_reminder, c.kilometer FROM checkout c, masalah m, bb b WHERE c.idmasalah=m.idmasalah and c.idbarang=b.BB_ID AND m.idmasalah = ?`;
+      var sqlquery = `SELECT c.idcheckout, c.idmasalah, c.idbarang, c.idsatuan, DATE_FORMAT( c.tanggal, "%Y-%m-%d") as tanggal, DAYNAME(timestamp) as hari, c.keterangan, c.qty, b.BB_NAMA as barang, b.BB_SATUAN as satuan, m.masalah, c.tgl_reminder, c.kilometer FROM checkout c, masalah m, bb b WHERE c.idmasalah=m.idmasalah and c.idbarang=b.BB_ID AND m.idmasalah = ?`;
       database.query(sqlquery, idmasalah, (error, rows) => {
         database.release();
         if (error) {

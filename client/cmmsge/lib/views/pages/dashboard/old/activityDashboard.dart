@@ -30,7 +30,6 @@ class _ActivityDashboardState extends State<ActivityDashboard> {
     super.initState();
     flag_activity = widget.flag_activity;
     token = widget.token;
-    print('Token?' + token!);
     // cekToken();
   }
 
@@ -48,7 +47,6 @@ class _ActivityDashboardState extends State<ActivityDashboard> {
         future: _apiService.getListMasalah(
             token!, flag_activity.toString(), 0.toString()),
         builder: (context, AsyncSnapshot<List<MasalahModel>?> snapshot) {
-          print(snapshot);
           if (snapshot.hasError) {
             return Center(
               child: Column(

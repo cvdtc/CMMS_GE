@@ -16,10 +16,8 @@ Future<List<RingkasanMesinModel>?> fetchRingkasanMesin(
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print(response.body + response.statusCode.toString());
   if (response.statusCode == 200) {
     // var data = jsonDecode(response.body);
-    // print('sss' + data);
     return ringkasanmesinFromJson(response.body);
   } else {
     // throw Exception([response.body, response.statusCode]);

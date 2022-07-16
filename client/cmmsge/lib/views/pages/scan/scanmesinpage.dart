@@ -151,7 +151,6 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
                           onPressed: () {
                             fetchMesinByNoMesin(token!, result!.code.toString())
                                 .then((value) {
-                              print('ppp' + value.toString());
                               setState(() {
                                 _isLoading = false;
                                 _datamesin.addAll(value!);
@@ -169,7 +168,6 @@ class _ScanMesinPageState extends State<ScanMesinPage> {
                                             )));
                               });
                             }).catchError((error, stackTrace) {
-                              print(error);
                               if (error == 204) {
                                 ReusableClasses().modalbottomWarning(
                                     context,

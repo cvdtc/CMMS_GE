@@ -14,7 +14,6 @@ Future<List<MesinModel>?> fetchMesinByNoMesin(
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print('ooo' + response.body + response.statusCode.toString());
   if (response.statusCode == 200) {
     return mesinFromJson(response.body);
   } else {

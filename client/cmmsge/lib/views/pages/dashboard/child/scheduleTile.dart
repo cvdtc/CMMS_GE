@@ -10,7 +10,6 @@ class ScheduleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(ScheduleModel);
     return Card(
         elevation: 0.0,
         child: InkWell(

@@ -29,8 +29,6 @@ class _MenuPageState extends State<MenuPage> {
     ApiService().getSite(token!).then((value) {
       _site.addAll(value!);
     }).whenComplete(() => print('xx' + _site.toString()));
-    print(token);
-    print(_site);
   }
 
   @override

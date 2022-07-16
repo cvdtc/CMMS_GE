@@ -17,7 +17,6 @@ class KomponenTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(komponen);
     _tecKeterangan.add(new TextEditingController());
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),

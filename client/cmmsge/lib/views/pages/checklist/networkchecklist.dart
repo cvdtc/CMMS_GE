@@ -19,7 +19,6 @@ Future<List<ChecklistModel>> fetchChecklist(String token) async {
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print(response.body);
   if (response.statusCode == 200) {
     return compute(checklistData, response.body);
   } else if (response.statusCode == 204) {

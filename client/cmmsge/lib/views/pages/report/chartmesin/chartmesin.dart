@@ -31,13 +31,11 @@ class _ChartMesinPageState extends State<ChartMesinPage> {
       token = sp.getString("access_token");
     });
     fetchchartmesin(token!, widget.idmesin).then((value) {
-      print('jjj' + value.toString());
       setState(() {
         _isLoading = false;
         // _ringkasanMesin.addAll(value);
       });
     }).catchError((error, stackTrace) {
-      print(error);
       if (error == 204) {
         ReusableClasses().modalbottomWarning(context, 'Warning!',
             "Data masih kosong", error.toString(), 'assets/images/sorry.png');

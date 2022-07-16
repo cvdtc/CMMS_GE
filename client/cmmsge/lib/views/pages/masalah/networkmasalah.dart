@@ -26,14 +26,11 @@ Future<List<MasalahModel>> fetchMasalah(String token, String flag_activity,
 
   /// for filter
   // Uri.parse(_apiService + 'masalah/' + flag_activity ); /// without filter temporary
-  print(url);
   var response = await http.get(url, headers: {
     'content-type': 'application/json',
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print(response.statusCode);
-  print(response.body);
   if (response.statusCode == 200) {
     return compute(parseSite, response.body);
   } else if (response.statusCode == 204) {

@@ -20,7 +20,6 @@ Future<List<SiteModel>> fetchSite(String token) async {
     'Authorization': 'Bearer ' + token
   });
   if (response.statusCode == 200) {
-    print('Network Site?' + response.body);
     return compute(parseSite, response.body);
   } else if (response.statusCode == 204) {
     throw (response.statusCode);

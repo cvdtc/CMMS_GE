@@ -108,7 +108,6 @@ class BottomKomponen {
                                       isChecked
                                           ? valueflag_reminder = 1
                                           : valueflag_reminder = 0;
-                                      print(value);
                                     });
                                   },
                                 );
@@ -357,21 +356,6 @@ class BottomKomponen {
       String jumlah_reminder,
       String idmesin,
       String idkomponen) {
-    print(token +
-        ' | ' +
-        nama +
-        ' | ' +
-        kategori +
-        ' | ' +
-        keterangan +
-        ' | ' +
-        flag_reminder +
-        ' | ' +
-        jumlah_reminder +
-        ' | ' +
-        idmesin +
-        ' | ' +
-        idkomponen);
     // * KONDISI UNTUK PENGECEKAN APAKAH NILAI/VALUE masalah, shift, tanggal, DAN jam SUDAH ADA VALUENYA APA BELUM
     if (nama == "" ||
         keterangan == "" ||
@@ -522,7 +506,6 @@ class BottomKomponen {
         flag_reminder: flag_reminder,
         jumlah_reminder: jumlah_reminder,
         idmesin: idmesin);
-    print(addData.toString() + tipe);
     if (tipe == 'tambah') {
       _apiService.addKomponen(token, addData).then((isSuccess) async {
         if (isSuccess) {
@@ -548,7 +531,6 @@ class BottomKomponen {
           buttonSimpanHandler = true;
         }
       }).onError((error, stackTrace) {
-        print('Error Checklist' + error.toString() + stackTrace.toString());
         Fluttertoast.showToast(
             msg: '${_apiService.responseCode.messageApi}',
             backgroundColor: Colors.green);
@@ -575,8 +557,6 @@ class BottomKomponen {
           buttonSimpanHandler = true;
         }
       }).onError((error, stackTrace) {
-        print(
-            'Error UBAH Checklist' + error.toString() + stackTrace.toString());
         Fluttertoast.showToast(
             msg: '${_apiService.responseCode.messageApi}',
             backgroundColor: Colors.green);
@@ -599,8 +579,6 @@ class BottomKomponen {
           buttonSimpanHandler = true;
         }
       }).onError((error, stackTrace) {
-        print(
-            'Error HAPUS Checklist' + error.toString() + stackTrace.toString());
         Fluttertoast.showToast(
             msg: '${_apiService.responseCode.messageApi}',
             backgroundColor: Colors.green);

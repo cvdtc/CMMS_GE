@@ -79,7 +79,6 @@ class MesinSearchPageState extends State<MesinSearchPage> {
   initState() {
     transaksi = widget.transaksi;
     flag_activity = widget.flag_activity;
-    print(transaksi);
     cekToken(transaksi!);
     super.initState();
   }

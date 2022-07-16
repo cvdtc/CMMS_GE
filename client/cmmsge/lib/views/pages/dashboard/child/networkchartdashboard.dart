@@ -13,7 +13,6 @@ Future<List<DashboardChartModel>?> fetchchartdashboard(String token) async {
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print(response.body + response.statusCode.toString());
   if (response.statusCode == 200) {
     return dashboardchartmodelFromJson(response.body);
   } else {

@@ -33,7 +33,6 @@ class _DataGantiPartPageState extends State<DataGantiPartPage> {
         _datagantipart.addAll(value);
       });
     }).catchError((error, stackTrace) {
-      print(error);
       if (error == 204) {
         ReusableClasses().modalbottomWarning(context, 'Warning!',
             "Data masih kosong", error.toString(), 'assets/images/sorry.png');

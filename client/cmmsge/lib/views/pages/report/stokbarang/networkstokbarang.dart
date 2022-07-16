@@ -15,13 +15,11 @@ List<StokBarangModel> parseSchedule(String responseBody) {
 Future<List<StokBarangModel>> fetchStokBarang(
     String token, String keyword) async {
   var url = Uri.parse(_apiService + 'stokbarang/' + keyword);
-  print('Keyword?' + keyword);
   var response = await http.get(url, headers: {
     'content-type': 'application/json',
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print(response.body);
   if (response.statusCode == 200) {
     return compute(parseSchedule, response.body);
   } else if (response.statusCode == 204) {

@@ -46,7 +46,6 @@ class _ChartDetailMesinState extends State<ChartDetailMesinPage> {
               _ringkasanMesin.addAll(value!);
             });
           }).catchError((error, stackTrace) {
-            print(error);
             if (error == 204) {
               ReusableClasses().modalbottomWarning(
                   context,

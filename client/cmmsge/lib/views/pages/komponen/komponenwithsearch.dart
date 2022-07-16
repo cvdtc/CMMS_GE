@@ -126,7 +126,6 @@ class _KomponenPageSearchState extends State<KomponenPageSearch> {
             child: ListView.builder(
               itemCount: _komponentsDisplay.length + 1,
               itemBuilder: (context, index) {
-                print(index);
                 if (!_isLoading) {
                   return index == 0
                       ? _searchBar()

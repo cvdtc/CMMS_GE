@@ -778,7 +778,6 @@ class BottomMasalah {
         idmesin: idmesin,
         jenis_masalah: kategori,
         flag_activity: flag_activity);
-    print(addData.toString());
     if (tipe == 'tambah') {
       _apiService.addMasalah(token, addData).then((isSuccess) {
         if (isSuccess) {
@@ -805,7 +804,6 @@ class BottomMasalah {
         }
       });
       // .onError((error, stackTrace) {
-      //   print('Error Masalah' + error.toString());
       //   Fluttertoast.showToast(
       //       msg: '${_apiService.responseCode.messageApi}',
       //       backgroundColor: Colors.green);

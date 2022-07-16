@@ -20,7 +20,6 @@ Future<List<DataGantiPartModel>> fetchDataGantiPart(
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print(response.body);
   if (response.statusCode == 200) {
     return compute(parseSite, response.body);
   } else if (response.statusCode == 204) {

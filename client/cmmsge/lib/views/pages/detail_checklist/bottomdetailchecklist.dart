@@ -232,8 +232,6 @@ class BottomChecklistDetail {
           isLoading = false;
         }
       }).onError((error, stackTrace) {
-        print(
-            'Error HAPUS Checklist' + error.toString() + stackTrace.toString());
         Fluttertoast.showToast(
             msg: '${_apiService.responseCode.messageApi}',
             backgroundColor: Colors.green);

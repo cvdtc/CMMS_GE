@@ -32,7 +32,6 @@ class _DashboardPageState extends State<DashboardPage> {
     setState(() {
       token = sp.getString("access_token");
       username = sp.getString("username");
-      print(token);
     });
     _apiService.getDashboard(token!).then((value) {
       // DashboardModel dashboardModel = DashboardModel();
@@ -60,12 +59,6 @@ class _DashboardPageState extends State<DashboardPage> {
     //     token = value![0];
     //     username = value[1];
     //   });
-    //   print('inside initstate' + token.toString());
-
-    // print(value!); /// all value of global checktoken class
-    // print(value[0]); /// token
-    // print(value[1]); /// username
-    // print(value[2]); /// jabatan
 
     // }).catchError((error, stackTrace) {
     //   ReusableClasses().modalbottomWarning(context, 'Warning!',

@@ -35,7 +35,6 @@ class _DataMasalahByMesinPageState extends State<DataMasalahByMesinPage> {
         _datamasalah.addAll(value);
       });
     }).catchError((error, stackTrace) {
-      print(error);
       if (error == 204) {
         ReusableClasses().modalbottomWarning(context, 'Warning!',
             "Data masih kosong", error.toString(), 'assets/images/sorry.png');
@@ -126,18 +125,20 @@ class _DataMasalahByMesinPageState extends State<DataMasalahByMesinPage> {
                                               )));
                                 }),
                                 DataCell(
-                                    e.status.toString == '0'
+                                    e.status.toString() == '0'
                                         ? Text(
                                             'Belum Selesai',
                                             style: TextStyle(
                                                 color: thirdcolor,
-                                                fontSize: 12.0),
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold),
                                           )
                                         : Text(
                                             'Selesai',
                                             style: TextStyle(
                                                 color: Colors.green,
-                                                fontSize: 12.0),
+                                                fontSize: 12.0,
+                                                fontWeight: FontWeight.bold),
                                           ), onDoubleTap: () {
                                   Navigator.push(
                                       context,

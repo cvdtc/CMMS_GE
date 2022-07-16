@@ -70,7 +70,6 @@ class ApiService {
       // ++ fyi : sending token with BEARER
       'Authorization': 'Bearer ' + token
     });
-    print("DASHBOARD?" + response.body);
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
@@ -95,7 +94,6 @@ class ApiService {
    */
   Future<List<KomponenModel>?> getListKomponen(
       String token, String idmesin) async {
-    print('Token Komponen Api Service' + token + idmesin);
     // ++ reminder don't forget to sending idmesin!
     var url = Uri.parse(BaseUrl + 'komponen/' + idmesin);
     var response = await client.get(url, headers: {
@@ -103,7 +101,6 @@ class ApiService {
       // ++ fyi : sending token with BEARER
       'Authorization': 'Bearer ' + token
     });
-    print("Data Komponen:" + response.body);
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
@@ -151,7 +148,6 @@ class ApiService {
         body: mesinToJson(data));
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
-    // print("ADD MESIN? " + response.body);
     if (response.statusCode == 201) {
       return true;
     } else {
@@ -194,7 +190,6 @@ class ApiService {
       // ++ fyi : sending token with BEARER
       'Authorization': 'Bearer ' + token
     });
-    print('GET TIMELINE' + response.body);
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
@@ -221,7 +216,6 @@ class ApiService {
     // ++ fyi : for getting response message from api
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
-    print(response.body + token);
     if (response.statusCode == 200) {
       return siteFromJson(response.body);
     } else {
@@ -308,7 +302,6 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: KomponenToJson(data));
-    print(url.toString() + ' | ' + data.toString());
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 201) {
@@ -348,7 +341,6 @@ class ApiService {
       'content-type': 'application/json',
       'Authorization': 'Bearer ${token}'
     });
-    print(response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
@@ -369,7 +361,6 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: masalahToJson(data));
-    print('send to api add masalah' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 201) {
@@ -391,7 +382,6 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: masalahToJson(data));
-    print('send to api edit masalah' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
@@ -474,7 +464,6 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: checkoutToJson(data));
-    print('UBAH DATA TGL REMINDER' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
@@ -493,7 +482,6 @@ class ApiService {
       'content-type': 'application/json',
       'Authorization': 'Bearer ${token}'
     });
-    print('HAPUS CHECKOUT' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
@@ -518,9 +506,7 @@ class ApiService {
       // ++ fyi : sending token with BEARER
       'Authorization': 'Bearer ' + token
     });
-    print('Masalah?' + response.body + response.statusCode.toString());
     // ++ fyi : for getting response message from api
-
     if (response.statusCode == 200) {
       Map responsemessage = jsonDecode(response.body);
       responseCode = ResponseCode.fromJson(responsemessage);
@@ -543,7 +529,6 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: penyelesaianToJson(data));
-    print('send to add penyelesaian' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 201) {
@@ -562,7 +547,6 @@ class ApiService {
       'content-type': 'application/json',
       'Authorization': 'Bearer ${token}'
     });
-    print('delete data penyelesiaan' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 200) {
@@ -601,7 +585,6 @@ class ApiService {
    * ! ADD CHECKLIST
    */
   Future<int> addChecklist(String token, ChecklistModel data) async {
-    print(token + data.toString());
     var url = Uri.parse(BaseUrl + 'checklist');
     var response = await client.post(url,
         headers: {
@@ -609,13 +592,9 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: checklistToJson(data));
-    print(data.toString() + ' | ' + token);
-    print('send to add checklist' + response.body[1].toString());
-    // print(responseCode);
     if (response.statusCode == 201) {
       Map responsemessage = jsonDecode(response.body);
       responseCode = ResponseCode.fromJson(responsemessage);
-      print(responseCode.data.toString());
       return responseCode.data;
     } else {
       return Future.error(
@@ -628,7 +607,6 @@ class ApiService {
    */
   Future<bool> editChecklist(
       String token, ChecklistModel data, String idchecklist) async {
-    print(token + data.toString());
     var url = Uri.parse(BaseUrl + 'checklist/' + idchecklist);
     var response = await client.put(url,
         headers: {
@@ -636,12 +614,8 @@ class ApiService {
           'Authorization': 'Bearer ${token}'
         },
         body: checklistToJson(data));
-    print(data);
-    print('send to edit checklist' + response.body[1].toString());
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
-
-    print(responseCode);
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -679,10 +653,7 @@ class ApiService {
           'content-type': 'application/json',
           'Authorization': 'Bearer ${token}'
         },
-        // body: json.encode({'array': data}));
         body: data);
-    print(data);
-    print('send to add penyelesaian' + response.body);
     Map responsemessage = jsonDecode(response.body);
     responseCode = ResponseCode.fromJson(responsemessage);
     if (response.statusCode == 201) {

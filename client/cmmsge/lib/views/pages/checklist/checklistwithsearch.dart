@@ -60,7 +60,6 @@ class ChecklistSearchPageState extends State<ChecklistSearchPage> {
 
   @override
   initState() {
-    print(transaksi);
     cekToken();
     super.initState();
   }

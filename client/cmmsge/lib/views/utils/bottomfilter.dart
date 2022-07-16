@@ -83,7 +83,6 @@ class BottomFilter {
                                 }).toList(),
                                 onChanged: (value) {
                                   setState(() {
-                                    print(value);
                                     dropdownSiteValue =
                                         int.parse(value.toString());
                                   });
@@ -148,10 +147,6 @@ class BottomFilter {
                                             showActionButtons: true,
                                             onSubmit: (value) {
                                               setState(() {});
-                                              print(value);
-                                              print(_conversionDateStart +
-                                                  ' | ' +
-                                                  _conversionDateEnd);
                                               Navigator.pop(context);
                                             },
                                           );

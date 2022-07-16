@@ -34,7 +34,6 @@ class _KomponenPageState extends State<KomponenPage> {
   initState() {
     idmesin = widget.idmesin;
     cekToken();
-    print('TokenKomponen?' + token);
     super.initState();
   }
 
@@ -47,7 +46,6 @@ class _KomponenPageState extends State<KomponenPage> {
 
   @override
   Widget build(BuildContext context) {
-    print('Token Komponen Widget' + token);
     return Scaffold(
       appBar: AppBar(
         title: Text('Daftar Komponen'),
@@ -55,9 +53,7 @@ class _KomponenPageState extends State<KomponenPage> {
         backgroundColor: thirdcolor,
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          print(idkomponenList);
-        },
+        onPressed: () {},
         label: Text(
           'Tambah Komponen',
           style: TextStyle(color: Colors.white),
@@ -147,7 +143,6 @@ class _KomponenPageState extends State<KomponenPage> {
               onTap: () {
                 idkomponenList.add(dataKomponen.idkomponen.toString());
                 idkomponenList.add(_tecKeterangan[index].text.toString());
-                print(idkomponenList.toString());
                 // idkomponenList.add(dataKomponen.idkomponen.toString());
               },
               child: Padding(
@@ -369,7 +364,6 @@ class _KomponenPageState extends State<KomponenPage> {
     //       'assets/images/sorry.png');
     // } else {
     //   SiteModel data = SiteModel(nama: nama, keterangan: keterangan);
-    //   print("Data? " + data.toString());
     //   _apiService.addRumah(token!, data).then((isSuccess) {
     //     if (isSuccess) {
     //       _tecNama.clear();

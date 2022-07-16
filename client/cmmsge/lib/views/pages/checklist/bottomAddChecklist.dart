@@ -44,7 +44,6 @@ class BottomAddChecklist {
       String idchecklist) {
 // * setting value text form field if action is edit
     if (tipe == 'ubah') {
-      print(tanggal_checklist);
       _tecDeskripsi.value = TextEditingValue(
           text: deskripsi,
           selection: TextSelection.fromPosition(
@@ -758,12 +757,9 @@ class BottomAddChecklist {
         tanggal_checklist: tanggal_checklist,
         revisi: revisi,
         idmesin: idmesin);
-    print(addData.toString() + tipe);
     if (tipe == 'tambah') {
       _apiService.addChecklist(token, addData).then((idcheckout) async {
-        print('HASIL??' + idcheckout.toString());
         if (idcheckout > 0) {
-          print("idcheckout?" + idcheckout.toString() + idmesin.toString());
           await Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -790,7 +786,6 @@ class BottomAddChecklist {
           buttonSimpanHandler = true;
         }
       }).onError((error, stackTrace) {
-        print('Error Checklist' + error.toString() + stackTrace.toString());
         Fluttertoast.showToast(
             msg: '${_apiService.responseCode.messageApi}',
             backgroundColor: Colors.green);
@@ -817,8 +812,6 @@ class BottomAddChecklist {
           buttonSimpanHandler = true;
         }
       }).onError((error, stackTrace) {
-        print(
-            'Error UBAH Checklist' + error.toString() + stackTrace.toString());
         Fluttertoast.showToast(
             msg: '${_apiService.responseCode.messageApi}',
             backgroundColor: Colors.green);
@@ -841,8 +834,6 @@ class BottomAddChecklist {
           buttonSimpanHandler = true;
         }
       }).onError((error, stackTrace) {
-        print(
-            'Error HAPUS Checklist' + error.toString() + stackTrace.toString());
         Fluttertoast.showToast(
             msg: '${_apiService.responseCode.messageApi}',
             backgroundColor: Colors.green);

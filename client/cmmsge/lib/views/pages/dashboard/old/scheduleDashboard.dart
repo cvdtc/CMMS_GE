@@ -44,7 +44,6 @@ class _ScheduleDashboardState extends State<ScheduleDashboard> {
         future: _apiService.getSchedule(token!),
         builder: (context, AsyncSnapshot<List<ScheduleModel>?> snapshot) {
           if (snapshot.hasError) {
-            print(snapshot.hasError);
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

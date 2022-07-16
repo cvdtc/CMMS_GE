@@ -191,8 +191,6 @@ class _KomponenChecklistPageState extends State<KomponenChecklistPage> {
                                     //               .text
                                     //               .toString()
                                     //         ]);
-                                    // print(dataList);
-                                    // print(json.encode({'array': dataList}));
                                     // setState(() {
                                     //   valueChecklist = json.encode(
                                     //       {'array': dataList}).toString();
@@ -234,9 +232,6 @@ class _KomponenChecklistPageState extends State<KomponenChecklistPage> {
 
                                                     /// idchecklist set injection for testing
                                                   ]);
-                                          print(dataList);
-                                          print(
-                                              json.encode({'array': dataList}));
                                           setState(() {
                                             valueChecklist = json.encode(
                                                 {'array': dataList}).toString();
@@ -274,7 +269,6 @@ class _KomponenChecklistPageState extends State<KomponenChecklistPage> {
         child: InkWell(
           onTap: () {
             checklistClick(token);
-            print(dataList);
           },
           child: const SizedBox(
             height: kToolbarHeight,
@@ -295,7 +289,6 @@ class _KomponenChecklistPageState extends State<KomponenChecklistPage> {
   }
 
   checklistClick(token) async {
-    print(dataList.length != indexLength + dataList.length + indexLength);
     if (dataList.length < indexLength) {
       ReusableClasses().modalbottomWarning(
           context,

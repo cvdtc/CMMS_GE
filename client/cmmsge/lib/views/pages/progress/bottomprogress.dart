@@ -193,7 +193,6 @@ class BottomProgress {
                   ElevatedButton(
                       onPressed: buttonSimpanHandler
                           ? () {
-                              print('clicked!');
                               Navigator.pop(context);
                               modalKonfirmasi(
                                   context,
@@ -235,17 +234,6 @@ class BottomProgress {
 // ++ MODAL UNTUK KONFIRMASI SEBELUM MELAKUKAN KONEKSI KE API
   void modalKonfirmasi(context, String tipe, String token, String idmasalah,
       String perbaikan, String engineer, String tanggal, String shift) {
-    print(tipe +
-        ' | ' +
-        idmasalah +
-        ' | ' +
-        perbaikan +
-        ' | ' +
-        engineer +
-        ' | ' +
-        tanggal +
-        ' | ' +
-        shift);
     // * KONDISI UNTUK PENGECEKAN APAKAH NILAI/VALUE masalah, shift, tanggal, DAN jam SUDAH ADA VALUENYA APA BELUM
     if (perbaikan == "" || shift == "" || tanggal == "" || engineer == "") {
       Fluttertoast.showToast(

@@ -386,7 +386,6 @@ class _MasalahPageSearchState extends State<MasalahPageSearch> {
               onChanged: (String? value) {
                 setState(() {
                   idsite = value;
-                  print('Clicked?' + idsite.toString());
                 });
               },
               items: siteList?.map((item) {

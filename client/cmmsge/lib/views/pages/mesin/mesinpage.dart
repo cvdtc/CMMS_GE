@@ -436,7 +436,6 @@ class _MesinPageState extends State<MesinPage> {
   //         'assets/images/sorry.png');
   //   } else {
   //     SiteModel data = SiteModel(nama: nama, keterangan: keterangan);
-  //     print("Data? " + data.toString());
   //     _apiService.addRumah(token!, data).then((isSuccess) {
   //       if (isSuccess) {
   //         _tecNama.clear();

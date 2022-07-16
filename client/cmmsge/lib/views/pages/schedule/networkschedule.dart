@@ -19,7 +19,6 @@ Future<List<ScheduleModel>> fetchSchedule(String token) async {
     // ++ fyi : sending token with BEARER
     'Authorization': 'Bearer ' + token
   });
-  print('schedule : ' + response.body);
   if (response.statusCode == 200) {
     return compute(parseSchedule, response.body);
   } else if (response.statusCode == 204) {
